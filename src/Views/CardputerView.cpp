@@ -619,7 +619,7 @@ void CardputerView::displaySeedFormatGeneralInfos() {
     Display->setTextColor(PRIMARY_COLOR);
     Display->setCursor(14, 88);
     Display->setTextSize(TEXT_MEDIUM);
-    Display->printf("BTC address is native segwit");
+    Display->printf("BTC address is segwit BIP84");
 
     // Button Next
     Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
