@@ -3,6 +3,7 @@
 
 #include <map> 
 #include <M5Cardputer.h>
+#include <Contexts/EntropyContext.h>
 
 #define KEY_OK '\n'
 #define KEY_DEL '\b'
@@ -14,6 +15,8 @@
 #define KEY_ARROW_LEFT ','
 #define KEY_ARROW_RIGHT '/'
 
+using namespace contexts;
+
 namespace inputs {
 
 
@@ -21,6 +24,8 @@ class CardputerInput {
 public:
     char handler();
     void waitPress();
+private:
+    EntropyContext& entropyContext = EntropyContext::getInstance();
 };
 
 }
