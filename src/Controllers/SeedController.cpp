@@ -56,9 +56,15 @@ void SeedController::handleSeedGeneration() {
   // Display seed infos
   display.displaySeedStart();
   input.waitPress();
+  
+  // Generate private keys and verify randomness
+  std::vector<uint8_t> privateKey;
+  do {
+    // Generate keys
+    privateKey = cryptoService.generatePrivateKey();
+    // (4.9 for 32bits is equal to 90% randomness)
+  } while (cryptoService.calculateShanonEntropy(privateKey) < 4.9);
 
-  // Generate keys
-  auto privateKey = cryptoService.generatePrivateKey();
   auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
   auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
   // auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
