@@ -258,7 +258,7 @@ void CardputerView::displayMnemonicWord(std::string word, size_t index) {
     // Infos
     Display->setTextSize(TEXT_TINY);
     Display->setTextColor(PRIMARY_COLOR);
-    Display->setCursor(34, 47);
+    Display->setCursor(32, 47);
     Display->printf("Press ESC when you are done");
 
     // Word box
