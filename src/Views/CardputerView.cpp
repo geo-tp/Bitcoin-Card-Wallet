@@ -644,8 +644,8 @@ void CardputerView::displaySdSaveGeneralInfos() {
     // Sub title
     Display->setTextSize(TEXT_SMALL);
     Display->setTextColor(TEXT_COLOR);
-    Display->setCursor(8, 46);
-    Display->printf("Only public infos are stored on SD");
+    Display->setCursor(28, 46);
+    Display->printf("Only public infos are stored");
 
     // Text
     Display->setCursor(22, 65);
