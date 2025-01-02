@@ -49,34 +49,32 @@ void AppDispatcher::setup() {
 }
 
 void AppDispatcher::run() {
-    while (true) {
-        if (!selectionContext.getIsModeSelected()) {
-            modeController.handleModeSelection();
-            continue;
-        }
+    if (!selectionContext.getIsModeSelected()) {
+        modeController.handleModeSelection();
+        return;
+    }
 
-        switch (selectionContext.getCurrentSelectedMode()) {
-            case SelectionModeEnum::PORTFOLIO:
-                if (selectionContext.getIsWalletSelected()) {
-                    walletController.handleWalletInformationSelection();
+    switch (selectionContext.getCurrentSelectedMode()) {
+        case SelectionModeEnum::PORTFOLIO:
+            if (selectionContext.getIsWalletSelected()) {
+                walletController.handleWalletInformationSelection();
 
-                } else {
-                    walletController.handleWalletSelection();
-                }
-                break;
+            } else {
+                walletController.handleWalletSelection();
+            }
+            break;
 
-            case SelectionModeEnum::CREATE_WALLET:
-                seedController.handleSeedGeneration();
-                break;
+        case SelectionModeEnum::CREATE_WALLET:
+            seedController.handleSeedGeneration();
+            break;
 
-            case SelectionModeEnum::LOAD_WALLET:
-                fileBrowserController.handleFileWalletSelection();
-                break;
+        case SelectionModeEnum::LOAD_WALLET:
+            fileBrowserController.handleFileWalletSelection();
+            break;
 
-            case SelectionModeEnum::INFOS:
-                seedController.handleSeedInformations();
-                break;
-        }
+        case SelectionModeEnum::INFOS:
+            seedController.handleSeedInformations();
+            break;
     }
 }
 
