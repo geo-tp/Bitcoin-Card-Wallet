@@ -80,30 +80,29 @@ std::vector<uint8_t> CryptoService::generatePrivateKey() {
     // Get entropy from user action
     std::vector<uint8_t> entropyUser = entropyContext.getAccumulatedEntropy();
 
-    // Hash the user entropy
-    uint8_t hash[keySize];
-    mbedtls_sha256(entropyUser.data(), entropyUser.size(), hash, 0); // 0 = SHA-256 (pas SHA-224)
-    std::vector<uint8_t> hashedUserKey(hash, hash + keySize);
-
     // Control size
     if (entropyEsp32.size() != keySize || entropyMbedtls.size() != keySize || entropyBuiltin.size() != keySize) {
         throw std::runtime_error("Failed to generate sufficient entropy");
     }
 
+    // Hash the user entropy
+    uint8_t hash[keySize];
+    mbedtls_sha256(entropyUser.data(), entropyUser.size(), hash, 0); // 0 = SHA-256 (pas SHA-224)
+    std::vector<uint8_t> hashedUserEntropy(hash, hash + keySize);
+
     // Mix entropy with XOR
     std::vector<uint8_t> mixedKey(keySize);
     for (size_t i = 0; i < keySize; ++i) {
         mixedKey[i] = entropyEsp32[i] ^ entropyMbedtls[i] ^ 
-                      entropyBuiltin[i] ^ hashedUserKey[i];
+                      entropyBuiltin[i] ^ hashedUserEntropy[i];
     }
 
     // Process SHA256 on the result
-    uint8_t hashedKey[keySize];
-    mbedtls_sha256(mixedKey.data(), mixedKey.size(), hashedKey, 0);
-
+    uint8_t hashedFinalKey[keySize];
+    mbedtls_sha256(mixedKey.data(), mixedKey.size(), hashedFinalKey, 0);
 
     // Convert to vector
-    std::vector<uint8_t> privateKey(hashedKey, hashedKey + keySize);
+    std::vector<uint8_t> privateKey(hashedFinalKey, hashedFinalKey + keySize);
 
     return privateKey; // Shanon score 7.2 on 256 bits sample
 }
