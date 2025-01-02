@@ -97,7 +97,7 @@ In the Bitcoin Card Wallet project, **random number generation is a critical com
 
 The project uses **multiple sources of entropy to generate random numbers**, which are then combined to form a single private key.
 
-### Four sources of enthropy
+### Four sources of entropy
 
 ```cpp
 
