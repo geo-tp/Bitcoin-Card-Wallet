@@ -8,14 +8,12 @@ WalletInformationSelection::WalletInformationSelection(CardputerView& display, C
 WalletInformationEnum WalletInformationSelection::select(const std::string& walletName) {
     display.displayTopBar(walletName.c_str(), true, false, true, 10);
     char key = KEY_NONE;
-    bool firstRender = true;
 
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
-        if (lastIndex != selectionIndex || firstRender) {
+        if (lastIndex != selectionIndex) {
             display.displaySelection(getWalletInformationStrings(), selectionIndex);
             display.displayPlugUsbMention();
             lastIndex = selectionIndex;
-            firstRender = false;
         }
 
         key = input.handler();
