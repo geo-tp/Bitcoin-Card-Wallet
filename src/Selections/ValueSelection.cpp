@@ -24,7 +24,7 @@ void ValueSelection::select(const std::string& description, const std::string& v
                 display.displayTopIcon();
                 input.waitPress();
                 display.setBrightness(120);
-                display.displayTopBar(description, true, false, false, 30);
+                display.displayTopBar(description, true, false, false, 20);
                 display.displayWalletValue(description, value); 
                 break;
         }
