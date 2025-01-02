@@ -12,7 +12,7 @@ Bitcoin Card Wallet is an ESP32 project that allows you to generate seeds, addre
 
 1. Navigate to the **"Create a wallet"** option.
 2. Record the displayed mnemonic safely (on paper, **not digitally**), you can choose a passphrase.
-3. Use the wallet's menu to derive and display your ***Bitcoin address, balance and xpub key.**
+3. Use the wallet's menu to derive and display your **Bitcoin address, balance and xpub key.**
 
 **NOTE :** An SD card is require to save wallets publics informations and load them at the launch of the application. Only public informations about your wallets are stored on the SD card, **SAVE YOUR SEED** or you will lose access to your bitcoin wallet.
 
@@ -44,7 +44,7 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
   - Supports **24-word mnemonics**.
   - Mnemonics can be restored in other **BIP39-compatible wallets** (Electrum for example).
 
-#### Example of a 24 words BIP39 Mnemonic seed
+#### Example of a 24 words BIP39 Mnemonic seed generated on the cardputer
 `dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility`
 
 ## Native SegWit Support:
@@ -70,7 +70,7 @@ Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to 
 - ![](./images/electrum4.png)
 5. If you used a passphrase, **ensure to check the extended word checkbox** to access the correct wallet.
 - ![](./images/electrum6.png)
-6. If you have a passphrase, the **passphrase must be entered** during the seed restoration process
+6. If you have a passphrase, the **passphrase must be entered** after typing the 24 words
 - ![](./images/electrum7.png)
 7. Electrum will automatically derive the keys and addresses following the **BIP84 (m/84'/0'/0') standard**, which is used by this wallet for **native SegWit** (Bech32) addresses.
 - ![](./images/electrum5.png)
