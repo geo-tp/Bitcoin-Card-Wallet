@@ -185,6 +185,48 @@ double CryptoService::calculateMinEntropy(const std::vector<uint8_t>& data) {
     return minEntropy;
 }
 
+std::string CryptoService::encodeBase58(const uint8_t* input, size_t len) {
+    if (!input || len == 0) {
+        return "";
+    }
+
+    const char* base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+    size_t zeroCount = 0;
+
+    // Count leading zero bytes
+    while (zeroCount < len && input[zeroCount] == 0) {
+        ++zeroCount;
+    }
+
+    // Initialize buffer for b58 conversion
+    std::vector<uint8_t> b58Buffer(len * 2);
+    size_t bufferSize = 0;
+
+    // Encode to b58
+    for (size_t i = zeroCount; i < len; ++i) {
+        int carry = input[i];
+        for (size_t j = 0; j < bufferSize; ++j) {
+            carry += b58Buffer[j] * 256;
+            b58Buffer[j] = carry % 58;
+            carry /= 58;
+        }
+        while (carry > 0) {
+            b58Buffer[bufferSize++] = carry % 58;
+            carry /= 58;
+        }
+    }
+
+    // String result
+    std::string result(zeroCount, '1');
+    for (auto it = b58Buffer.rbegin(); it != b58Buffer.rend(); ++it) {
+        if (*it != 0 || result.size() > zeroCount) { // Skip leading zeroes in the buffer
+            result += base58Chars[*it];
+        }
+    }
+
+    return result;
+}
+
 std::vector<uint8_t> CryptoService::OLDderivePublicKey(const std::vector<uint8_t>& privateKey) {
     // Create context
     secp256k1_context* ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
@@ -237,48 +279,6 @@ std::string CryptoService::OLDgenerateBitcoinAddress(const std::vector<uint8_t>&
 
     std::memcpy(extendedKey + 21, checksum, 4);
     return encodeBase58(extendedKey, 25);
-}
-
-std::string CryptoService::encodeBase58(const uint8_t* input, size_t len) {
-    if (!input || len == 0) {
-        return "";
-    }
-
-    const char* base58Chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-    size_t zeroCount = 0;
-
-    // Count leading zero bytes
-    while (zeroCount < len && input[zeroCount] == 0) {
-        ++zeroCount;
-    }
-
-    // Initialize buffer for b58 conversion
-    std::vector<uint8_t> b58Buffer(len * 2);
-    size_t bufferSize = 0;
-
-    // Encode to b58
-    for (size_t i = zeroCount; i < len; ++i) {
-        int carry = input[i];
-        for (size_t j = 0; j < bufferSize; ++j) {
-            carry += b58Buffer[j] * 256;
-            b58Buffer[j] = carry % 58;
-            carry /= 58;
-        }
-        while (carry > 0) {
-            b58Buffer[bufferSize++] = carry % 58;
-            carry /= 58;
-        }
-    }
-
-    // String result
-    std::string result(zeroCount, '1');
-    for (auto it = b58Buffer.rbegin(); it != b58Buffer.rend(); ++it) {
-        if (*it != 0 || result.size() > zeroCount) { // Skip leading zeroes in the buffer
-            result += base58Chars[*it];
-        }
-    }
-
-    return result;
 }
 
 }
