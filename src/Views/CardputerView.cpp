@@ -595,6 +595,40 @@ void CardputerView::displaySeedGeneralInfos() {
     Display->printf("Next  ->");
 }
 
+void CardputerView::displaySeedFormatGeneralInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(25, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("About Format");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(30, 46);
+    Display->printf("Seed uses BIP39 standard");
+
+    // Text
+    Display->setCursor(25, 65);
+    Display->printf("You can restore it anywhere");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(14, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("BTC address is native segwit");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
 void CardputerView::displaySdSaveGeneralInfos() {
     Display->fillScreen(BACKGROUND_COLOR);
 

@@ -18,6 +18,8 @@ void SeedController::handleSeedInformations() {
   input.waitPress();
   display.displaySdSaveGeneralInfos();
   input.waitPress();
+  display.displaySeedFormatGeneralInfos();
+  input.waitPress();
   selectionContext.setIsModeSelected(false); // go back to menu
 }
 
