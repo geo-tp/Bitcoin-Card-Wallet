@@ -18,9 +18,12 @@ Bitcoin Card Wallet is an ESP32 project that allows you to generate seeds, addre
 
 ## How to use
 
-1. Navigate to the **"Create a wallet"** option.
+1. Navigate to the **"NEW WALLET"** option.
+- ![](./images/menu.jpg)
 2. Record the displayed mnemonic safely (on paper, **not digitally**), you can choose a passphrase.
+- ![](./images/seed.jpg)
 3. Use the wallet's menu to derive and display your **Bitcoin address, balance and xpub key.**
+- ![](./images/wallet.jpg)
 
 **NOTE :** An SD card is require to save wallets publics informations and load them at the launch of the application. Only public informations about your wallets are stored on the SD card, **SAVE YOUR SEED** or you will lose access to your bitcoin wallet.
 
