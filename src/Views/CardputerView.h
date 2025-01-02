@@ -51,7 +51,7 @@ public:
     static void displaySeedEnd(bool sdCardMount);
     static void displaySeedGeneralInfos();
     static void displaySdSaveGeneralInfos();
-    void displaySeedFormatGeneralInfos();
+    static void displaySeedFormatGeneralInfos();
     static void drawBitcoinIcon(int x, int y);
 
 private:
