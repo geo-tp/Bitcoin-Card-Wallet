@@ -61,12 +61,12 @@ void SeedController::handleSeedGeneration() {
   auto privateKey = cryptoService.generatePrivateKey();
   auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
   auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
+  // auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
 
   // Mnemonic
   manageMnemonic(mnemonic);
 
   // Passphrase
-  // auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
   auto passphrase = managePassphrase(); // return "" in case user doesn't want passphrase
 
   // Derive PublicKey and create segwit BTC address
