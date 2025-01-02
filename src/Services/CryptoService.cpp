@@ -16,7 +16,6 @@ namespace services {
 CryptoService::CryptoService() {}
 
 std::vector<uint8_t> CryptoService::generateRandomMbetls(size_t size) {
-
     // Init context
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_entropy_context entropy;
@@ -42,7 +41,7 @@ std::vector<uint8_t> CryptoService::generateRandomMbetls(size_t size) {
 
 std::vector<uint8_t> CryptoService::generateRandomEsp32(size_t size) {
     // Get entropy from esp32 HRNG
-    std::vector<uint8_t> randomData(32);
+    std::vector<uint8_t> randomData(size);
     bootloader_random_enable();
     esp_fill_random(randomData.data(), randomData.size());
     bootloader_random_disable();
