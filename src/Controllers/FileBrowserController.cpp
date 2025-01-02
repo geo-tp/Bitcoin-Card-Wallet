@@ -22,6 +22,7 @@ void FileBrowserController::handleFileWalletSelection() {
     std::vector<std::string> elementNames;
     std::string fileContent;
 
+    display.displaySubMessage("Loading", 83);
     sdService.begin(); // SD card start
     
     // No SD Card
