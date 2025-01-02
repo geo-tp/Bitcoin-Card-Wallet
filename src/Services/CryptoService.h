@@ -11,6 +11,9 @@
 #include "PSBT.h"       // if using PSBT functionality
 #include "Conversion.h" // to get access to functions like toHex() or fromBase64()
 #include "Hash.h"       // if using hashes
+#include <Contexts/EntropyContext.h>
+
+using namespace contexts;
 
 namespace services {
 
@@ -31,10 +34,10 @@ public:
     double calculateMaurerRandomness(const std::vector<uint8_t>& data);
     std::vector<uint8_t> OLDderivePublicKey(const std::vector<uint8_t>& privateKey);
     std::string OLDgenerateBitcoinAddress(const std::vector<uint8_t>& publicKey);
-
 private:
     void OLDhashPublicKey(const std::vector<uint8_t>& publicKey, std::vector<uint8_t>& hashedKey);
     std::string encodeBase58(const uint8_t* input, size_t len);
+    EntropyContext& entropyContext = EntropyContext::getInstance();
 };
 
 }
