@@ -617,7 +617,7 @@ void CardputerView::displaySeedFormatGeneralInfos() {
     Display->setCursor(25, 65);
     Display->printf("You can restore it anywhere");
     Display->setTextColor(PRIMARY_COLOR);
-    Display->setCursor(14, 88);
+    Display->setCursor(16, 88);
     Display->setTextSize(TEXT_MEDIUM);
     Display->printf("BTC address is segwit BIP84");
 
