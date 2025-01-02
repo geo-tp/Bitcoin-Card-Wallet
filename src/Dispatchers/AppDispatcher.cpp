@@ -11,6 +11,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       // Contexts
       globalContext(GlobalContext::getInstance()),       // App variables
       selectionContext(SelectionContext::getInstance()), // User selection variables
+      entropyContext(EntropyContext::getInstance()),     // Collect user entropy during app life cycle
 
       // Selections with injected dependencies
       modeSelection(display, input),                 // Select the main mode
@@ -46,11 +47,13 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
 
 void AppDispatcher::setup() {
     display.initialise();
+    entropyContext.collect();
 }
 
 void AppDispatcher::run() {
     if (!selectionContext.getIsModeSelected()) {
         modeController.handleModeSelection();
+        entropyContext.tick();
         return;
     }
 
@@ -62,20 +65,25 @@ void AppDispatcher::run() {
             } else {
                 walletController.handleWalletSelection();
             }
+            entropyContext.tick();
             break;
 
         case SelectionModeEnum::CREATE_WALLET:
             seedController.handleSeedGeneration();
+            entropyContext.tick();
             break;
 
         case SelectionModeEnum::LOAD_WALLET:
             fileBrowserController.handleFileWalletSelection();
+            entropyContext.tick();
             break;
 
         case SelectionModeEnum::INFOS:
             seedController.handleSeedInformations();
+            entropyContext.tick();
             break;
     }
+    entropyContext.collect();
 }
 
 } // namespace dispatchers

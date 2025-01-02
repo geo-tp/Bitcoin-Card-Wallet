@@ -3,6 +3,7 @@
 
 #include <Contexts/GlobalContext.h>
 #include <Contexts/SelectionContext.h>
+#include <Contexts/EntropyContext.h>
 #include <Enums/SelectionModeEnum.h>
 #include <Services/LedService.h>
 #include <Services/WalletService.h>
@@ -44,6 +45,7 @@ private:
     // Contexts
     GlobalContext& globalContext;
     SelectionContext& selectionContext;
+    EntropyContext& entropyContext;
 
     // Selections
     ModeSelection modeSelection;
