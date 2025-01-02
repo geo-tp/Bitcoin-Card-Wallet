@@ -11,6 +11,11 @@ Bitcoin Card Wallet is an ESP32 project that allows you to generate seeds, addre
 - **SD Card**: Support for SD card storage to save and retrieve wallet data.
 - **Passphrase**: Generate and use seeds with an optional passphrase for enhanced security.
 
+## Installation
+
+- <b>M5Burner</b> : Search into M5CARDPUTER section and burn it
+- <b>Old school</b> : Build or take the firmware.bin from the [github release](https://github.com/geo-tp/Bitcoin-Card-Wallet/releases) and flash it
+
 ## How to use
 
 1. Navigate to the **"Create a wallet"** option.
