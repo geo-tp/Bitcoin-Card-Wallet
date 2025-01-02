@@ -2,6 +2,9 @@
 
 Bitcoin Card Wallet is an ESP32 project that allows you to generate seeds, addresses, and  manage Bitcoin wallets. It offers key generation based on BIP39 standards, allowing the user to generate a mnemonic 24 words seed that can be safely backed up and restored in compatible wallets.
 
+![](./images/bitcoin-card-wallet.jpg)
+
+
 - **Manage Wallets**: create seeds, public key, mnemonic words, balance
 - **QR Code**: Generate and display QR codes for easy sharing of Bitcoin and balance addresses.
 - **USB Typing**: Emulate a USB keyboard to type out Bitcoin addresses.
