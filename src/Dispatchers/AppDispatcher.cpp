@@ -58,10 +58,10 @@ void AppDispatcher::run() {
     }
 
     switch (selectionContext.getCurrentSelectedMode()) {
+        
         case SelectionModeEnum::PORTFOLIO:
             if (selectionContext.getIsWalletSelected()) {
                 walletController.handleWalletInformationSelection();
-
             } else {
                 walletController.handleWalletSelection();
             }
