@@ -21,8 +21,9 @@ void EntropyContext::collect() {
     uint8_t data_state = digitalRead(46); // Read DATA (G46)
     uint8_t clk_state = digitalRead(43); // Read CLK (G43)
 
-    // Bits rotation
-    mic_gpio_state = (mic_gpio_state << 1) | (mic_gpio_state >> 31);
+    // Rotate the bits of mic_gpio_state by a random number of positions
+    uint8_t random_rotation = static_cast<uint8_t>(esp_random() & 0x1F); // Random value between 0 and 31
+    mic_gpio_state = (mic_gpio_state << random_rotation) | (mic_gpio_state >> (32 - random_rotation));
 
     // Func duration delta
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count();
