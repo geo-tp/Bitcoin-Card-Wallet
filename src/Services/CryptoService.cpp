@@ -69,7 +69,7 @@ std::vector<uint8_t> CryptoService::generateRandomBuiltin(size_t size) {
 }
 
 std::vector<uint8_t> CryptoService::generatePrivateKey() {
-    // 32 bits for a 24 words mnemonic
+    // For a 24 words mnemonic
     const size_t keySize = 32;
 
     // Get entropy from hardware and software
@@ -104,10 +104,11 @@ std::vector<uint8_t> CryptoService::generatePrivateKey() {
     // Convert to vector
     std::vector<uint8_t> privateKey(hashedFinalKey, hashedFinalKey + keySize);
 
-    return privateKey; // Shanon score 7.2 on 256 bits sample
+    return privateKey;
 }
 
 std::vector<std::string> CryptoService::privateKeyToMnemonic(const std::vector<uint8_t>& privateKey) {
+    // Convert a 32 bytes private key into a vector of 24 words
     auto entropy = std::vector<uint8_t>(privateKey.begin(), privateKey.end());
     auto mnemonic = BIP39::create_mnemonic(entropy, BIP39::language::en);
     auto validation = BIP39::valid_mnemonic(mnemonic, BIP39::language::en);
