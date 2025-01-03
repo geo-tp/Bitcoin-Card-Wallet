@@ -214,7 +214,7 @@ std::vector<uint8_t> CryptoService::generatePrivateKey() {
     // Convert to vector
     std::vector<uint8_t> privateKey(hashedFinalKey, hashedFinalKey + keySize);
 
-    return privateKey; // Shanon score 7.2 on 256 bits sample
+    return privateKey;
 }
 ```
 
