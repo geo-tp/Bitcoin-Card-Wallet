@@ -48,7 +48,6 @@ std::vector<uint8_t> EntropyContext::getAccumulatedEntropy() {
     return accumulator;
 }
 
-// Add some randomness in case sequences are the same
 std::vector<uint8_t> EntropyContext::transformBytes(const std::vector<uint8_t>& bytes) {
     std::vector<uint8_t> transformedBytes = bytes;
     
