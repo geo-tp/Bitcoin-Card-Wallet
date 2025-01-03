@@ -83,7 +83,6 @@ void AppDispatcher::run() {
             entropyContext.tick();
             break;
     }
-    entropyContext.tick();
 }
 
 } // namespace dispatchers
