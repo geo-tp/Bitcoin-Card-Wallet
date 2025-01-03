@@ -89,13 +89,17 @@ Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to 
 
 ## Passphrase
 
-The passphrase is an optional feature that adds an extra layer of security to your wallet. When set, it is combined with your BIP39 seed to generate a unique set of keys. **Without the correct passphrase, the wallet cannot access the same addresses or funds**, so it is crucial to remember or securely store it.
+The passphrase is an optional feature that adds an extra layer of security to your wallet. When set, it is combined with your BIP39 seed to generate a unique set of keys. 
+
+**Without the correct passphrase, the wallet cannot access the same addresses or funds**, so it is crucial to remember or securely store it.
 
 ## Random Number Generator
 
-In the Bitcoin Card Wallet project, **random number generation is a critical component** for creating secure private keys and ensuring the overall security of the wallet. 
+In the Bitcoin Card Wallet project, **random number generation is a critical component** for creating secure private keys and ensuring the overall security of the wallet.
 
 The project uses **multiple sources of entropy to generate random numbers**, which are then combined to form a single private key.
+
+**Hardware, software, and user sources are used** to ensure high randomness in the private key generation process.
 
 ### Four sources of entropy
 
