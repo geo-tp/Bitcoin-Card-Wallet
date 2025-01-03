@@ -101,10 +101,9 @@ The project uses **multiple sources of entropy to generate random numbers**, whi
 
 **Hardware, software, and user sources are used** to ensure high randomness in the private key generation process.
 
-### Four sources of entropy
+### Three sources of entropy
 
 ```cpp
-
 // mbedTLS's Deterministic Random Bit Generator seeded with hardware generated entropy and a custom string
 std::vector<uint8_t> CryptoService::generateRandomMbetls(size_t size) {
     // Init context
@@ -159,6 +158,21 @@ std::vector<uint8_t> CryptoService::generateRandomBuiltin(size_t size) {
     }
 
     return randomData;
+}
+```
+
+### Collecting entropy from user inputs 
+```cpp
+void EntropyContext::tick() {
+    auto now = std::chrono::high_resolution_clock::now();
+
+    // Calculate the delta between the last input tick and now
+    if (lastTickTime.time_since_epoch().count() != 0) {
+        auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastTickTime).count();
+        add(delta);
+    }
+
+    lastTickTime = now; // Update the last tick time
 }
 ```
 
