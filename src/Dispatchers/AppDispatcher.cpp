@@ -47,7 +47,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
 
 void AppDispatcher::setup() {
     display.initialise();
-    entropyContext.collect();
+    entropyContext.tick(); // this will generate entropy
 }
 
 void AppDispatcher::run() {
@@ -58,7 +58,7 @@ void AppDispatcher::run() {
     }
 
     switch (selectionContext.getCurrentSelectedMode()) {
-        
+
         case SelectionModeEnum::PORTFOLIO:
             if (selectionContext.getIsWalletSelected()) {
                 walletController.handleWalletInformationSelection();
@@ -83,7 +83,7 @@ void AppDispatcher::run() {
             entropyContext.tick();
             break;
     }
-    entropyContext.collect();
+    entropyContext.tick();
 }
 
 } // namespace dispatchers

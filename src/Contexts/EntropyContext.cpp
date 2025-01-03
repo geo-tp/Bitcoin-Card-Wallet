@@ -8,7 +8,6 @@ namespace contexts {
 // Singleton instance accessor
 EntropyContext& EntropyContext::getInstance() {
     static EntropyContext instance;
-    instance.collect(); // Collect entropy each time the instance is accessed
     return instance;
 }
 
@@ -36,6 +35,7 @@ void EntropyContext::collect() {
 void EntropyContext::tick() {
     auto now = std::chrono::high_resolution_clock::now();
 
+    // Calculate the delta between the last tick and now
     if (lastTickTime.time_since_epoch().count() != 0) {
         auto delta = std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastTickTime).count();
         add(delta);
@@ -48,8 +48,11 @@ std::vector<uint8_t> EntropyContext::getAccumulatedEntropy() {
     return accumulator;
 }
 
+// Add some randomness in case sequences are the same
 std::vector<uint8_t> EntropyContext::transformBytes(const std::vector<uint8_t>& bytes) {
     std::vector<uint8_t> transformedBytes = bytes;
+    
+    // Add some randomness in case sequences are the same
     for (auto& byte : transformedBytes) {
         byte ^= static_cast<uint8_t>(esp_random() & 0xFF); // Use only the lower 8 bits
     }

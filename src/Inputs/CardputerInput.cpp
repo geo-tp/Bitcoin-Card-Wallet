@@ -18,6 +18,7 @@ char CardputerInput::handler() {
 
         if (M5Cardputer.Keyboard.isPressed()) {
             Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
+            entropyContext.tick();
 
             if (status.enter) { // go to next menu
                 return KEY_OK;
@@ -50,6 +51,7 @@ void CardputerInput::waitPress() {
     if (M5Cardputer.Keyboard.isChange()) {
       if (M5Cardputer.Keyboard.isPressed()) {
             Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
+            entropyContext.tick();
             for (auto c : status.word) {
                 entropyContext.add(c); // get some entropy
             }
