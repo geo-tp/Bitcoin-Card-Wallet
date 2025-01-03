@@ -57,9 +57,7 @@ void AppDispatcher::run() {
     }
 
     switch (selectionContext.getCurrentSelectedMode()) {
-
         case SelectionModeEnum::PORTFOLIO:
-            entropyContext.tick();
             if (selectionContext.getIsWalletSelected()) {
                 walletController.handleWalletInformationSelection();
             } else {
@@ -68,17 +66,14 @@ void AppDispatcher::run() {
             break;
 
         case SelectionModeEnum::CREATE_WALLET:
-            entropyContext.tick();
             seedController.handleSeedGeneration();
             break;
 
         case SelectionModeEnum::LOAD_WALLET:
-            entropyContext.tick();
             fileBrowserController.handleFileWalletSelection();
             break;
 
         case SelectionModeEnum::INFOS:
-            entropyContext.tick();
             seedController.handleSeedInformations();
             break;
     }
