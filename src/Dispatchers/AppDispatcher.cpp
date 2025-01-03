@@ -47,13 +47,12 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
 
 void AppDispatcher::setup() {
     display.initialise();
-    entropyContext.tick(); // this will generate entropy
 }
 
 void AppDispatcher::run() {
     if (!selectionContext.getIsModeSelected()) {
         modeController.handleModeSelection();
-        entropyContext.tick();
+        entropyContext.tick(); // this will generate entropy
         return;
     }
 

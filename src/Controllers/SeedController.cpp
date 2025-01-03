@@ -146,7 +146,7 @@ void SeedController::manageMnemonic(std::vector<std::string>& mnemonic) {
     if (mnemonicVerification && word != mnemonic[randomNumber]) {
       if (!word.empty()) {display.displaySubMessage("Wrong answer", 50, 2000);}
     } else {
-      display.displaySubMessage("Seed backup done", 38, 2000);
+      display.displaySubMessage("Seed backup done", 36, 2000);
       mnemonicIsBackedUp = true;
     }
   } while (!mnemonicIsBackedUp);
