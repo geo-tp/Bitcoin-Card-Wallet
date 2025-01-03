@@ -51,35 +51,35 @@ void AppDispatcher::setup() {
 
 void AppDispatcher::run() {
     if (!selectionContext.getIsModeSelected()) {
-        modeController.handleModeSelection();
         entropyContext.tick(); // this will generate entropy
+        modeController.handleModeSelection();
         return;
     }
 
     switch (selectionContext.getCurrentSelectedMode()) {
 
         case SelectionModeEnum::PORTFOLIO:
+            entropyContext.tick();
             if (selectionContext.getIsWalletSelected()) {
                 walletController.handleWalletInformationSelection();
             } else {
                 walletController.handleWalletSelection();
             }
-            entropyContext.tick();
             break;
 
         case SelectionModeEnum::CREATE_WALLET:
-            seedController.handleSeedGeneration();
             entropyContext.tick();
+            seedController.handleSeedGeneration();
             break;
 
         case SelectionModeEnum::LOAD_WALLET:
-            fileBrowserController.handleFileWalletSelection();
             entropyContext.tick();
+            fileBrowserController.handleFileWalletSelection();
             break;
 
         case SelectionModeEnum::INFOS:
-            seedController.handleSeedInformations();
             entropyContext.tick();
+            seedController.handleSeedInformations();
             break;
     }
 }
