@@ -1,14 +1,23 @@
 #ifndef SEED_MANAGER_H
 #define SEED_MANAGER_H
 
+#include <Views/CardputerView.h>
+#include <Inputs/CardputerInput.h>
+#include <Services/CryptoService.h>
+#include <Services/WalletService.h>
+#include <Services/SdService.h>
+#include <Services/LedService.h>
+#include <Services/RfidService.h>
+#include <Models/Wallet.h>
+#include <Selections/MnemonicSelection.h>
+#include <Selections/StringPromptSelection.h>
+#include <Selections/ConfirmationSelection.h>
+#include <Selections/SeedRestorationSelection.h>
+#include <Contexts/SelectionContext.h>
+#include <Contexts/GlobalContext.h>
+#include <Enums/SeedRestorationModeEnum.h>
 #include <vector>
 #include <string>
-#include "Services/CryptoService.h"
-#include "Services/RfidService.h"
-#include "Services/SdService.h"
-#include "Services/WalletService.h"
-#include "Selections/ConfirmationSelection.h"
-#include "Selections/StringPromptSelection.h"
 
 using namespace services;
 using namespace selections;
@@ -17,26 +26,42 @@ namespace managers {
 
 class SeedManager {
 public:
-    SeedManager(CryptoService& cryptoService,
-                RfidService& rfidService,
-                SdService& sdService,
+    SeedManager(CardputerView& display, 
+                CardputerInput& input, 
+                CryptoService& cryptoService,
                 WalletService& walletService,
+                SdService& sdService,
+                RfidService& rfidService,
+                LedService& ledService,
+                MnemonicSelection& mnemonicSelection,
+                StringPromptSelection& stringPromptSelection,
                 ConfirmationSelection& confirmationSelection,
-                StringPromptSelection& stringPromptSelection);
-
-    std::tuple<std::vector<uint8_t>, std::string> manageEncryption(const std::vector<uint8_t>& privateKey);
+                SeedRestorationSelection& seedRestorationSelection);
+    
+    void manageMnemonic(std::vector<std::string>& mnemonic);
+    std::tuple<std::vector<uint8_t>, std::string> manageEncryption(std::vector<uint8_t> privateKey);    
     std::vector<uint8_t> manageDecryption();
-    std::vector<uint8_t> generatePrivateKey();
-    bool saveToRfid(const std::vector<uint8_t>& privateKey, const std::string& salt, const std::vector<uint8_t>& signature);
-    std::vector<uint8_t> readFromRfid();
+    std::vector<uint8_t> managePrivateKey();
+    void manageRfidSave(std::vector<uint8_t> privateKey);
+    std::vector<uint8_t>manageRfidRead();
+    bool manageSdConfirmation();
+    void manageSdSave(Wallet wallet);
+    std::string managePassphrase();
+    std::string confirmStringsMatch(const std::string& prompt1, const std::string& prompt2, const std::string& mismatchMessage);
 
-private:
+    CardputerView& display;
+    CardputerInput& input;
     CryptoService& cryptoService;
-    RfidService& rfidService;
-    SdService& sdService;
     WalletService& walletService;
-    ConfirmationSelection& confirmationSelection;
+    SdService& sdService;
+    RfidService& rfidService;
+    LedService& ledService;
+    MnemonicSelection& mnemonicSelection;
     StringPromptSelection& stringPromptSelection;
+    ConfirmationSelection& confirmationSelection;
+    SeedRestorationSelection& seedRestorationSelection;
+    SelectionContext& selectionContext = SelectionContext::getInstance();
+    GlobalContext& globalContext = GlobalContext::getInstance();
 };
 
 } // namespace managers

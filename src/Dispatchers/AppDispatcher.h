@@ -23,6 +23,9 @@
 #include <Controllers/WalletController.h>
 #include <Controllers/SeedController.h>
 #include <Controllers/FileBrowserController.h>
+#include <Managers/SeedManager.h>
+#include <Managers/WalletManager.h>
+#include <Managers/FileBrowserManager.h>
 
 using namespace controllers;
 using namespace contexts;
@@ -30,6 +33,7 @@ using namespace enums;
 using namespace repositories;
 using namespace selections;
 using namespace services;
+using namespace managers;
 
 namespace dispatchers {
 
@@ -71,6 +75,11 @@ private:
     SdService sdService;
     UsbService usbService;
     RfidService rfidService;
+
+    // Managers
+    SeedManager seedManager;
+    WalletManager walletManager;
+    FileBrowserManager fileBrowserManager;
 
     // Controllers
     ModeController modeController;

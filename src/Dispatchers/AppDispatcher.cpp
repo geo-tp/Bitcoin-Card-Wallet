@@ -35,17 +35,21 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       sdService(),                                   // SD Card logic
       usbService(),                                  // USB (keyboard) logic
       rfidService(),
-      
+    
+      // Managers for each routes, wrap dependencies for controllers
+      seedManager(display, input, cryptoService, walletService, sdService, rfidService, ledService,
+                  mnemonicSelection, stringPromptSelection, confirmationSelection, seedRestorationSelection),
+
+      walletManager(display, input, walletService, usbService, walletSelection, keyboardLayoutSelection,
+                    confirmationSelection, stringPromptSelection, walletInformationSelection, valueSelection),
+
+      fileBrowserManager(display, input, sdService, walletService, filePathSelection, confirmationSelection),
+
       // Controllers with injected dependencies for routes handling
       modeController(display, input, modeSelection),
-
-      walletController(display, input, walletService, usbService, walletSelection, keyboardLayoutSelection,
-                       confirmationSelection, stringPromptSelection, walletInformationSelection, valueSelection),
-
-      seedController(display, input, cryptoService, walletService, sdService, rfidService, ledService,
-                     mnemonicSelection, stringPromptSelection, confirmationSelection, seedRestorationSelection),
-
-      fileBrowserController(display, input, sdService, walletService, filePathSelection, confirmationSelection) { }
+      walletController(walletManager),
+      seedController(seedManager),
+      fileBrowserController(fileBrowserManager) { }
 
 void AppDispatcher::setup() {
     display.initialize();

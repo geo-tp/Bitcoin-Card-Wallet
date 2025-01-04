@@ -2,26 +2,14 @@
 
 namespace controllers {
 
-WalletController::WalletController(CardputerView& display, 
-                                   CardputerInput& input, 
-                                   WalletService& walletService,
-                                   UsbService& usbService,
-                                   WalletSelection& walletSelection,
-                                   KeyboardLayoutSelection& keyboardLayoutSelection,
-                                   ConfirmationSelection& confirmationSelection,
-                                   StringPromptSelection& stringPromptSelection,
-                                   WalletInformationSelection& walletInformationSelection,
-                                   ValueSelection& valueSelection)
-    : display(display), input(input), walletService(walletService), keyboardLayoutSelection(keyboardLayoutSelection), 
-    usbService(usbService), walletSelection(walletSelection), confirmationSelection(confirmationSelection), 
-    stringPromptSelection(stringPromptSelection), walletInformationSelection(walletInformationSelection), valueSelection(valueSelection) {}
+WalletController::WalletController(WalletManager& manager) : manager(manager) {}
 
 void WalletController::handleWalletSelection() {
-    auto wallets = walletService.getAllWallets();
+    auto wallets = manager.walletService.getAllWallets();
 
     // No wallets currently in the repo, ask for loading wallets file from the SD card
     if (wallets.empty()) {
-        auto confirmation = confirmationSelection.select("Load wallets file?");
+        auto confirmation = manager.confirmationSelection.select("Load wallets file?");
 
         if (confirmation) {
             selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_WALLET);
@@ -32,7 +20,7 @@ void WalletController::handleWalletSelection() {
     }
 
     // Select the desired wallet
-    auto selectedWallet = walletSelection.select(wallets);
+    auto selectedWallet = manager.walletSelection.select(wallets);
     
     // User hits the return button if the returned wallet is empty
     if (selectedWallet.empty()) {
@@ -51,8 +39,7 @@ void WalletController::handleWalletInformationSelection() {
     const uint8_t* selectedLayout = nullptr; // for keyboard layout
 
     // Select between Balance, Btc Address, PubKey
-    WalletInformationSelection walletInfoSelection(display, input);
-    auto selectedInfo = walletInfoSelection.select(selectedWallet.getName());
+    auto selectedInfo = manager.walletInformationSelection.select(selectedWallet.getName());
 
     // Init usb keyboard
     switch (selectedInfo) {
@@ -62,9 +49,9 @@ void WalletController::handleWalletInformationSelection() {
             // Keyboard layout is not selected, this means usb keyboard is not init
             if (!selectionContext.getIsLayoutSelected()) {
                 // Select keyboard layout and init it
-                selectedLayout = keyboardLayoutSelection.select();
-                usbService.setLayout(selectedLayout);
-                usbService.begin();
+                selectedLayout = manager.keyboardLayoutSelection.select();
+                manager.usbService.setLayout(selectedLayout);
+                manager.usbService.begin();
                 selectionContext.setIsLayoutSelected(true);
             }
             break;
@@ -77,26 +64,26 @@ void WalletController::handleWalletInformationSelection() {
             break;
 
         case WalletInformationEnum::BALANCE:
-            valueSelection.select(
+            manager.valueSelection.select(
                 "Balance", 
                 globalContext.getBitcoinBalanceUrl() + selectedWallet.getAddress(), 
-                usbService
+                manager.usbService
             );
             break;
 
         case WalletInformationEnum::ADDRESS:
-            valueSelection.select(
+            manager.valueSelection.select(
                 "Address", 
                 selectedWallet.getAddress(), 
-                usbService
+                manager.usbService
             );
             break;
 
         case WalletInformationEnum::PUBLIC_KEY:
-            valueSelection.select(
+            manager.valueSelection.select(
                 "Public Key", 
                 selectedWallet.getPublicKey(), 
-                usbService
+                manager.usbService
             );
             break;
     }
