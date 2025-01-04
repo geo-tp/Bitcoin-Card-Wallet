@@ -197,7 +197,7 @@ std::vector<uint8_t> CryptoService::generatePrivateKey(size_t keySize) {
 
     // Mix entropy with XOR
     auto mixedKey = mixEntropy(entropyMbedtls, entropyEsp32, 
-                                               entropyBuiltin, entropyUser);
+                                               entropyBuiltin, hashedEntropyUser);
     // Process SHA256 on the result
     auto privateKey = hashSha256(mixedKey, keySize);
 
