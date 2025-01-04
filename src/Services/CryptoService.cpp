@@ -9,6 +9,7 @@
 #include "esp_random.h"
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/entropy.h"
+#include "mbedtls/pkcs5.h"
 #include "cryptopp/rng.h"
 
 namespace services {
@@ -66,6 +67,13 @@ std::vector<uint8_t> CryptoService::generateRandomBuiltin(size_t size) {
     }
 
     return randomData;
+}
+
+std::string CryptoService::getRandomString(size_t length) {
+    auto randomData = generateRandomEsp32(length);
+    std::string randomString(randomData.begin(), randomData.end());
+
+    return randomString;
 }
 
 std::vector<uint8_t> CryptoService::generatePrivateKey() {
@@ -240,6 +248,143 @@ std::string CryptoService::encodeBase58(const uint8_t* input, size_t len) {
     }
 
     return result;
+}
+
+std::vector<uint8_t> CryptoService::deriveKeyFromPassphrase(const std::string& passphrase, const std::string& salt, size_t keySize) {
+    std::vector<uint8_t> key(keySize);
+
+    // initialize context
+    mbedtls_md_context_t mdContext;
+    mbedtls_md_init(&mdContext);
+    const mbedtls_md_info_t* mdInfo = mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
+
+
+    // Configure context
+    if (mbedtls_md_setup(&mdContext, mdInfo, 1) != 0) {
+        mbedtls_md_free(&mdContext);
+        throw std::runtime_error("Failed to setup MD context");
+    }
+
+    // Derive key PBKDF2
+    int ret = mbedtls_pkcs5_pbkdf2_hmac(
+        &mdContext,                               // Contexte de hachage
+        reinterpret_cast<const unsigned char*>(passphrase.data()), passphrase.size(), // Passphrase
+        reinterpret_cast<const unsigned char*>(salt.data()), salt.size(),             // Salt
+        10000,                                    // Nombre iterations
+        keySize,                                  // Taille de la clé
+        key.data()                                // Résultat
+    );
+
+    mbedtls_md_free(&mdContext);
+
+    if (ret != 0) {
+        throw std::runtime_error("Failed to derive key using PBKDF2");
+    }
+
+    return key;
+}
+
+std::vector<uint8_t> CryptoService::encryptAES(const std::vector<uint8_t>& data, const std::vector<uint8_t>& key) {
+    if (data.size() % 16 != 0) {
+        throw std::invalid_argument("Data size must be a multiple of 16.");
+    }
+
+    if (key.size() != 16) {
+        throw std::invalid_argument("Key size must be 16 bytes for AES-128.");
+    }
+
+    mbedtls_aes_context aes;
+    mbedtls_aes_init(&aes);
+
+    // Set the encryption key
+    mbedtls_aes_setkey_enc(&aes, key.data(), 128);
+
+    std::vector<uint8_t> encrypted(data.size());
+    for (size_t i = 0; i < data.size(); i += 16) {
+        mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_ENCRYPT, data.data() + i, encrypted.data() + i);
+    }
+
+    mbedtls_aes_free(&aes);
+
+    return encrypted;
+}
+
+std::vector<uint8_t> CryptoService::decryptAES(const std::vector<uint8_t>& encrypted, const std::vector<uint8_t>& key) {
+    if (encrypted.size() % 16 != 0) {
+        throw std::invalid_argument("Encrypted data size must be a multiple of 16.");
+    }
+
+    if (key.size() != 16) {
+        throw std::invalid_argument("Key size must be 16 bytes for AES-128.");
+    }
+
+    mbedtls_aes_context aes;
+    mbedtls_aes_init(&aes);
+
+    // Set the decryption key
+    mbedtls_aes_setkey_dec(&aes, key.data(), 128);
+
+    std::vector<uint8_t> decrypted(encrypted.size());
+    for (size_t i = 0; i < encrypted.size(); i += 16) {
+        mbedtls_aes_crypt_ecb(&aes, MBEDTLS_AES_DECRYPT, encrypted.data() + i, decrypted.data() + i);
+    }
+
+    mbedtls_aes_free(&aes);
+
+    return decrypted;
+}
+
+std::vector<uint8_t> CryptoService::encryptPrivateKeyWithPassphrase(const std::vector<uint8_t>& privateKey, const std::string& passphrase, const std::string& salt) {
+    if (privateKey.size() != 32) {
+        throw std::invalid_argument("Private key size must be 32 bytes.");
+    }
+
+    // Derive key with passphrase and salt
+    auto derivedKey = deriveKeyFromPassphrase(passphrase, salt, 16);
+
+    // Encrypt
+    auto encryptedPrivateKey = encryptAES(privateKey, derivedKey);
+
+    return encryptedPrivateKey;
+}
+
+std::vector<uint8_t> CryptoService::decryptPrivateKeyWithPassphrase(const std::vector<uint8_t>& encryptedPrivateKey, const std::string& passphrase, const std::string& salt) {
+    if (encryptedPrivateKey.size() % 16 != 0) {
+        throw std::invalid_argument("Encrypted private key size must be a multiple of 16.");
+    }
+
+    // Derive key with passphrase and salt
+    auto derivedKey = deriveKeyFromPassphrase(passphrase, salt, 16);
+
+    // Decrypt
+    auto decryptedPrivateKey = decryptAES(encryptedPrivateKey, derivedKey);
+
+    return decryptedPrivateKey;
+}
+
+std::pair<std::vector<uint8_t>, std::vector<uint8_t>> CryptoService::splitVector(const std::vector<uint8_t>& input) {
+    if (input.size() != 32) {
+        throw std::invalid_argument("Input vector must be 32 bytes.");
+    }
+
+    std::vector<uint8_t> part1(input.begin(), input.begin() + 16);
+    std::vector<uint8_t> part2;
+    part2.insert(part2.end(), input.begin() + 16, input.end());
+
+    return {part1, part2};
+}
+
+std::vector<uint8_t> CryptoService::generateSignature(const std::vector<uint8_t>& data, const std::string& salt) {
+    // Combine data and salt
+    std::vector<uint8_t> combined(data.begin(), data.end());
+    combined.insert(combined.end(), salt.begin(), salt.end());
+
+    // Hash the combined data
+    uint8_t hash[32]; // SHA256 produces 32 bytes
+    mbedtls_sha256(combined.data(), combined.size(), hash, 0); // 0 for SHA256, not SHA224
+
+    // Return the first 16 bytes
+    return std::vector<uint8_t>(hash, hash + 16);
 }
 
 std::vector<uint8_t> CryptoService::OLDderivePublicKey(const std::vector<uint8_t>& privateKey) {
