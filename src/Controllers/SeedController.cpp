@@ -122,6 +122,7 @@ void SeedController::handleSeedRestoration() {
           passphrase = manager.managePassphrase(); // return "" in case user doesn't want passphrase
 
           // Prompt for a wallet name
+          manager.display.displayTopBar("Wallet", false, false, true);
           walletName = manager.stringPromptSelection.select("Enter wallet name");
           if (walletName.empty()) {
             return;
