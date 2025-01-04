@@ -7,11 +7,15 @@ SeedController::SeedController(CardputerView& display,
                                CryptoService& cryptoService,
                                WalletService& walletService,
                                SdService& sdService,
+                               RfidService& rfidService,
+                               LedService& ledService,
                                MnemonicSelection& mnemonicSelection,
                                StringPromptSelection& stringPromptSelection,
-                               ConfirmationSelection& confirmationSelection)
-    : display(display), input(input), cryptoService(cryptoService), walletService(walletService), sdService(sdService),
-      mnemonicSelection(mnemonicSelection), stringPromptSelection(stringPromptSelection),  confirmationSelection(confirmationSelection)  {}
+                               ConfirmationSelection& confirmationSelection,
+                               SeedRestorationSelection& seedRestorationSelection)
+    : display(display), input(input), cryptoService(cryptoService), walletService(walletService), sdService(sdService), 
+      rfidService(rfidService), ledService(ledService), mnemonicSelection(mnemonicSelection), stringPromptSelection(stringPromptSelection),  
+      confirmationSelection(confirmationSelection), seedRestorationSelection(seedRestorationSelection)  {}
 
 void SeedController::handleSeedInformations() {
   display.displaySeedGeneralInfos();
@@ -27,22 +31,9 @@ void SeedController::handleSeedGeneration() {
   // Display the top main bar with the btc icon
   display.displayTopBar("New Seed", false, false, true, 5);
 
-  // SD card start
-  display.displaySubMessage("Loading", 83); // sd can take time to response
-  sdService.begin(); 
-
-  // Display no SD card
-  if (!sdService.getSdState()) {
-    auto confirmation = confirmationSelection.select("No SD card found");
-    if (!confirmation) {
-      selectionContext.setIsModeSelected(false); // go back to menu
-      sdService.close(); // SD card stop
-      return;
-    }
-  }
-
-  // SD card stop
-  sdService.close();
+  // Check if an sd is plugged
+  auto confirmRunWithoutSd = manageSdConfirmation();
+  if(!confirmRunWithoutSd) {return;}
 
   // Prompt for a wallet name
   auto walletName = stringPromptSelection.select("Enter wallet name");
@@ -58,18 +49,12 @@ void SeedController::handleSeedGeneration() {
   input.waitPress();
   
   // Generate private keys and verify randomness
-  std::vector<uint8_t> privateKey;
-  do {
-    // Generate keys
-    privateKey = cryptoService.generatePrivateKey();
-    // (4.9 for 32bits is equal to 90% randomness)
-  } while (cryptoService.calculateShanonEntropy(privateKey) < 4.9);
+  auto privateKey = managePrivateKey();
 
+  // Mnemonic
   auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
   auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
   // auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
-
-  // Mnemonic
   manageMnemonic(mnemonic);
 
   // Passphrase
@@ -80,15 +65,14 @@ void SeedController::handleSeedGeneration() {
   auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
   auto address = cryptoService.generateBitcoinAddress(publicKey);
 
-  // Delete seed
-  mnemonic.clear();
-  privateKey.clear();
-  mnemonicString.clear(); 
-
   // Create Wallet
   Wallet wallet(walletName, publicKey.toString().c_str(), address);
 
+  // Save seed on a RFID tag
+  manageRfidSave(privateKey);
+
   // Save wallet to SD if any
+  display.displaySubMessage("Loading", 83);
   sdService.begin(); // SD card start
   manageSdSave(wallet);
 
@@ -98,8 +82,138 @@ void SeedController::handleSeedGeneration() {
 
   sdService.close(); // SD card stop
 
+  // Delete seed
+  mnemonic.clear();
+  privateKey.clear();
+  mnemonicString.clear(); 
+
   // Go to Portfolio
   selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+}
+
+void SeedController::handleSeedRestoration() {
+  display.displayTopBar("Load Seed", true, false, true, 15);
+  auto restorationMethod = seedRestorationSelection.select();
+
+  if (restorationMethod == SeedRestorationModeEnum::NONE) {
+      selectionContext.setIsModeSelected(false); // go to menu
+      return;
+  }
+
+  std::vector<uint8_t> privateKey;
+  std::vector<std::string> mnemonic;
+  std::string walletName;
+  std::string mnemonicString;
+  std::string passphrase;
+  std::string address;
+  HDPublicKey publicKey;
+  Wallet wallet;
+
+  switch (restorationMethod) {
+      case SeedRestorationModeEnum::NONE:
+          selectionContext.setIsModeSelected(false); // go to menu
+
+      case SeedRestorationModeEnum::RFID:
+          // Display infos about module
+          display.displayPlugRfid();
+          input.waitPress();
+
+          // Get the private key from tag
+          privateKey = manageRfidRead();
+          if (privateKey.size() != 32) {return;} // user hits return
+
+          // Convert to mnemonic 24 words
+          mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
+
+          // Bad seed if empty
+          if (!mnemonic.empty()) {
+            display.displaySubMessage("Seed is valid", 60, 1000);
+            display.displaySubMessage("First word: " + mnemonic[0], 38, 3000);
+          }
+
+          // Passphrase
+          passphrase = managePassphrase(); // return "" in case user doesn't want passphrase
+
+          // Prompt for a wallet name
+          walletName = stringPromptSelection.select("Enter wallet name");
+          if (walletName.empty()) {
+            return;
+          }
+
+          // Derive PublicKey and create segwit BTC address
+          display.displaySubMessage("Loading", 83);
+          mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
+          publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
+          address = cryptoService.generateBitcoinAddress(publicKey);
+
+          // Create Wallet
+          wallet.setName(walletName);
+          wallet.setPublicKey(publicKey.toString().c_str());
+          wallet.setAddress(address);
+
+          // Save wallet to SD if any
+          display.displaySubMessage("Loading", 83);
+          sdService.begin(); // SD card start
+          manageSdSave(wallet);
+
+          // Display seed save infos
+          display.displaySeedEnd(sdService.getSdState());
+          input.waitPress();
+
+          sdService.close(); // SD card stop
+
+          // Delete seed
+          mnemonic.clear();
+          privateKey.clear();
+          mnemonicString.clear(); 
+
+          // Go to Portfolio
+          selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+          break;
+
+      case SeedRestorationModeEnum::SD:
+          // handleRestorationFromSD();
+          break;
+
+      case SeedRestorationModeEnum::WORDS_24:
+          // handleRestorationFromWords();
+          break;
+
+      default:
+          display.displayDebug("Invalid resto mode");
+          break;
+  }
+
+}
+
+std::vector<uint8_t> SeedController::managePrivateKey() {
+  // Generate private keys and verify randomness
+  std::vector<uint8_t> privateKey;
+  do {
+    privateKey = cryptoService.generatePrivateKey();
+  } while (cryptoService.calculateShanonEntropy(privateKey) < 4.9);
+
+  return privateKey;
+}
+
+bool SeedController::manageSdConfirmation() {
+    // SD card start
+  display.displaySubMessage("Loading", 83); // sd can take time to response
+  sdService.begin(); 
+
+  // Display 'no SD card
+  if (!sdService.getSdState()) {
+    auto confirmation = confirmationSelection.select("No SD card found");
+    if (!confirmation) {
+      selectionContext.setIsModeSelected(false); // go back to menu
+      sdService.close(); // SD card stop
+      return false;
+    }
+  }
+
+  // SD card stop
+  sdService.close();
+  return true;
 }
 
 void SeedController::manageSdSave(Wallet wallet) {
@@ -132,7 +246,7 @@ void SeedController::manageMnemonic(std::vector<std::string>& mnemonic) {
     mnemonicSelection.select(mnemonic);
 
     // Verify Backup
-    mnemonicVerification = confirmationSelection.select(" Verify backup ?");
+    mnemonicVerification = confirmationSelection.select(" Verify backup?");
     if (mnemonicVerification) {
       // Random num for a word index
       randomNumber = rand() % mnemonic.size();
@@ -152,28 +266,179 @@ void SeedController::manageMnemonic(std::vector<std::string>& mnemonic) {
   } while (!mnemonicIsBackedUp);
 }
 
+std::string SeedController::confirmStringsMatch(const std::string& prompt1, const std::string& prompt2, const std::string& mismatchMessage) {
+    std::string input1, input2;
+    auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
+    globalContext.setMaxInputCharCount(128); // 128 chars max for passphrase
+    do {
+        input1 = stringPromptSelection.select(prompt1, 0, false);
+        input2 = stringPromptSelection.select(prompt2, 4, false);
+
+        if (input1 != input2) {
+            display.displaySubMessage(mismatchMessage, 58, 2000);
+        }
+    } while (input1 != input2);
+    globalContext.setMaxInputCharCount(defaultMaxCharLimit);
+    return input1;
+}
+
 std::string SeedController::managePassphrase() {
   auto passConfirmation = confirmationSelection.select("Add passphrase?");
-  std::string passphrase1 = "";
-  auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
-  globalContext.setMaxInputCharCount(128); // 128 chars max for passphrase
+  std::string passphrase = "";
+
 
   if (passConfirmation) {
-    std::string passphrase2 = "";
-    do {
-      passphrase1 = stringPromptSelection.select("Enter passphrase", 0, false);
-      passphrase2 = stringPromptSelection.select("Repeat passphrase", 4, false);
-
-      if (passphrase1 != passphrase2) {
-        display.displaySubMessage("Do not match", 58, 2000);
-      }
-
-    } while (passphrase1 != passphrase2);
+    passphrase = confirmStringsMatch("Enter passphrase", "Repeat passphrase", "Do not math");
     display.displaySubMessage("Passphrase set", 46, 2000);
   }
 
-  globalContext.setMaxInputCharCount(defaultMaxCharLimit);
-  return passphrase1;
+  return passphrase;
 }
+
+std::tuple<std::vector<uint8_t>, std::string> SeedController::manageEncryption(std::vector<uint8_t> privateKey) {
+    display.displaySubMessage("Loading", 83, 800); // Add some time to avoid double input
+    auto encryptConfirmation = confirmationSelection.select("Encrypt the seed?");
+    if (!encryptConfirmation) { 
+        return {privateKey, ""};
+    }
+
+    // Get salt and encrypt key
+    auto salt = cryptoService.getRandomString(16); // 16 bytes, not chars
+    auto password = confirmStringsMatch("Enter a password", " Repeat password", "Do not match");
+    display.displaySubMessage("Loading", 83);
+    auto encryptedKey = cryptoService.encryptPrivateKeyWithPassphrase(privateKey, password, salt);
+
+    return {encryptedKey, salt};
+}
+
+std::vector<uint8_t> SeedController::manageDecryption() {
+    // Get private key, salt and signature
+    auto privateKey = rfidService.getPrivateKey();
+    auto salt = rfidService.getSalt();
+    auto sign = rfidService.getSignature();
+
+    auto saltIsEmpty = std::all_of(salt.begin(), salt.end(), [](int value) { return value == 0; });
+    bool validation = false;
+    while (!validation && privateKey.size() == 32 && !saltIsEmpty) {
+      auto password = stringPromptSelection.select("Enter the password", 8);
+      display.displaySubMessage("Loading", 83);
+      auto decryptedKey = cryptoService.decryptPrivateKeyWithPassphrase(privateKey, password, salt);
+      auto generatedSign = cryptoService.generateSignature(decryptedKey, salt);
+
+      validation = sign == generatedSign;
+      if(validation) {
+        privateKey = decryptedKey;
+        display.displaySubMessage("Seed decrypted", 48, 2000);
+      } else {
+        display.displaySubMessage("Bad password", 55, 1500);
+      }
+    }
+    return privateKey;
+}
+
+void SeedController::manageRfidSave(std::vector<uint8_t> privateKey) {
+  // Display RFID
+  display.displaySeedRfid();
+  input.waitPress();
+  display.displayTopBar("MIFARE 1K", false, false, false);
+
+  // Confirm RFID
+  auto rfidConfirmation = confirmationSelection.select("Seed on RFID tag?");
+  if (!rfidConfirmation) { return; }
+  
+  // Init RFID
+  rfidService.initialize();
+
+  // Get salt, key, sign
+  std::vector<uint8_t> returnedKey;
+  std::string salt;
+  std::tie(returnedKey, salt) = manageEncryption(privateKey);
+  auto signature = cryptoService.generateSignature(privateKey, salt);
+  auto splittedKey = cryptoService.splitVector(returnedKey); // block are 16 bytes for a 32 bytes keys
+  
+  display.displaySubMessage("PLUG YOUR TAG", 43);
+  const unsigned long timeout = 5000; // 5 seconds
+  unsigned long startTime = millis();
+
+  while (true) {
+    if (millis() - startTime > timeout) {
+        // Ask confirmation to continue each 5 sec
+        auto continueProcess = confirmationSelection.select("Retry saving seed?");
+        if (!continueProcess) {
+            display.displaySubMessage("RFID save cancelled", 30, 2000);
+            break;
+        }
+        startTime = millis();
+        display.displaySubMessage("PLUG YOUR TAG", 43);
+    }
+
+    // No tag detected
+    if (!rfidService.isCardPresent()) {
+        delay(300);
+        continue;
+    }
+
+    ledService.blink();
+
+    // Save private key
+    auto privateKeySaved = rfidService.savePrivateKey(splittedKey.first, splittedKey.second);
+    if (!privateKeySaved) {
+        display.displaySubMessage("Failed to save key", 38, 1000);
+        continue;
+    }
+
+    // Save salt with zeros if no encryption
+    auto saltSaved = rfidService.saveSalt(salt);
+    if (!saltSaved) {
+        display.displaySubMessage("Failed to save salt", 34, 1000);
+        continue;
+    }
+
+    // Save sign as a checksum for data
+    auto signSaved = rfidService.saveSignature(signature);
+    if (!saltSaved) {
+        display.displaySubMessage("Failed to save sign", 34, 1000);
+        continue;
+    }
+
+    display.displaySubMessage("Seed is saved", 60, 2000);
+    return;
+  }
+  rfidService.end();
+}
+
+std::vector<uint8_t> SeedController::manageRfidRead() {
+  std::vector<uint8_t> privateKey;
+  display.displayTopBar("MIFARE 1K", false, false, false);
+  display.displaySubMessage("PLUG YOUR TAG", 43);
+
+  rfidService.initialize();
+
+  const unsigned long timeout = 5000; // 5 seconds
+  unsigned long startTime = millis();
+
+  while (true) {
+    if (millis() - startTime > timeout) {
+        // Ask confirmation to continue each 5 sec
+        auto continueProcess = confirmationSelection.select("Retry reading tag?");
+        if (!continueProcess) {
+            display.displaySubMessage("RFID read cancelled", 30, 2000);
+            return privateKey;
+        }
+        startTime = millis();
+        display.displaySubMessage("PLUG YOUR TAG", 43);
+    }
+
+    // No tag detected
+    if (!rfidService.isCardPresent()) {
+        delay(300);
+        continue;
+    }
+
+    ledService.blink();
+    return manageDecryption();
+  }
+}
+
 
 } // namespace controllers

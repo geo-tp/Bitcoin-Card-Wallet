@@ -162,16 +162,15 @@ bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
     // Calculer l'adresse du sector trailer
     uint8_t sectorTrailer = sector * 4 + 3;
 
-    // Authentifier avec la clé par défaut
     if (!authenticateBlock(sectorTrailer)) {
         return false;
     }
 
-    // Définir les nouvelles clés (optionnel)
+    // Définir les nouvelles clés ici
     MFRC522::MIFARE_Key keyA = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
     MFRC522::MIFARE_Key keyB = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
-    // Définir les bits d'accès pour lecture seule
+    // Définir les bits d'acces pour lecture seule
     byte accessBits[3] = {0b11111100, 0b00001111, 0b00000000};
 
     // Construire le nouveau contenu du secteur trailer
@@ -181,7 +180,7 @@ bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
     dataBlock[9] = 0x00; // Byte utilisateur (optionnel)
     memcpy(dataBlock + 10, keyB.keyByte, 6); // Clé B
 
-    // Écrire le secteur trailer
+    // Ecrire le secteur trailer
     if (!writeBlock(sectorTrailer, std::vector<uint8_t>(dataBlock, dataBlock + 16))) {
         return false;
     }
