@@ -23,6 +23,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       mnemonicSelection(display, input),             // Select one word from the 24 mnemonic words
       keyboardLayoutSelection(display, input),       // Select a kb layout for USB string injection
       valueSelection(display, input),                // Select between QRCode and USB typing
+      seedRestorationSelection(display, input),      // Select restoration method
 
       // Repositories
       walletRepository(),                            // Repository for storing and loading wallets
@@ -33,6 +34,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       cryptoService(),                               // Private keys, BTC address, encoding logic
       sdService(),                                   // SD Card logic
       usbService(),                                  // USB (keyboard) logic
+      rfidService(),
       
       // Controllers with injected dependencies for routes handling
       modeController(display, input, modeSelection),
@@ -40,13 +42,13 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       walletController(display, input, walletService, usbService, walletSelection, keyboardLayoutSelection,
                        confirmationSelection, stringPromptSelection, walletInformationSelection, valueSelection),
 
-      seedController(display, input, cryptoService, walletService, sdService, mnemonicSelection, stringPromptSelection, 
-                     confirmationSelection),
+      seedController(display, input, cryptoService, walletService, sdService, rfidService, ledService,
+                     mnemonicSelection, stringPromptSelection, confirmationSelection, seedRestorationSelection),
 
       fileBrowserController(display, input, sdService, walletService, filePathSelection, confirmationSelection) { }
 
 void AppDispatcher::setup() {
-    display.initialise();
+    display.initialize();
 }
 
 void AppDispatcher::run() {
@@ -71,6 +73,10 @@ void AppDispatcher::run() {
 
         case SelectionModeEnum::LOAD_WALLET:
             fileBrowserController.handleFileWalletSelection();
+            break;
+
+        case SelectionModeEnum::LOAD_SEED:
+            seedController.handleSeedRestoration();
             break;
 
         case SelectionModeEnum::INFOS:

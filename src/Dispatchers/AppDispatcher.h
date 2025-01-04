@@ -10,6 +10,7 @@
 #include <Services/CryptoService.h>
 #include <Services/SdService.h>
 #include <Services/UsbService.h>
+#include <Services/RfidService.h>
 #include <Repositories/WalletRepository.h>
 #include <Selections/ModeSelection.h>
 #include <Selections/FilePathSelection.h>
@@ -17,6 +18,7 @@
 #include <Selections/FilePathSelection.h>
 #include <Selections/KeyboardLayoutSelection.h>
 #include <Selections/ValueSelection.h>
+#include <Selections/SeedRestorationSelection.h>
 #include <Controllers/ModeController.h>
 #include <Controllers/WalletController.h>
 #include <Controllers/SeedController.h>
@@ -57,6 +59,7 @@ private:
     FilePathSelection filePathSelection;
     KeyboardLayoutSelection keyboardLayoutSelection;
     ValueSelection valueSelection;
+    SeedRestorationSelection seedRestorationSelection;
 
     // Repositories
     WalletRepository walletRepository;
@@ -67,6 +70,7 @@ private:
     LedService ledService;
     SdService sdService;
     UsbService usbService;
+    RfidService rfidService;
 
     // Controllers
     ModeController modeController;

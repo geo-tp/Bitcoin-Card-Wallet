@@ -27,7 +27,7 @@ void FileBrowserController::handleFileWalletSelection() {
     
     // No SD Card
     if (!sdService.getSdState()) {
-        confirmationSelection.select("SD card not found");
+        display.displaySubMessage("SD card not found", 38, 2000);
         sdService.close(); // SD card stop
         selectionContext.setIsModeSelected(false);
         return;
@@ -95,7 +95,6 @@ bool FileBrowserController::verifyWalletFile(std::string fileContent) {
         fileContent.find("Version:") == std::string::npos) {
         return false;
     }
-
     return true;
 }
 
@@ -126,7 +125,6 @@ std::vector<std::string> FileBrowserController::getCachedDirectoryElements(const
         }
         cachedDirectoryElements[path] = elements;
     }
-
     return elements;
 }
 
