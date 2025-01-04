@@ -11,6 +11,7 @@ private:
     std::string name;                // Nom du wallet
     std::string publicKey;           // Clé publique du wallet xpub sous forme zpub....
     std::string address;             // Adresse Bitcoin
+    std::vector<uint8_t> privateKey; // Only stored if restored or loaded
 
 public:
     Wallet() : name(""), address("") {}
@@ -33,6 +34,10 @@ public:
         return address;
     }
 
+    std::vector<uint8_t> getPrivateKey() const {
+        return privateKey;
+    }
+
     // Setters
     void setName(const std::string& walletName) {
         name = walletName;
@@ -40,6 +45,10 @@ public:
 
     void setPublicKey(const std::string& pubKey) {
         publicKey = pubKey;
+    }
+
+    void setPrivateKey(const std::vector<uint8_t>& priKey) {
+        privateKey = priKey;
     }
 
     void setAddress(const std::string& addr) {
