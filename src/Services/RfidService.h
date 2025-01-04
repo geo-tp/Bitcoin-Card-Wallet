@@ -12,6 +12,22 @@
 #include "mfrc522_i2c.h"
 #include <Contexts/GlobalContext.h>
 
+/* 
+ MIFARE 1K TAG
+
+- **Manufacturer Block** (Sector 0, Block 0)  
+  Stores the **UID** (unique identifier) and factory data. Typically read-only.
+
+- **Data Blocks** (e.g., Block 1 and Block 2 of Sector 0, Block 4, 5, 6 of Sector 1, etc.)  
+  Store user data (16 bytes each). The *access conditions* for these blocks are defined in the sector’s trailer block.
+
+- **Sector Trailer** (the last block in each sector, e.g., Block 3 in Sector 0, Block 7 in Sector 1, etc.)  
+  Contains:
+  - **Key A** (6 bytes)
+  - **Access Bits** (3 bytes) + **User Byte** (1 byte)
+  - **Key B** (6 bytes)
+*/
+
 using namespace contexts;
 
 namespace services {
@@ -38,6 +54,17 @@ public:
 private:
     MFRC522 mfrc522;
     GlobalContext& globalContext = GlobalContext::getInstance();
+
+    // Block Number
+    int blockSalt         = globalContext.getBlockSalt();
+    int blockPrivateKey1  = globalContext.getBlockPrivateKey1();
+    int blockPrivateKey2  = globalContext.getBlockPrivateKey2();
+    int blockSign         = globalContext.getBlockSign();
+
+    // Pin and address
+    int sda = globalContext.getSdaPin();
+    int scl = globalContext.getSclPin();
+    int address = globalContext.getRfidAddress();
 };
 
 } // namespace services

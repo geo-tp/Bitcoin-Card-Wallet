@@ -34,7 +34,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       cryptoService(),                               // Private keys, BTC address, encoding logic
       sdService(),                                   // SD Card logic
       usbService(),                                  // USB (keyboard) logic
-      rfidService(),
+      rfidService(),                                 // RFID tag read and write logic
     
       // Managers for each routes, wrap dependencies for controllers
       seedManager(display, input, cryptoService, walletService, sdService, rfidService, ledService,

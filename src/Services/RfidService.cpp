@@ -3,10 +3,10 @@
 namespace services {
 
 RfidService::RfidService()
-    : mfrc522(0x28) {}
+    : mfrc522(address) {}
 
 void RfidService::initialize() {
-    Wire.begin(2, 1);
+    Wire.begin(sda, scl);
     mfrc522.PCD_Init();
 }
 
@@ -72,15 +72,15 @@ bool RfidService::savePrivateKey(const std::vector<uint8_t>& data1, const std::v
         throw std::invalid_argument("Both data blocks must be exactly 16 bytes.");
     }
 
-    if (!authenticateBlock(4) || !authenticateBlock(5)) {
+    if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
         return false;
     }
 
-    if (!writeBlock(4, data1) || !writeBlock(5, data2)) {
+    if (!writeBlock(blockPrivateKey1, data1) || !writeBlock(blockPrivateKey2, data2)) {
         return false;
     }
 
-    if (!verifyBlock(4, data1) || !verifyBlock(5, data2)) {
+    if (!verifyBlock(blockPrivateKey1, data1) || !verifyBlock(blockPrivateKey2, data2)) {
         return false;
     }
 
@@ -95,25 +95,25 @@ void RfidService::end() {
 bool RfidService::saveSalt(const std::string& salt) {
     std::vector<uint8_t> saltData;
     if (salt.empty()) {
-        saltData = std::vector<uint8_t>(16, 0); // Act like 'no encryption on the seed'
+        saltData = std::vector<uint8_t>(16, 0); // all zeros act like 'no encryption on the seed'
     } else {
         saltData = std::vector<uint8_t>(salt.begin(), salt.end());
     }
 
-    return authenticateBlock(6) && 
-           writeBlock(6, saltData) && 
-           verifyBlock(6, saltData);
+    return authenticateBlock(blockSalt) && 
+           writeBlock(blockSalt, saltData) && 
+           verifyBlock(blockSalt, saltData);
 }
 
 std::vector<uint8_t> RfidService::getPrivateKey() {
-    // Authentification des blocs contenant la clé
-    if (!authenticateBlock(4) || !authenticateBlock(5)) {
+    // Auth des blocs contenant la clé
+    if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
         throw std::runtime_error("Failed to authenticate blocks for encrypted key.");
     }
 
-    // Lecture des blocs 4 et 5
-    auto part1 = readBlock(4);
-    auto part2 = readBlock(5);
+    // Lecture des blocs
+    auto part1 = readBlock(blockPrivateKey1);
+    auto part2 = readBlock(blockPrivateKey2);
 
     // Combinaison des deux parties de la clé
     std::vector<uint8_t> encryptedKey;
@@ -125,13 +125,13 @@ std::vector<uint8_t> RfidService::getPrivateKey() {
 }
 
 std::string RfidService::getSalt() {
-    // Authentification du bloc contenant le salt
-    if (!authenticateBlock(6)) {
+    // Auth du bloc contenant le salt
+    if (!authenticateBlock(blockSalt)) {
         throw std::runtime_error("Failed to authenticate block for salt.");
     }
 
     // Lecture du bloc 6
-    auto saltData = readBlock(6);
+    auto saltData = readBlock(blockSalt);
 
     // Conversion du vecteur de bytes en string
     std::string salt(saltData.begin(), saltData.end());
@@ -145,17 +145,17 @@ bool RfidService::saveSignature(const std::vector<uint8_t>& signature) {
         throw std::invalid_argument("Signature block must be 16 bytes.");
     }
 
-    return authenticateBlock(8) && 
-           writeBlock(8, signature) &&
-           verifyBlock(8, signature);
+    return authenticateBlock(blockSign) && 
+           writeBlock(blockSign, signature) &&
+           verifyBlock(blockSign, signature);
 }
 
 std::vector<uint8_t> RfidService::getSignature() {
-    if (!authenticateBlock(8)) {
+    if (!authenticateBlock(blockSign)) {
         throw std::runtime_error("Failed to authenticate block for signature.");
     }
 
-    return readBlock(8);
+    return readBlock(blockSign);
 }
 
 bool RfidService::lockSectorAsReadOnly(uint8_t sector) {

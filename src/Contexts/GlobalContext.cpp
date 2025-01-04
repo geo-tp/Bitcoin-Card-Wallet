@@ -107,4 +107,62 @@ void GlobalContext::setFileCountLimit(int fileCountLimit) {
     this->fileCountLimit = fileCountLimit;
 }
 
+// Getters and setters for sdaPin, sclPin, and rfidAddress
+int GlobalContext::getSdaPin() const {
+    return sdaPin;
+}
+
+void GlobalContext::setSdaPin(int sdaPin) {
+    this->sdaPin = sdaPin;
+}
+
+int GlobalContext::getSclPin() const {
+    return sclPin;
+}
+
+void GlobalContext::setSclPin(int sclPin) {
+    this->sclPin = sclPin;
+}
+
+int GlobalContext::getRfidAddress() const {
+    return rfidAddress;
+}
+
+void GlobalContext::setRfidAddress(int rfidAddress) {
+    this->rfidAddress = rfidAddress;
+}
+
+// Getters and setters for blockSalt, blockPrivateKey1, blockPrivateKey2, blockSign (all integers)
+int GlobalContext::getBlockSalt() const {
+    return blockSalt;
+}
+
+void GlobalContext::setBlockSalt(int blockSalt) {
+    this->blockSalt = blockSalt;
+}
+
+int GlobalContext::getBlockPrivateKey1() const {
+    return blockPrivateKey1;
+}
+
+void GlobalContext::setBlockPrivateKey1(int blockPrivateKey1) {
+    this->blockPrivateKey1 = blockPrivateKey1;
+}
+
+int GlobalContext::getBlockPrivateKey2() const {
+    return blockPrivateKey2;
+}
+
+void GlobalContext::setBlockPrivateKey2(int blockPrivateKey2) {
+    this->blockPrivateKey2 = blockPrivateKey2;
+}
+
+int GlobalContext::getBlockSign() const {
+    return blockSign;
+}
+
+void GlobalContext::setBlockSign(int blockSign) {
+    this->blockSign = blockSign;
+}
+
 } // namespace contexts

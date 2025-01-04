@@ -46,22 +46,60 @@ public:
 
     int getFileCountLimit() const;
     void setFileCountLimit(int fileCountLimit);
+
+    int getSdaPin() const;
+    void setSdaPin(int sdaPin);
+
+    int getSclPin() const;
+    void setSclPin(int sclPin);
+
+    int getRfidAddress() const;
+    void setRfidAddress(int rfidAddress);
+
+    int getBlockSalt() const;
+    void setBlockSalt(int blockSalt);
+
+    int getBlockPrivateKey1() const;
+    void setBlockPrivateKey1(int blockPrivateKey1);
+
+    int getBlockPrivateKey2() const;
+    void setBlockPrivateKey2(int blockPrivateKey2);
+
+    int getBlockSign() const;
+    void setBlockSign(int blockSign);
+
 private:
     // Private constructor to prevent instantiation
     GlobalContext();
 
+    // GENERAL
     std::string appName = "Card Wallet";
     std::string fileWalletPath;
     std::string fileWalletDefaultPath = "/bitcoin-card-wallets.txt";
     std::string bitcoinBalanceUrl = "https://www.blockonomics.co/#/search?q=";
     int maxInputCharCount = 14;
+
+    // LED
     int ledPin = 21;
+
+    // SD
     int sdCardCSPin = 12;
     int sdCardMISOPin = 39;
     int sdCardMOSIPin = 14;
     int sdCardCLKPin = 40;
     int fileCacheLimit = 24;
     int fileCountLimit = 512;
+
+    // I2C
+    int sdaPin = 2;
+    int sclPin = 1;
+
+    // RFID
+    int rfidAddress = 0x28;
+    int blockSalt = 6;
+    int blockPrivateKey1 = 4;
+    int blockPrivateKey2 = 5;
+    int blockSign = 8;
 };
 
 } // namespace contexts
