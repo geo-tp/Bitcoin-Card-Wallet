@@ -80,9 +80,9 @@ bool RfidService::savePrivateKey(const std::vector<uint8_t>& data1, const std::v
         return false;
     }
 
-    // if (!verifyBlock(4, data1) || !verifyBlock(5, data2)) {
-    //     return false;
-    // }
+    if (!verifyBlock(4, data1) || !verifyBlock(5, data2)) {
+        return false;
+    }
 
     return true; // success
 }
