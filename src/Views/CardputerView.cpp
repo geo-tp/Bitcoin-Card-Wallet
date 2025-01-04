@@ -4,7 +4,7 @@ namespace views {
 
 M5GFX* CardputerView::Display = nullptr;
 
-void CardputerView::initialise() {
+void CardputerView::initialize() {
     Display = &M5Cardputer.Display;
     Display->setRotation(1);
     Display->setTextColor(TEXT_COLOR);
@@ -527,6 +527,40 @@ void CardputerView::displaySeedStart(){
     Display->printf("OK to start");
 }
 
+void CardputerView::displaySeedRfid(){
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(45, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("About RFID");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(12, 46);
+    Display->printf("You can store your seed on a tag");
+
+    // Text
+    Display->setCursor(20, 65);
+    Display->printf("Plug your RFID2 if you want it");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(8, 88);
+    Display->setTextSize(TEXT_SMALL);
+    Display->printf("You can encrypt it with password");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
 void CardputerView::displaySeedEnd(bool sdCardMount) {
     Display->fillScreen(BACKGROUND_COLOR);
 
@@ -559,6 +593,40 @@ void CardputerView::displaySeedEnd(bool sdCardMount) {
     Display->setTextSize(TEXT_MEDIUM);
     Display->setCursor(80, 115);
     Display->printf("OK to start");
+}
+
+void CardputerView::displayPlugRfid(){
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(54, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("Plug RFID");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(42, 46);
+    Display->printf("Plug you RFID2 module");
+
+    // Text
+    Display->setCursor(45, 65);
+    Display->printf("into the I2C grove port");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(20, 88);
+    Display->setTextSize(TEXT_SMALL);
+    Display->printf("Press OK when you are ready");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
 }
 
 void CardputerView::displaySeedGeneralInfos() {

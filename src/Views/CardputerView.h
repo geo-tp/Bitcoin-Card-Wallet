@@ -31,7 +31,7 @@ namespace views {
 
 class CardputerView {
 public:
-    static void initialise();
+    static void initialize();
     static void setBrightness(uint16_t brightness);
     static void displayTopBar(const std::string& title, bool submenu=false, bool searchBar=false, bool bitcoinIcon=false, size_t correctionOffset=0);
     static void displaySelection(const std::vector<std::string>& selectionStrings,  uint16_t selectionIndex, const std::vector<std::string>& selectionDescription={}, bool upperCase=false, bool showCurrency=false);
@@ -48,10 +48,12 @@ public:
     static void displayKeyboardLayout(const std::string& layoutName);
     static void displayPlugUsbMention();
     static void displaySeedStart();
+    static void displaySeedRfid();
     static void displaySeedEnd(bool sdCardMount);
     static void displaySeedGeneralInfos();
     static void displaySdSaveGeneralInfos();
     static void displaySeedFormatGeneralInfos();
+    static void displayPlugRfid();
     static void drawBitcoinIcon(int x, int y);
 
 private:
