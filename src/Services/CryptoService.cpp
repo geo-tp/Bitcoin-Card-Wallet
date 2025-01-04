@@ -76,41 +76,28 @@ std::string CryptoService::getRandomString(size_t length) {
     return randomString;
 }
 
-std::vector<uint8_t> CryptoService::generatePrivateKey() {
-    // For a 24 words mnemonic
-    const size_t keySize = 32;
-
+std::vector<uint8_t> CryptoService::generatePrivateKey(size_t keySize) {
     // Get entropy from hardware and software
-    std::vector<uint8_t> entropyEsp32 = generateRandomEsp32(keySize);
-    std::vector<uint8_t> entropyMbedtls = generateRandomMbetls(keySize);
-    std::vector<uint8_t> entropyBuiltin = generateRandomBuiltin(keySize);
+    auto entropyEsp32 = generateRandomEsp32(keySize);
+    auto entropyMbedtls = generateRandomMbetls(keySize);
+    auto entropyBuiltin = generateRandomBuiltin(keySize);
 
     // Get entropy from user action
-    std::vector<uint8_t> entropyUser = entropyContext.getAccumulatedEntropy();
+    auto entropyUser = entropyContext.getAccumulatedEntropy();
 
     // Control size
     if (entropyEsp32.size() != keySize || entropyMbedtls.size() != keySize || entropyBuiltin.size() != keySize) {
         throw std::runtime_error("Failed to generate sufficient entropy");
     }
 
-    // Hash the user entropy
-    uint8_t hash[keySize];
-    mbedtls_sha256(entropyUser.data(), entropyUser.size(), hash, 0); // 0 = SHA-256 (pas SHA-224)
-    std::vector<uint8_t> hashedUserEntropy(hash, hash + keySize);
+    // Process SHA256 on the user entropy
+    auto hashedEntropyUser = hashSha256(entropyUser, keySize);
 
     // Mix entropy with XOR
-    std::vector<uint8_t> mixedKey(keySize);
-    for (size_t i = 0; i < keySize; ++i) {
-        mixedKey[i] = entropyEsp32[i] ^ entropyMbedtls[i] ^ 
-                      entropyBuiltin[i] ^ hashedUserEntropy[i];
-    }
-
+    auto mixedKey = mixEntropy(entropyMbedtls, entropyEsp32, 
+                                               entropyBuiltin, entropyUser);
     // Process SHA256 on the result
-    uint8_t hashedFinalKey[keySize];
-    mbedtls_sha256(mixedKey.data(), mixedKey.size(), hashedFinalKey, 0);
-
-    // Convert to vector
-    std::vector<uint8_t> privateKey(hashedFinalKey, hashedFinalKey + keySize);
+    auto privateKey = hashSha256(mixedKey, keySize);
 
     return privateKey;
 }
@@ -135,6 +122,14 @@ std::string CryptoService::mnemonicVectorToString(std::vector<std::string> mnemo
     }
 
     return oss.str();
+}
+
+std::vector<uint8_t> CryptoService::hashSha256(const std::vector<uint8_t>& entropy, size_t keySize) {
+    uint8_t hash[keySize];
+    mbedtls_sha256(entropy.data(), entropy.size(), hash, 0); // 0 = SHA-256 (not SHA-224)
+
+    // Convert to std::vector<uint8_t> and return
+    return std::vector<uint8_t>(hash, hash + keySize);
 }
 
 HDPublicKey CryptoService::derivePublicKey(std::string mnemonic, std::string passphrase) {
@@ -184,6 +179,19 @@ double CryptoService::calculateMaurerRandomness(const std::vector<uint8_t>& data
     }
 
     throw std::runtime_error("Insufficient data for Maurer randomness test.");
+}
+
+std::vector<uint8_t> CryptoService::mixEntropy(const std::vector<uint8_t>& data1, 
+                                               const std::vector<uint8_t>& data2, 
+                                               const std::vector<uint8_t>& data3,
+                                               const std::vector<uint8_t>& data4) {
+    // Mix entropy with XOR
+    std::vector<uint8_t> mixedKey(data1.size());
+    for (size_t i = 0; i < data1.size(); ++i) {
+        mixedKey[i] = data1[i] ^ data2[i] ^ 
+                      data3[i] ^ data4[i];
+    }
+    return mixedKey;
 }
 
 double CryptoService::calculateMinEntropy(const std::vector<uint8_t>& data) {

@@ -26,7 +26,7 @@ public:
     std::vector<uint8_t> generateRandomEsp32(size_t size);
     std::vector<uint8_t> generateRandomBuiltin(size_t size);
     std::string getRandomString(size_t length);
-    std::vector<uint8_t> generatePrivateKey();
+    std::vector<uint8_t> generatePrivateKey(size_t keySize = 32);
     std::vector<std::string> privateKeyToMnemonic(const std::vector<uint8_t>& privateKey);
     HDPublicKey derivePublicKey(std::string mnemonic, std::string passphrase="");
     std::string generateBitcoinAddress(HDPublicKey xpub);
@@ -34,6 +34,8 @@ public:
     double calculateShanonEntropy(const std::vector<uint8_t>& data);
     double calculateMinEntropy(const std::vector<uint8_t>& data);
     double calculateMaurerRandomness(const std::vector<uint8_t>& data);
+    std::vector<uint8_t> mixEntropy(const std::vector<uint8_t>& data1, const std::vector<uint8_t>& data2, const std::vector<uint8_t>& data3, const std::vector<uint8_t>& data4);
+    std::vector<uint8_t> hashSha256(const std::vector<uint8_t>& entropy, size_t keySize);
     std::vector<uint8_t> deriveKeyFromPassphrase(const std::string& passphrase, const std::string& salt, size_t keySize);
     std::vector<uint8_t> encryptAES(const std::vector<uint8_t>& data, const std::vector<uint8_t>& key);
     std::vector<uint8_t> decryptAES(const std::vector<uint8_t>& encrypted, const std::vector<uint8_t>& key);
