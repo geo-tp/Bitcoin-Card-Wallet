@@ -7,6 +7,7 @@ enum class SelectionModeEnum {
     PORTFOLIO,
     CREATE_WALLET,
     LOAD_WALLET,
+    LOAD_SEED,
     INFOS,
     COUNT
 };
