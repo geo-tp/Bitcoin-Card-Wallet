@@ -179,7 +179,7 @@ void EntropyContext::tick() {
 ### Mixed and hashed to form the final private key
 ```cpp
 std::vector<uint8_t> CryptoService::generatePrivateKey() {
-    // 32 bits for a 24 words mnemonic
+    // 32 bytes for a 24 words mnemonic
     const size_t keySize = 32;
 
     // Get entropy from hardware and software
