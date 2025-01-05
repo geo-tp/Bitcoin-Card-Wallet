@@ -6,8 +6,7 @@ SeedRestorationSelection::SeedRestorationSelection(CardputerView& display, Cardp
     : display(display), input(input) {}
 
 SeedRestorationModeEnum SeedRestorationSelection::select() {
-    display.displaySelection(getModeStrings(), selectionIndex, getModeDescriptionStrings());
-
+    lastIndex = -1;
     char key = KEY_NONE;
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
         if (lastIndex != selectionIndex) {
