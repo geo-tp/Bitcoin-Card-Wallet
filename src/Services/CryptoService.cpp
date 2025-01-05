@@ -124,6 +124,26 @@ std::string CryptoService::mnemonicVectorToString(std::vector<std::string> mnemo
     return oss.str();
 }
 
+BIP39::word_list CryptoService::mnemonicStringToWordList(const std::string& mnemonicStr) {
+    BIP39::word_list wordList;
+
+    if (mnemonicStr.empty()) {
+        return wordList;
+    }
+
+    // Split the string by whitespace into tokens, then add each token to the word_list
+    std::istringstream iss(mnemonicStr);
+    for (std::string token; iss >> token; ) {
+        wordList.add(token);
+    }
+
+    return wordList;
+}
+
+bool CryptoService::verifyMnemonic(BIP39::word_list mnemonic) {
+    return BIP39::valid_mnemonic(mnemonic, BIP39::language::en);
+}
+
 std::vector<uint8_t> CryptoService::hashSha256(const std::vector<uint8_t>& entropy, size_t keySize) {
     uint8_t hash[keySize];
     mbedtls_sha256(entropy.data(), entropy.size(), hash, 0); // 0 = SHA-256 (not SHA-224)
