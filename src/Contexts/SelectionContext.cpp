@@ -45,12 +45,20 @@ Wallet SelectionContext::getCurrentSelectedWallet() const {
     return currentSelectedWallet; 
 }
 
-uint16_t SelectionContext::getCurrentFileIndex() const {
-    return currentFileIndex;
-}
-
 void SelectionContext::setCurrentSelectedWallet(const Wallet& wallet) { 
     this->currentSelectedWallet = wallet; 
+}
+
+uint16_t SelectionContext::getCurrentFileIndex() const {
+    return static_cast<uint16_t>(currentFileIndex);
+}
+
+FileTypeEnum SelectionContext::getCurrentSelectedFileType() const {
+    return currentSelectedFileType;
+}
+
+void SelectionContext::setCurrentSelectedFileType(FileTypeEnum fileType) {
+    this->currentSelectedFileType = fileType;
 }
 
 } // namespace contexts

@@ -4,6 +4,7 @@
 #include <string>
 #include <Models/Wallet.h>
 #include <Enums/SelectionModeEnum.h>
+#include <Enums/FileTypeEnum.h>
 
 using namespace enums;
 using namespace models;
@@ -32,20 +33,22 @@ public:
     void setCurrentSelectedWallet(const Wallet& wallet);
 
     uint16_t getCurrentFileIndex() const;
+
+    FileTypeEnum getCurrentSelectedFileType() const;
+    void setCurrentSelectedFileType(FileTypeEnum fileType);
+
 private:
     // Private constructor for singleton
     SelectionContext();
 
-    // Member variables
     bool isModeSelected = false;
     bool isLayoutSelected = false;
     bool isWalletSelected = false;
     SelectionModeEnum currentSelectedMode;
-
     Wallet currentSelectedWallet;
-
     size_t currentFileIndex;
     std::string currentFilePath;
+    FileTypeEnum currentSelectedFileType = FileTypeEnum::WALLET;
 };
 
 } // namespace contexts
