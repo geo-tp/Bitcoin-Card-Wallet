@@ -38,7 +38,7 @@ public:
     static void displayStringPrompt(std::string stringDescription, std::string stringInput, size_t offsetX=0, bool backButton=true);
     static void displayConfirmationPrompt(std::string stringDescription);
     static void displaySubMessage(std::string message, size_t x = 10, int delayMs=0);
-    static void displayMnemonicWord(std::string word, size_t index);
+    static void displayMnemonicWord(std::string word, size_t index, size_t size=24, bool esc=true, bool restore=false);
     static void displayWalletFileInfo(std::string defaultFileName);
     static void displayClearMainView(uint8_t offsetY=0);
     static void displayDebug(std::string message);
@@ -53,6 +53,7 @@ public:
     static void displaySeedGeneralInfos();
     static void displaySdSaveGeneralInfos();
     static void displaySeedFormatGeneralInfos();
+    void displaySeedRestorationInfos();
     static void displayPlugRfid();
     static void drawBitcoinIcon(int x, int y);
 

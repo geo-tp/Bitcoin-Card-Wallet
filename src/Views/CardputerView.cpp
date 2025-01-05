@@ -248,18 +248,28 @@ void CardputerView::displaySubMessage(std::string message, size_t x, int delayMs
     }
 }
 
-void CardputerView::displayMnemonicWord(std::string word, size_t index) {
+void CardputerView::displayMnemonicWord(std::string word, size_t index, size_t size, bool esc, bool restore) {
     // Clear
     displayClearMainView(5);
 
     // Box frame
     Display->drawRoundRect(10, 35, Display->width() - 20, 90, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
 
-    // Infos
-    Display->setTextSize(TEXT_TINY);
-    Display->setTextColor(PRIMARY_COLOR);
-    Display->setCursor(32, 47);
-    Display->printf("Press ESC when you are done");
+    if (esc) {
+        // Esc
+        Display->setTextSize(TEXT_TINY);
+        Display->setTextColor(PRIMARY_COLOR);
+        Display->setCursor(32, 47);
+        Display->printf("Press ESC when you are done");
+    }
+
+    if (restore) {
+        Display->setTextSize(TEXT_SMALL);
+        Display->setTextColor(PRIMARY_COLOR);
+        Display->setCursor(24, 49);
+        Display->printf("Write the word and press OK"); 
+    }
+
 
     // Word box
     Display->drawRoundRect(40, 65, Display->width() - 77, 35, DEFAULT_ROUND_RECT, RECT_COLOR_LIGHT);
@@ -271,17 +281,19 @@ void CardputerView::displayMnemonicWord(std::string word, size_t index) {
     Display->setCursor(offsetX, 80);
     Display->printf(word.c_str());
 
-    // < >
-    Display->setCursor(20, 80);
-    Display->printf("<");
-    Display->setCursor(Display->width() - 30, 80);
-    Display->printf(">");
-    Display->setTextColor(PRIMARY_COLOR);
-    Display->setTextSize(TEXT_MEDIUM);
+    if (!restore) {
+        // < >
+        Display->setCursor(20, 80);
+        Display->printf("<");
+        Display->setCursor(Display->width() - 30, 80);
+        Display->printf(">");
+    }
 
     // Counter
-    Display->setCursor(Display->width() / 2 - 20, Display->height() - 23);
-    Display->printf("%d/24", index+1);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(Display->width() / 2 - 15, Display->height() - 23);
+    Display->printf("%d/%d", index+1, size);
     Display->setTextColor(TEXT_COLOR);
 }
 
@@ -419,6 +431,7 @@ void CardputerView::displayWalletValue(std::string description, std::string valu
     if (description == "Balance") {
         Display->setCursor(0, 39);
         Display->setTextSize(0.97);
+        limit = 85;
     } else if (description == "Address") {
         Display->setCursor(0, 48);
         Display->setTextSize(1.2);
@@ -722,6 +735,40 @@ void CardputerView::displaySdSaveGeneralInfos() {
     Display->setCursor(26, 88);
     Display->setTextSize(TEXT_MEDIUM_LARGE);
     Display->printf("SEEDS ARE NOT SAVED");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
+void CardputerView::displaySeedRestorationInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(40, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("About Seed");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(22, 46);
+    Display->printf("Write each word of your seed");
+
+    // Text
+    Display->setCursor(27, 65);
+    Display->printf("Input your words accurately");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(28, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("It will recover your wallet");
 
     // Button Next
     Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);

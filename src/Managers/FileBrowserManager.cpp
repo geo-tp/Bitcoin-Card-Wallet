@@ -80,6 +80,7 @@ bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
             display.displaySubMessage("Loading", 83);
             auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
             auto address = cryptoService.generateBitcoinAddress(publicKey);
+            auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
             display.displaySubMessage("Seed loaded", 65, 2000);
 
             // Prompt for a wallet name
@@ -87,6 +88,9 @@ bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
 
             // Create Wallet
             Wallet wallet(walletName, publicKey.toString().c_str(), address, mnemonicString);
+
+            // Save seed on a RFID tag
+            manageRfidSave(privateKey);
 
             // Save wallet to SD if any
             display.displaySubMessage("Loading", 83);

@@ -21,6 +21,7 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       confirmationSelection(display, input),         // Return the user confirmation
       walletInformationSelection(display, input),    // Select a wallet infos (Name, Address, PubKey)
       mnemonicSelection(display, input),             // Select one word from the 24 mnemonic words
+      mnemonicRestoreSelection(display, input),      // Return the user string for a mnemonic word
       keyboardLayoutSelection(display, input),       // Select a kb layout for USB string injection
       valueSelection(display, input),                // Select between QRCode and USB typing
       seedRestorationSelection(display, input),      // Select restoration method
@@ -38,8 +39,9 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
     
       // Global manager to manage process as saveSD, readRFID...
       globalManager(display, input, cryptoService, walletService, sdService, rfidService, 
-                    ledService, usbService, mnemonicSelection, stringPromptSelection, confirmationSelection, 
-                    seedRestorationSelection, filePathSelection,keyboardLayoutSelection, walletSelection,
+                    ledService, usbService, mnemonicSelection, mnemonicRestoreSelection,
+                    stringPromptSelection, confirmationSelection, seedRestorationSelection, 
+                    filePathSelection,keyboardLayoutSelection, walletSelection,
                     walletInformationSelection, valueSelection),
 
       // Specific managers for each controllers

@@ -66,7 +66,7 @@ void WalletController::handleWalletInformationSelection() {
         case WalletInformationEnum::BALANCE:
             manager.valueSelection.select(
                 "Balance", 
-                globalContext.getBitcoinBalanceUrl() + selectedWallet.getAddress(), 
+                globalContext.getBitcoinBalanceUrl() + selectedWallet.getPublicKey(), 
                 manager.usbService
             );
             break;

@@ -11,6 +11,7 @@
 #include <Services/UsbService.h>
 #include <Models/Wallet.h>
 #include <Selections/MnemonicSelection.h>
+#include <Selections/MnemonicRestoreSelection.h>
 #include <Selections/StringPromptSelection.h>
 #include <Selections/ConfirmationSelection.h>
 #include <Selections/SeedRestorationSelection.h>
@@ -45,6 +46,7 @@ public:
     RfidService& rfidService;
     LedService& ledService;
     MnemonicSelection& mnemonicSelection;
+    MnemonicRestoreSelection& mnemonicRestoreSelection;
     StringPromptSelection& stringPromptSelection;
     ConfirmationSelection& confirmationSelection;
     SeedRestorationSelection& seedRestorationSelection;
@@ -65,6 +67,7 @@ public:
                   LedService& ledService,
                   UsbService& usbService,
                   MnemonicSelection& mnemonicSelection,
+                  MnemonicRestoreSelection& mnemonicRestoreSelection,
                   StringPromptSelection& stringPromptSelection,
                   ConfirmationSelection& confirmationSelection,
                   SeedRestorationSelection& seedRestorationSelection,

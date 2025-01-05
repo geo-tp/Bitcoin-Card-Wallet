@@ -15,6 +15,7 @@
 #include <Selections/ModeSelection.h>
 #include <Selections/FilePathSelection.h>
 #include <Selections/MnemonicSelection.h>
+#include <Selections/MnemonicRestoreSelection.h>
 #include <Selections/FilePathSelection.h>
 #include <Selections/KeyboardLayoutSelection.h>
 #include <Selections/ValueSelection.h>
@@ -62,6 +63,7 @@ private:
     ConfirmationSelection confirmationSelection;
     WalletInformationSelection walletInformationSelection;
     MnemonicSelection mnemonicSelection;
+    MnemonicRestoreSelection mnemonicRestoreSelection;
     FilePathSelection filePathSelection;
     KeyboardLayoutSelection keyboardLayoutSelection;
     ValueSelection valueSelection;

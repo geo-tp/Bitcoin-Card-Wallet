@@ -14,6 +14,7 @@ GlobalManager::GlobalManager(CardputerView& display,
                              LedService& ledService,
                              UsbService& usbService,
                              MnemonicSelection& mnemonicSelection,
+                             MnemonicRestoreSelection& mnemonicRestoreSelection,
                              StringPromptSelection& stringPromptSelection,
                              ConfirmationSelection& confirmationSelection,
                              SeedRestorationSelection& seedRestorationSelection,
@@ -32,6 +33,7 @@ GlobalManager::GlobalManager(CardputerView& display,
       ledService(ledService),
       usbService(usbService),
       mnemonicSelection(mnemonicSelection),
+      mnemonicRestoreSelection(mnemonicRestoreSelection),
       stringPromptSelection(stringPromptSelection),
       confirmationSelection(confirmationSelection),
       seedRestorationSelection(seedRestorationSelection),
@@ -52,6 +54,7 @@ GlobalManager::GlobalManager(const GlobalManager& other)
       ledService(other.ledService),
       usbService(other.usbService),
       mnemonicSelection(other.mnemonicSelection),
+      mnemonicRestoreSelection(other.mnemonicRestoreSelection),
       stringPromptSelection(other.stringPromptSelection),
       confirmationSelection(other.confirmationSelection),
       seedRestorationSelection(other.seedRestorationSelection),
@@ -199,7 +202,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
         // Ask confirmation to continue each 5 sec
         auto continueProcess = confirmationSelection.select("Retry saving seed?");
         if (!continueProcess) {
-            display.displaySubMessage("RFID save cancelled", 30, 2000);
+            display.displaySubMessage("RFID save cancelled", 27, 2000);
             break;
         }
         startTime = millis();

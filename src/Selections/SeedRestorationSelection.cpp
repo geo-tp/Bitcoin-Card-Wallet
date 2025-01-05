@@ -36,6 +36,8 @@ const std::string SeedRestorationSelection::getModeToString(SeedRestorationModeE
             return "RFID TAG";
         case SeedRestorationModeEnum::SD:
             return "SD CARD";
+        case SeedRestorationModeEnum::WORDS_12:
+            return "12 WORDS";
         case SeedRestorationModeEnum::WORDS_24:
             return "24 WORDS";
         default:
@@ -49,6 +51,7 @@ const std::string SeedRestorationSelection::getModeDescription(SeedRestorationMo
             return "       from RFID tag";
         case SeedRestorationModeEnum::SD:
             return "            from SD card";
+        case SeedRestorationModeEnum::WORDS_12:
         case SeedRestorationModeEnum::WORDS_24:
             return "   from mnemonic";
         default:

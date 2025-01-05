@@ -16,7 +16,10 @@ public:
 
     // Additional seed-specific methods
     void manageMnemonic(std::vector<std::string>& mnemonic);
+    bool manageMnemonicRestore(size_t wordCount);
     std::vector<uint8_t> managePrivateKey();
+    void manageRfidSeedRestoration();
+    void manageNewSeedCreation();
 };
 
 } // namespace managers
