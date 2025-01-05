@@ -160,7 +160,10 @@ void SeedController::handleSeedRestoration() {
           break;
 
       case SeedRestorationModeEnum::SD:
-          // handleRestorationFromSD();
+          selectionContext.setCurrentSelectedFileType(FileTypeEnum::SEED);
+          
+           // Go to sd file browser
+          selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
           break;
 
       case SeedRestorationModeEnum::WORDS_24:

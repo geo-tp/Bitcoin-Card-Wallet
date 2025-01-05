@@ -104,7 +104,7 @@ std::string GlobalManager::managePassphrase() {
     std::string passphrase;
     if (passConfirmation) {
         passphrase = confirmStringsMatch("Enter passphrase", "Repeat passphrase", "Do not match");
-        display.displaySubMessage("Passphrase set", 46, 2000);
+        display.displaySubMessage("Passphrase set", 48, 2000);
     }
     return passphrase;
 }

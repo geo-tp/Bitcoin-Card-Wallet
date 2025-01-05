@@ -12,7 +12,7 @@ void WalletController::handleWalletSelection() {
         auto confirmation = manager.confirmationSelection.select("Load wallets file?");
 
         if (confirmation) {
-            selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_WALLET);
+            selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
         } else {
             selectionContext.setIsModeSelected(false); // Go back to menu
         }

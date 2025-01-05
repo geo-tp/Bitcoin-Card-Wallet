@@ -28,7 +28,7 @@ void FileBrowserController::handleFileSelection() {
             // Load file with correct type
             if(manager.loadFile(currentPath, selectedFileType)) {break;} // successfully loaded
            
-            // Revert to parent dir, currentPath was not a valid wallet file
+            // Revert to parent dir, currentPath was not a valid file
             currentPath = manager.getParentDirectory(currentPath);
             currentPath = currentPath.empty() ? "/" : currentPath;
         }
@@ -39,7 +39,8 @@ void FileBrowserController::handleFileSelection() {
         
         // Select the file or folder
         uint16_t currentIndex = selectionContext.getCurrentFileIndex();
-        currentPath = manager.filePathSelection.select(elementNames, manager.extractFilename(currentPath), currentPath, currentIndex);
+        currentPath = manager.filePathSelection.select(elementNames, manager.extractFilename(currentPath), 
+                                                       currentPath, currentIndex, selectedFileType);
 
     } while (!currentPath.empty()); // user hits the return button at root path
 

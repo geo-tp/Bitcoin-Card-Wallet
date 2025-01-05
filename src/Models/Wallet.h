@@ -12,14 +12,21 @@ private:
     std::string publicKey;           // Clé publique du wallet xpub sous forme zpub....
     std::string address;             // Adresse Bitcoin
     std::vector<uint8_t> privateKey; // Only stored if restored or loaded
+    std::string mnemonic;            // Only store if restore from SD
 
 public:
-    Wallet() : name(""), address("") {}
+    Wallet() : name(""), address(""), mnemonic("") {}
 
     Wallet(const std::string& walletName, 
            const std::string& pubKey, 
            const std::string& addr)
         : name(walletName), publicKey(pubKey), address(addr) {}
+
+    Wallet(const std::string& walletName, 
+           const std::string& pubKey, 
+           const std::string& addr,
+           const std::string& mnemonic)
+        : name(walletName), publicKey(pubKey), address(addr), mnemonic(mnemonic) {}
 
     // Getters
     std::string getName() const {
@@ -38,6 +45,10 @@ public:
         return privateKey;
     }
 
+    std::string getMnemonic() const {
+        return mnemonic;
+    }
+
     // Setters
     void setName(const std::string& walletName) {
         name = walletName;
@@ -49,6 +60,10 @@ public:
 
     void setPrivateKey(const std::vector<uint8_t>& priKey) {
         privateKey = priKey;
+    }
+
+    void setMnemonic(const std::string& mne) {
+        mnemonic = mne;
     }
 
     void setAddress(const std::string& addr) {

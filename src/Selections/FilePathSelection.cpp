@@ -6,7 +6,7 @@ FilePathSelection::FilePathSelection(CardputerView& display, CardputerInput& inp
     : display(display), input(input), lastIndex(-1) {}
 
 std::string FilePathSelection::select(const std::vector<std::string>& elementNames, std::string folderName, 
-                                      std::string folderPath, uint16_t& selectionIndex) {
+                                      std::string folderPath, uint16_t& selectionIndex, FileTypeEnum fileType) {
     lastIndex = -1;
     char key = KEY_NONE;
     std::vector<std::string> filteredNames = elementNames;
@@ -17,7 +17,7 @@ std::string FilePathSelection::select(const std::vector<std::string>& elementNam
     folderName = folderName == "" ? "root" : folderName; // if foldeName is "" then folderName is "root"
 
     // Info about file on first run
-    handleFirstRun();
+    handleFirstRun(fileType);
     display.displayTopBar(searchQuery != "" ? searchQuery : folderName, true, true);
 
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
@@ -112,12 +112,19 @@ std::string FilePathSelection::select(const std::vector<std::string>& elementNam
     return folderPath + filteredNames[selectionIndex];
 }
 
-void FilePathSelection::handleFirstRun() {
-    if (firstRun) {
-        display.displayWalletFileInfo(globalContext.getfileWalletDefaultPath());
-        input.waitPress();
-        firstRun = false;
+void FilePathSelection::handleFirstRun(FileTypeEnum fileType) {
+    if (!firstRun) {return;}
+
+    switch (fileType) {
+        case FileTypeEnum::WALLET:
+            display.displayWalletFileInfo(globalContext.getfileWalletDefaultPath());
+            input.waitPress();
+            break;
+        case FileTypeEnum::SEED:
+            display.displaySubMessage("12 or 24 words txt file", 19, 2000);
+            break;
     }
+    firstRun = false;
 }
 
 std::string FilePathSelection::toLowerCase(const std::string& input) {

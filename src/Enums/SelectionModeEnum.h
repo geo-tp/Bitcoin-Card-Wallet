@@ -6,7 +6,7 @@ namespace enums {
 enum class SelectionModeEnum {
     PORTFOLIO,
     CREATE_WALLET,
-    LOAD_WALLET,
+    LOAD_SD,
     LOAD_SEED,
     INFOS,
     COUNT

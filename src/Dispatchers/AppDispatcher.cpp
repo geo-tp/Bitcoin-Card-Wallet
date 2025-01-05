@@ -77,7 +77,7 @@ void AppDispatcher::run() {
             seedController.handleSeedGeneration();
             break;
 
-        case SelectionModeEnum::LOAD_WALLET:
+        case SelectionModeEnum::LOAD_SD:
             fileBrowserController.handleFileSelection();
             break;
 

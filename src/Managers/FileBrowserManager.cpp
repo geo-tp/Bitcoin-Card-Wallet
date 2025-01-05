@@ -9,11 +9,9 @@ FileBrowserManager::FileBrowserManager(const GlobalManager& gm)
 bool FileBrowserManager::loadFile(std::string currentPath, FileTypeEnum selectedFileType) {
     switch (selectedFileType) {
         case FileTypeEnum::WALLET:
-            if(manageWalletFile(currentPath)) {return true;};
-            break;
+            return manageWalletFile(currentPath);
         case FileTypeEnum::SEED:
-            if(manageSeedFile(currentPath)) {return true;};
-            break;
+            return manageSeedFile(currentPath);
     }
     return false;
 }
@@ -59,6 +57,7 @@ bool FileBrowserManager::manageWalletFile(const std::string& currentPath) {
 bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
     auto fileName = extractFilename(currentPath);
     auto fileExt = extractFileExtension(fileName);
+    std::string passphrase;
 
     if (fileExt == "txt") {
         auto fileContent = sdService.readFile(currentPath.c_str());
@@ -68,9 +67,12 @@ bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
             auto validation = cryptoService.verifyMnemonic(mnemonicWordList);
 
             if (!validation) {
-                display.displaySubMessage("Invalid mnemonic words", 20, 2000);
+                display.displaySubMessage("Invalid mnemonic", 41, 2000);
                 return false;
             }
+
+            display.displayTopBar("Restore Seed", false, false, true, 5);
+            display.displaySubMessage("Valid mnemonic", 45, 2000);
 
             auto passphrase = managePassphrase(); // return "" in case user doesn't want passphrase
 
@@ -78,9 +80,24 @@ bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
             display.displaySubMessage("Loading", 83);
             auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
             auto address = cryptoService.generateBitcoinAddress(publicKey);
+            display.displaySubMessage("Seed loaded", 65, 2000);
 
-            
-            display.displaySubMessage("Seed loaded", 50, 1000);
+            // Prompt for a wallet name
+            auto walletName = stringPromptSelection.select("Enter wallet name");
+
+            // Create Wallet
+            Wallet wallet(walletName, publicKey.toString().c_str(), address, mnemonicString);
+
+            // Save wallet to SD if any
+            display.displaySubMessage("Loading", 83);
+            sdService.begin(); // SD card start
+            manageSdSave(wallet);
+            display.displaySeedEnd(sdService.getSdState());
+            input.waitPress();
+            sdService.close(); // SD card stop
+
+            // Go to portfolio
+            selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
             return true;
         } else {
             confirmationSelection.select("    Invalid seed");

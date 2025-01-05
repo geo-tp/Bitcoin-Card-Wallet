@@ -38,7 +38,7 @@ const std::string ModeSelection::getSelectionModeToString(SelectionModeEnum mode
             return "PORTFOLIO";
         case SelectionModeEnum::CREATE_WALLET:
             return "NEW WALLET";
-        case SelectionModeEnum::LOAD_WALLET:
+        case SelectionModeEnum::LOAD_SD:
             return "LOAD WALLET";
         case SelectionModeEnum::LOAD_SEED:
             return "RESTORE SEED";
@@ -55,7 +55,7 @@ const std::string ModeSelection::getSelectionModeDescription(SelectionModeEnum m
             return "      btc wallets";
         case SelectionModeEnum::CREATE_WALLET:
             return "     btc seed";
-        case SelectionModeEnum::LOAD_WALLET:
+        case SelectionModeEnum::LOAD_SD:
             return "  from sd";
         case SelectionModeEnum::LOAD_SEED:
             return "secret";
