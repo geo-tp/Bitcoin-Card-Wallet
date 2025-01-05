@@ -7,7 +7,8 @@ enum class SeedRestorationModeEnum {
     NONE = -1, // No choice
     RFID,      // Restoration via RFID tag
     SD,        // Restoration via SD card
-    WORDS_24,  // Restoration via 24 words mnemonic
+    WORDS_12,  // Restoration via 12 words mnemonic
+    WORDS_24,  
     COUNT
 };
 
