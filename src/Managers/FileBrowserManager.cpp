@@ -8,10 +8,10 @@ FileBrowserManager::FileBrowserManager(const GlobalManager& gm)
 
 bool FileBrowserManager::loadFile(std::string currentPath, FileTypeEnum selectedFileType) {
     switch (selectedFileType) {
-        case  FileTypeEnum::WALLET:
+        case FileTypeEnum::WALLET:
             if(manageWalletFile(currentPath)) {return true;};
             break;
-        case  FileTypeEnum::SEED:
+        case FileTypeEnum::SEED:
             if(manageSeedFile(currentPath)) {return true;};
             break;
     }
