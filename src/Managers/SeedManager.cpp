@@ -154,6 +154,8 @@ std::vector<uint8_t> SeedManager::manageDecryption() {
     bool validation = false;
     while (!validation && privateKey.size() == 32 && !saltIsEmpty) {
       auto password = stringPromptSelection.select("Enter the password", 8);
+      if (password.empty()) {return std::vector<uint8_t>();}
+
       display.displaySubMessage("Loading", 83);
       auto decryptedKey = cryptoService.decryptPrivateKeyWithPassphrase(privateKey, password, salt);
       auto generatedSign = cryptoService.generateSignature(decryptedKey, salt);
