@@ -5,6 +5,7 @@
 #include <Contexts/SelectionContext.h>
 #include <Contexts/GlobalContext.h>
 #include <Enums/SelectionModeEnum.h>
+#include <Managers/GlobalManager.h>
 #include <vector>
 #include <string>
 
@@ -19,12 +20,12 @@ private:
     FileBrowserManager& manager;
     GlobalContext& globalContext = GlobalContext::getInstance();
     SelectionContext& selectionContext = SelectionContext::getInstance();
-    std::string currentPath;
+    std::string currentPath = "/";
 
 public:
     FileBrowserController(FileBrowserManager& manager);
 
-    void handleFileWalletSelection();
+    void handleFileSelection();
 };
 
 } // namespace controllers

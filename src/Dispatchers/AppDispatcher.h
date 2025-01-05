@@ -5,13 +5,13 @@
 #include <Contexts/SelectionContext.h>
 #include <Contexts/EntropyContext.h>
 #include <Enums/SelectionModeEnum.h>
+#include <Repositories/WalletRepository.h>
 #include <Services/LedService.h>
 #include <Services/WalletService.h>
 #include <Services/CryptoService.h>
 #include <Services/SdService.h>
 #include <Services/UsbService.h>
 #include <Services/RfidService.h>
-#include <Repositories/WalletRepository.h>
 #include <Selections/ModeSelection.h>
 #include <Selections/FilePathSelection.h>
 #include <Selections/MnemonicSelection.h>
@@ -19,10 +19,12 @@
 #include <Selections/KeyboardLayoutSelection.h>
 #include <Selections/ValueSelection.h>
 #include <Selections/SeedRestorationSelection.h>
+#include <Selections/WalletSelection.h>
 #include <Controllers/ModeController.h>
 #include <Controllers/WalletController.h>
 #include <Controllers/SeedController.h>
 #include <Controllers/FileBrowserController.h>
+#include <Managers/GlobalManager.h>
 #include <Managers/SeedManager.h>
 #include <Managers/WalletManager.h>
 #include <Managers/FileBrowserManager.h>
@@ -77,6 +79,7 @@ private:
     RfidService rfidService;
 
     // Managers
+    GlobalManager globalManager;
     SeedManager seedManager;
     WalletManager walletManager;
     FileBrowserManager fileBrowserManager;

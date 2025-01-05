@@ -2,18 +2,18 @@
 
 namespace controllers {
 
-FileBrowserController::FileBrowserController(FileBrowserManager& manager)
-    : manager(manager),
-      currentPath("/") {}
+FileBrowserController::FileBrowserController(FileBrowserManager& fileBrowserManager)
+    : manager(fileBrowserManager) 
+{}
 
-void FileBrowserController::handleFileWalletSelection() {
+void FileBrowserController::handleFileSelection() {
     std::vector<std::string> elementNames;
     std::string fileContent;
+    auto selectedFileType = selectionContext.getCurrentSelectedFileType();
 
+    // Check SD card
     manager.display.displaySubMessage("Loading", 83);
     manager.sdService.begin(); // SD card start
-    
-    // No SD Card
     if (!manager.sdService.getSdState()) {
         manager.display.displaySubMessage("SD card not found", 38, 2000);
         manager.sdService.close(); // SD card stop
@@ -25,8 +25,9 @@ void FileBrowserController::handleFileWalletSelection() {
     do {
         // currentPath is a file
         if (manager.sdService.isFile(currentPath)) {
-            if(manager.manageFile(currentPath)) {break;}; // succesfuly loaded
-
+            // Load file with correct type
+            if(manager.loadFile(currentPath, selectedFileType)) {break;} // successfully loaded
+           
             // Revert to parent dir, currentPath was not a valid wallet file
             currentPath = manager.getParentDirectory(currentPath);
             currentPath = currentPath.empty() ? "/" : currentPath;

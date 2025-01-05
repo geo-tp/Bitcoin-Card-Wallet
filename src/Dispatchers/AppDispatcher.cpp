@@ -36,14 +36,16 @@ AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
       usbService(),                                  // USB (keyboard) logic
       rfidService(),                                 // RFID tag read and write logic
     
-      // Managers for each routes, wrap dependencies for controllers
-      seedManager(display, input, cryptoService, walletService, sdService, rfidService, ledService,
-                  mnemonicSelection, stringPromptSelection, confirmationSelection, seedRestorationSelection),
+      // Global manager to manage process as saveSD, readRFID...
+      globalManager(display, input, cryptoService, walletService, sdService, rfidService, 
+                    ledService, usbService, mnemonicSelection, stringPromptSelection, confirmationSelection, 
+                    seedRestorationSelection, filePathSelection,keyboardLayoutSelection, walletSelection,
+                    walletInformationSelection, valueSelection),
 
-      walletManager(display, input, walletService, usbService, walletSelection, keyboardLayoutSelection,
-                    confirmationSelection, stringPromptSelection, walletInformationSelection, valueSelection),
-
-      fileBrowserManager(display, input, sdService, walletService, filePathSelection, confirmationSelection),
+      // Specific managers for each controllers
+      seedManager(globalManager),
+      walletManager(globalManager),
+      fileBrowserManager(globalManager),
 
       // Controllers with injected dependencies for routes handling
       modeController(display, input, modeSelection),
@@ -76,7 +78,7 @@ void AppDispatcher::run() {
             break;
 
         case SelectionModeEnum::LOAD_WALLET:
-            fileBrowserController.handleFileWalletSelection();
+            fileBrowserController.handleFileSelection();
             break;
 
         case SelectionModeEnum::LOAD_SEED:

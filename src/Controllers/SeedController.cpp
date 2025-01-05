@@ -114,7 +114,7 @@ void SeedController::handleSeedRestoration() {
 
           // Bad seed if empty
           if (!mnemonic.empty()) {
-            manager.display.displaySubMessage("Seed is valid", 60, 1000);
+            manager.display.displaySubMessage("Seed is valid", 63, 1000);
             manager.display.displaySubMessage("First word: " + mnemonic[0], 38, 3000);
           }
 
