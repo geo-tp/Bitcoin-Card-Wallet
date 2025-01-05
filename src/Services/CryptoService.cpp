@@ -140,6 +140,21 @@ BIP39::word_list CryptoService::mnemonicStringToWordList(const std::string& mnem
     return wordList;
 }
 
+std::vector<uint8_t> CryptoService::mnemonicToPrivateKey(const std::string& mnemonic) {
+    // Buffer big enough
+    uint8_t buffer[64] = {0};
+
+    // The function returns how many bytes were actually written.
+    size_t written = mnemonicToEntropy(
+        mnemonic.c_str(),         // The mnemonic words
+        mnemonic.size(),          // Length of that string
+        buffer,                   // Output buffer
+        sizeof(buffer)            // Buffer size
+    );
+
+    return std::vector<uint8_t>(buffer, buffer + written);
+}
+
 bool CryptoService::verifyMnemonic(BIP39::word_list mnemonic) {
     return BIP39::valid_mnemonic(mnemonic, BIP39::language::en);
 }

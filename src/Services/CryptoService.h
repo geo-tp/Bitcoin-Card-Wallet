@@ -32,6 +32,7 @@ public:
     std::string generateBitcoinAddress(HDPublicKey xpub);
     std::string mnemonicVectorToString(std::vector<std::string> mnemonic);
     BIP39::word_list mnemonicStringToWordList(const std::string& mnemonicStr);
+    std::vector<uint8_t> mnemonicToPrivateKey(const std::string& mnemonic);
     bool verifyMnemonic(BIP39::word_list mnemonic);
     double calculateShanonEntropy(const std::vector<uint8_t>& data);
     double calculateMinEntropy(const std::vector<uint8_t>& data);
