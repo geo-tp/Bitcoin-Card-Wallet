@@ -3,10 +3,10 @@
 namespace services {
 
 RfidService::RfidService()
-    : mfrc522(address) {}
+    : mfrc522(0x28) {}
 
 void RfidService::initialize() {
-    Wire.begin(sda, scl);
+    Wire.begin(2, 1);
     mfrc522.PCD_Init();
 }
 
