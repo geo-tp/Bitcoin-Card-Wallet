@@ -29,15 +29,6 @@ void SeedController::handleSeedRestoration() {
       return;
   }
 
-  std::vector<uint8_t> privateKey;
-  std::vector<std::string> mnemonic;
-  std::string walletName;
-  std::string mnemonicString;
-  std::string passphrase;
-  std::string address;
-  HDPublicKey publicKey;
-  Wallet wallet;
-
   switch (restorationMethod) {
       case SeedRestorationModeEnum::NONE:
           selectionContext.setIsModeSelected(false); // go to menu
