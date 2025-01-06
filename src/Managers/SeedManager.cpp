@@ -18,7 +18,7 @@ std::vector<uint8_t> SeedManager::managePrivateKey() {
   return privateKey;
 }
 
-void SeedManager::manageMnemonic(std::vector<std::string>& mnemonic) {
+void SeedManager::manageMnemonicRead(std::vector<std::string>& mnemonic) {
   bool mnemonicIsBackedUp = false;
   bool mnemonicVerification = false;
   std::string word;
@@ -50,7 +50,7 @@ void SeedManager::manageMnemonic(std::vector<std::string>& mnemonic) {
   } while (!mnemonicIsBackedUp);
 }
 
-bool SeedManager::manageMnemonicRestore(size_t wordCount) {
+std::vector<std::string> SeedManager::manageMnemonicWrite(size_t wordCount) {
     std::vector<std::string> mnemonicWords;
     mnemonicWords.reserve(wordCount);
 
@@ -67,8 +67,7 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
     bool allWordsFilled = std::all_of(mnemonicWords.begin(), mnemonicWords.end(),
                                      [](const std::string& word) { return !word.empty(); });
     if (!allWordsFilled) {
-        display.displaySubMessage("Invalid mnemonic", 41, 2000);
-        return false;
+        return {};
     }
 
     // Check if valid mnemonic
@@ -76,10 +75,29 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
     auto mnemonicWordList = cryptoService.mnemonicStringToWordList(mnemonicString);
     auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
     if (mnemonicString.empty() || !cryptoService.verifyMnemonic(mnemonicWordList)) {
-      display.displaySubMessage("Invalid mnemonic", 41, 2000);
-      return false;
+      return {};
     }
 
+    return mnemonicWords;
+}
+
+bool SeedManager::manageMnemonicRestore(size_t wordCount) {
+    std::vector<std::string> mnemonicWords;
+    mnemonicWords.reserve(wordCount);
+    
+    // Get each word
+    // auto mnemonic = manageMnemonicWrite(wordCount);
+    // if (mnemonic.empty()) {
+    //   display.displaySubMessage("Invalid mnemonic", 41, 2000);
+    //   return false;
+    // }
+
+    // Convert
+    auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
+    auto mnemonicWordList = cryptoService.mnemonicStringToWordList(mnemonicString);
+    auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
+
+    // Valid mnemonic
     display.displayTopBar("Restore seed", false, false, true, 5);
     display.displaySubMessage("Valid mnemonic", 45, 2000);
 
@@ -115,6 +133,59 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
 
     sdService.close(); // SD card stop
     
+
+    return true;
+}
+
+std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
+    // Get the words from user
+    auto mnemonic = manageMnemonicWrite(wordCount);
+    if (mnemonic.empty()) {
+        display.displaySubMessage("Invalid mnemonic", 41, 2000);
+        return {};
+    }
+
+    display.displayTopBar("Restore seed", false, false, true, 5);
+    display.displaySubMessage("Valid mnemonic", 45, 2000);
+
+    sdService.close(); // SD card stop
+    
+    return mnemonic;
+}
+
+bool SeedManager::manageRfidSeedSignature() {
+    // Display infos about module
+    display.displayPlugRfid();
+    input.waitPress();
+
+    // Get the private key from tag
+    auto privateKey = manageRfidRead();
+    if (privateKey.size() != 32) {return false;} // user hits return
+
+    // Convert to mnemonic 24 words
+    auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
+
+    // Bad seed if empty
+    if (mnemonic.empty()) {
+      return false;
+    }
+
+    // Valid seed
+    display.displaySubMessage("Seed is valid", 63, 1000);
+    display.displaySubMessage("First word: " + mnemonic[0], 38, 3000);
+
+    display.displaySubMessage("Loading", 83);
+    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
+
+    // Get Wallet
+    auto wallet = selectionContext.getCurrentSelectedWallet();
+    wallet.setMnemonic(mnemonicString);
+    selectionContext.setCurrentSelectedWallet(wallet);
+
+    selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
+    selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
+
+    display.displaySubMessage("Select psbt file", 50, 3000);
 
     return true;
 }
@@ -207,7 +278,7 @@ void SeedManager::manageNewSeedCreation() {
     auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
 
     // Let the user see the 24 words
-    manageMnemonic(mnemonic);
+    manageMnemonicRead(mnemonic);
 
     // Optional passphrase
     auto passphrase = managePassphrase(); // returns "" if user doesn't want passphrase

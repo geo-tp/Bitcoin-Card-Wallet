@@ -160,7 +160,7 @@ std::vector<uint8_t> GlobalManager::manageDecryption() {
 
       display.displaySubMessage("Loading", 83);
       auto decryptedKey = cryptoService.decryptPrivateKeyWithPassphrase(privateKey, password, salt);
-      auto generatedSign = cryptoService.generateSignature(decryptedKey, salt);
+      auto generatedSign = cryptoService.generateChecksum(decryptedKey, salt);
 
       validation = sign == generatedSign;
       if(validation) {
@@ -186,11 +186,13 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
   // Init RFID
   rfidService.initialize();
 
+  display.displayDebug(std::to_string(privateKey.size()));
+
   // Get salt, key, sign
   std::vector<uint8_t> returnedKey;
   std::string salt;
   std::tie(returnedKey, salt) = manageEncryption(privateKey);
-  auto signature = cryptoService.generateSignature(privateKey, salt);
+  auto signature = cryptoService.generateChecksum(privateKey, salt);
   auto splittedKey = cryptoService.splitVector(returnedKey); // block are 16 bytes for a 32 bytes keys
   
   display.displaySubMessage("PLUG YOUR TAG", 43);
@@ -275,6 +277,18 @@ std::vector<uint8_t> GlobalManager::manageRfidRead() {
     ledService.blink();
     return manageDecryption();
   }
+}
+
+std::vector<uint8_t> GlobalManager::manageBitcoinSignature(std::string& psbt, std::string& mnemonic) {
+        auto passphrase = managePassphrase();
+
+        auto signedTransactionB64 = cryptoService.signBitcoinTransactions(psbt, mnemonic, passphrase);
+        if(signedTransactionB64.empty()) {return {};}
+
+        auto signedTransactionBytes = cryptoService.convertPSBTBase64ToBinary(signedTransactionB64);
+        if(signedTransactionBytes.empty()) {return {};}
+
+        return signedTransactionBytes;
 }
 
 } // namespace managers

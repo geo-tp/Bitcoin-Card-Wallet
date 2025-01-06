@@ -15,11 +15,15 @@ public:
     SeedManager(const GlobalManager& gm);
 
     // Additional seed-specific methods
-    void manageMnemonic(std::vector<std::string>& mnemonic);
+    void manageMnemonicRead(std::vector<std::string>& mnemonic);
     bool manageMnemonicRestore(size_t wordCount);
+    std::vector<std::string> manageMnemonicLoading(size_t wordCount);
+    std::vector<std::string> manageMnemonicWrite(size_t wordCount);
     std::vector<uint8_t> managePrivateKey();
     void manageRfidSeedRestoration();
+    bool manageRfidSeedSignature();
     void manageNewSeedCreation();
+
 };
 
 } // namespace managers

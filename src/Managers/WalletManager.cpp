@@ -3,8 +3,7 @@
 namespace managers {
 
 WalletManager::WalletManager(const GlobalManager& gm)
-    : GlobalManager(gm) // calls GlobalManager's copy constructor
+    : GlobalManager(gm) // copy constructor
 {}
-
 
 } // namespace controllers

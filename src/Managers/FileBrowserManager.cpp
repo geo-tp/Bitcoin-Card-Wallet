@@ -12,6 +12,8 @@ bool FileBrowserManager::loadFile(std::string currentPath, FileTypeEnum selected
             return manageWalletFile(currentPath);
         case FileTypeEnum::SEED:
             return manageSeedFile(currentPath);
+        case FileTypeEnum::TRANSACTION:
+            return manageTransactionFile(currentPath);
     }
     return false;
 }
@@ -51,6 +53,39 @@ bool FileBrowserManager::manageWalletFile(const std::string& currentPath) {
     } else {
         confirmationSelection.select("Unsupported file");
     }
+    return false;
+}
+
+bool FileBrowserManager::manageTransactionFile(const std::string& currentPath) {
+    auto fileName = extractFilename(currentPath);
+    auto fileExt = extractFileExtension(fileName);
+
+    if (fileExt == "psbt") {
+        display.displayTopBar("Signing", false, false, true);
+        display.displaySubMessage("Loading", 83);
+
+        auto fileContent = sdService.readBinaryFile(currentPath.c_str());
+        auto psbt = cryptoService.convertPSBTBinaryToBase64(fileContent);
+        auto mnemonic = selectionContext.getCurrentSelectedWallet().getMnemonic();
+        auto signedTransactionBytes = manageBitcoinSignature(psbt, mnemonic);
+
+        if (signedTransactionBytes.empty()) {
+            display.displaySubMessage("Failed to sign", 60, 2000);
+            return false;
+        } 
+        
+        auto parent = getParentDirectory(currentPath);
+        std::string baseFileName = fileName.substr(0, fileName.find_last_of('.')); // remove ext .psbt
+        sdService.writeBinaryFile((parent + "/" + baseFileName + "-signed.psbt").c_str(), signedTransactionBytes);
+        display.displaySubMessage("Transaction signed", 33, 3000);
+        selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+        selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET);
+        selectionContext.setTransactionOngoing(false);
+
+        return true;
+    } 
+
+    confirmationSelection.select("Unsupported file");
     return false;
 }
 

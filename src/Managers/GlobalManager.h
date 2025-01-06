@@ -91,6 +91,7 @@ public:
 
     void manageRfidSave(std::vector<uint8_t> privateKey);
     std::vector<uint8_t> manageRfidRead();
+    std::vector<uint8_t> manageBitcoinSignature(std::string& psbt, std::string& mnemonic);
 };
 
 } // namespace managers

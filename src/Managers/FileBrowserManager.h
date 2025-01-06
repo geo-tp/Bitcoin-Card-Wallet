@@ -37,6 +37,7 @@ public:
     bool loadFile(std::string currentPath, FileTypeEnum selectedFileType);    
     bool verifyWalletFile(const std::string& fileContent);
     bool manageWalletFile(const std::string& currentPath);
+    bool manageTransactionFile(const std::string& currentPath);
     bool verifySeedFile(const std::string& fileContent);
     bool manageSeedFile(const std::string& currentPath);
     std::vector<std::string> getCachedDirectoryElements(const std::string& path);
