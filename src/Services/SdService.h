@@ -24,8 +24,9 @@ public:
     std::vector<std::string> listElements(std::string dirPath, size_t limit=0);
     std::string readFile(const char* filePath);
     bool writeFile(const char* filePath, const std::string& data);
+    bool writeBinaryFile(const char* filePath, const std::vector<uint8_t>& data);
     bool appendToFile(const char* filePath, const std::string& data);
-
+    std::vector<uint8_t> readBinaryFile(const char* filePath);
 private:
     GlobalContext& globalContext = GlobalContext::getInstance();
     SPIClass sdCardSPI;

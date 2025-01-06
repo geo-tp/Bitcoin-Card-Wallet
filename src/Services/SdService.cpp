@@ -98,6 +98,23 @@ std::vector<std::string> SdService::listElements(std::string dirPath, size_t lim
 
 }
 
+std::vector<uint8_t> SdService::readBinaryFile(const char* filePath) {
+    std::vector<uint8_t> content;
+    if (!sdCardMounted) {
+        return content;
+    }
+
+    File file = SD.open(filePath, FILE_READ);
+    if (file) {
+        content.reserve(file.size());
+        while (file.available()) {
+            content.push_back(file.read());
+        }
+        file.close();
+    }
+    return content;
+}
+
 std::string SdService::readFile(const char* filePath) {
     std::string content;
     if (!sdCardMounted) {
@@ -127,6 +144,21 @@ bool SdService::writeFile(const char* filePath, const std::string& data) {
         return true;
     }
     return false;
+}
+
+bool SdService::writeBinaryFile(const char* filePath, const std::vector<uint8_t>& data) {
+    if (!sdCardMounted) {
+        return false;
+    }
+
+    File file = SD.open(filePath, FILE_WRITE);
+    if (file) {
+        file.write(data.data(), data.size());
+        file.close();
+        return true; 
+    }
+
+    return false; 
 }
 
 bool SdService::appendToFile(const char* filePath, const std::string& data) {
