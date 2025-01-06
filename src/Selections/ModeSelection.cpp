@@ -9,6 +9,8 @@ SelectionModeEnum ModeSelection::select() {
     display.displayTopBar(globalContext.getAppName());
     display.drawBitcoinIcon(20, 3);
     display.displaySelection(getSelectionModeStrings(), selectionIndex, getSelectionModeDescriptionStrings());
+    selectionIndex = 0;
+    lastIndex = -1;
     
     char key = KEY_NONE;
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
