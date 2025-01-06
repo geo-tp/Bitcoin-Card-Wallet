@@ -5,6 +5,7 @@ namespace controllers {
 WalletController::WalletController(WalletManager& manager) : manager(manager) {}
 
 void WalletController::handleWalletSelection() {
+
     auto wallets = manager.walletService.getAllWallets();
 
     // No wallets currently in the repo, ask for loading wallets file from the SD card
@@ -85,6 +86,19 @@ void WalletController::handleWalletInformationSelection() {
                 selectedWallet.getPublicKey(), 
                 manager.usbService
             );
+            break;
+
+        case WalletInformationEnum::SIGNATURE:
+
+            auto selectedWallet = selectionContext.getCurrentSelectedWallet();
+            if(selectedWallet.getMnemonic().empty()) {
+                selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SEED);
+            } else {
+                selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
+                selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
+            }
+            
+            selectionContext.setTransactionOngoing(true);
             break;
     }
 }

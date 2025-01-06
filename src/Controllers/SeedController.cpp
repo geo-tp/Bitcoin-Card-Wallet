@@ -21,8 +21,15 @@ void SeedController::handleSeedGeneration() {
 }
 
 void SeedController::handleSeedRestoration() {
+  auto transactionOngoing = selectionContext.getTransactionOngoing();
+  if (transactionOngoing) {
+    manager.display.displaySeedLoadInfos();
+    manager.input.waitPress();
+  }
+
   manager.display.displayTopBar("Load Seed", true, false, true, 15);
   auto restorationMethod = manager.seedRestorationSelection.select();
+
 
   if (restorationMethod == SeedRestorationModeEnum::NONE) {
       selectionContext.setIsModeSelected(false); // go to menu
@@ -34,7 +41,11 @@ void SeedController::handleSeedRestoration() {
           selectionContext.setIsModeSelected(false); // go to menu
 
       case SeedRestorationModeEnum::RFID:
-          manager.manageRfidSeedRestoration();
+          if (transactionOngoing) {
+            manager.manageRfidSeedSignature();
+          } else {
+            manager.manageRfidSeedRestoration();
+          }
           break;
 
       case SeedRestorationModeEnum::SD:
@@ -43,15 +54,19 @@ void SeedController::handleSeedRestoration() {
           break;
           
       case SeedRestorationModeEnum::WORDS_12:
-          manager.manageMnemonicRestore(12);
+          if(transactionOngoing) {
+            manager.manageMnemonicLoading(12);
+          } else {
+            manager.manageMnemonicRestore(12);
+          }
           break;
 
       case SeedRestorationModeEnum::WORDS_24:
-          manager.manageMnemonicRestore(24);
-          break;
-
-      default:
-          manager.display.displayDebug("Invalid resto mode");
+          if(transactionOngoing) {
+            manager.manageMnemonicLoading(24);
+          } else {
+            manager.manageMnemonicRestore(24);
+          }
           break;
   }
 
