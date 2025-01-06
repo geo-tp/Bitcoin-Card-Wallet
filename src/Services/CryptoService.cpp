@@ -417,7 +417,7 @@ std::pair<std::vector<uint8_t>, std::vector<uint8_t>> CryptoService::splitVector
     return {part1, part2};
 }
 
-std::vector<uint8_t> CryptoService::generateSignature(const std::vector<uint8_t>& data, const std::string& salt) {
+std::vector<uint8_t> CryptoService::generateChecksum(const std::vector<uint8_t>& data, const std::string& salt) {
     // Combine data and salt
     std::vector<uint8_t> combined(data.begin(), data.end());
     combined.insert(combined.end(), salt.begin(), salt.end());
@@ -428,6 +428,82 @@ std::vector<uint8_t> CryptoService::generateSignature(const std::vector<uint8_t>
 
     // Return the first 16 bytes
     return std::vector<uint8_t>(hash, hash + 16);
+}
+
+std::string CryptoService::signBitcoinTransactions(const std::string& psbtBase64, const std::string& mnemonic, const std::string& passphrase) {
+    // Derive key
+    HDPrivateKey rootKey(mnemonic.c_str(), passphrase.c_str());
+    HDPrivateKey accountKey = rootKey.derive("m/84'/0'/0'/");
+
+    // Charger la PSBT
+    PSBT psbt;
+    size_t bytesParsed = psbt.parseBase64(psbtBase64.c_str());
+
+    // Signer les transactions
+    uint8_t signedInputs = psbt.sign(rootKey);
+    if (signedInputs == 0) {
+        return ""; // can't sign
+    }
+
+    // Export the signed PSBT as Base64
+    std::string signedPsbtBase64 = psbt.toBase64().c_str();
+    return signedPsbtBase64;
+}
+
+std::string CryptoService::convertPSBTBinaryToBase64(const std::vector<uint8_t>& psbtBinary) {
+    // Parse the binary PSBT
+    wally_psbt* psbt = nullptr;
+    int res = wally_psbt_from_bytes(psbtBinary.data(), psbtBinary.size(), &psbt);
+    if (res != WALLY_OK || psbt == nullptr) {
+        return "";
+    }
+
+    // Convert the structure to Base64
+    char* psbtBase64 = nullptr;
+    res = wally_psbt_to_base64(psbt, &psbtBase64);
+    if (res != WALLY_OK || psbtBase64 == nullptr) {
+        wally_psbt_free(psbt);
+        return "";
+    }
+
+    // Store the Base64 string in a `std::string`
+    std::string psbtBase64Str(psbtBase64);
+
+    // Clean up memory
+    wally_free_string(psbtBase64); 
+    wally_psbt_free(psbt);
+
+    return psbtBase64Str;
+}
+
+std::vector<uint8_t> CryptoService::convertPSBTBase64ToBinary(const std::string& psbtBase64) {
+    // Parse PSBT Base64
+    wally_psbt* psbt = nullptr;
+    int res = wally_psbt_from_base64(psbtBase64.c_str(), &psbt);
+    if (res != WALLY_OK || psbt == nullptr) {
+        return {};
+    }
+
+    // Get length
+    size_t psbtBinaryLen = 0;
+    res = wally_psbt_get_length(psbt, &psbtBinaryLen);
+    if (res != WALLY_OK || psbtBinaryLen == 0) {
+        wally_psbt_free(psbt);
+        return {};
+    }
+
+    // Convertir en binaire
+    std::vector<uint8_t> psbtBinary(psbtBinaryLen);
+    size_t bytesWritten = 0;
+    res = wally_psbt_to_bytes(psbt, psbtBinary.data(), psbtBinaryLen, &bytesWritten);
+    if (res != WALLY_OK || bytesWritten != psbtBinaryLen) {
+        wally_psbt_free(psbt); // Nettoyer la mémoire
+        return {};
+    }
+
+    wally_psbt_free(psbt);
+
+    return psbtBinary;
 }
 
 std::vector<uint8_t> CryptoService::OLDderivePublicKey(const std::vector<uint8_t>& privateKey) {

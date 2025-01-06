@@ -12,6 +12,15 @@
 #include "PSBT.h"       // if using PSBT functionality
 #include "Conversion.h" // to get access to functions like toHex() or fromBase64()
 #include "Hash.h"       // if using hashes
+#include "wally_core.h"
+#include "wally_bip32.h"
+#include "wally_bip39.h"
+#include "wally_address.h"
+#include "wally_script.h"
+#include "wally_psbt.h"
+#include <fstream>
+#include <M5Cardputer.h>
+
 #include <Contexts/EntropyContext.h>
 
 using namespace contexts;
@@ -45,7 +54,10 @@ public:
     std::vector<uint8_t> encryptPrivateKeyWithPassphrase(const std::vector<uint8_t>& privateKey, const std::string& passphrase, const std::string& salt);
     std::vector<uint8_t> decryptPrivateKeyWithPassphrase(const std::vector<uint8_t>& encryptedPrivateKey, const std::string& passphrase, const std::string& salt);
     std::pair<std::vector<uint8_t>, std::vector<uint8_t>> splitVector(const std::vector<uint8_t>& input);
-    std::vector<uint8_t> generateSignature(const std::vector<uint8_t>& data, const std::string& salt);
+    std::vector<uint8_t> generateChecksum(const std::vector<uint8_t>& data, const std::string& salt);
+    std::string signBitcoinTransactions(const std::string& psbtBase64, const std::string& mnemonic, const std::string& passphrase);
+    std::vector<uint8_t> convertPSBTBase64ToBinary(const std::string& psbtBase64);
+    std::string convertPSBTBinaryToBase64(const std::vector<uint8_t>& psbtBinary);
     std::vector<uint8_t> OLDderivePublicKey(const std::vector<uint8_t>& privateKey);
     std::string OLDgenerateBitcoinAddress(const std::vector<uint8_t>& publicKey);
 private:
