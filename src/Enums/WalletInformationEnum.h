@@ -8,6 +8,7 @@ enum class WalletInformationEnum {
     BALANCE,  // Balance de l'adresse
     ADDRESS,  // Adresse Bitcoin
     PUBLIC_KEY, // Public key du wallet
+    SIGNATURE,
     COUNT
 };
 
