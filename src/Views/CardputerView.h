@@ -53,6 +53,7 @@ public:
     static void displaySeedGeneralInfos();
     static void displaySdSaveGeneralInfos();
     static void displaySeedFormatGeneralInfos();
+    void displaySeedLoadInfos();
     void displaySeedRestorationInfos();
     static void displayPlugRfid();
     static void drawBitcoinIcon(int x, int y);

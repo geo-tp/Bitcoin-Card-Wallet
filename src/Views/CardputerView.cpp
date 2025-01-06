@@ -676,6 +676,40 @@ void CardputerView::displaySeedGeneralInfos() {
     Display->printf("Next  ->");
 }
 
+void CardputerView::displaySeedLoadInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(46, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("Load Seed");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(15, 46);
+    Display->printf("Seed is not saved on the device");
+
+    // Text
+    Display->setCursor(18, 65);
+    Display->printf("To be able to sign transactions");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(24, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("Load it with RFID SD Words");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
 void CardputerView::displaySeedFormatGeneralInfos() {
     Display->fillScreen(BACKGROUND_COLOR);
 
