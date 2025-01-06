@@ -23,7 +23,6 @@ void UsbService::sendString(const std::string& text) {
 
     for (const char& c : text) {
         keyboard.write(c);
-        delay(1);
     }
 }
 
