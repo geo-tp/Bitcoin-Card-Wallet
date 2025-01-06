@@ -13,7 +13,6 @@ WalletInformationEnum WalletInformationSelection::select(const std::string& wall
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
         if (lastIndex != selectionIndex) {
             display.displaySelection(getWalletInformationStrings(), selectionIndex);
-            display.displayPlugUsbMention();
             lastIndex = selectionIndex;
         }
 
@@ -42,6 +41,8 @@ const std::string WalletInformationSelection::getWalletInformationToString(Walle
             return "BITCOIN ADDRESS";
         case WalletInformationEnum::PUBLIC_KEY:
             return "WALLET PUBLIC KEY";
+        case WalletInformationEnum::SIGNATURE:
+            return "SIGN TRANSACTIONS";
         default:
             return "Unknown";
     }
