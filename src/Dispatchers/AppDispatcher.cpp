@@ -1,5 +1,6 @@
 #include "AppDispatcher.h"
 
+
 namespace dispatchers {
 
 AppDispatcher::AppDispatcher(CardputerView& display, CardputerInput& input)
