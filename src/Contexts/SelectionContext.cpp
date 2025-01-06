@@ -61,4 +61,12 @@ void SelectionContext::setCurrentSelectedFileType(FileTypeEnum fileType) {
     this->currentSelectedFileType = fileType;
 }
 
+bool SelectionContext::getTransactionOngoing() const {
+    return transactionOngoing;
+}
+
+void SelectionContext::setTransactionOngoing(bool transactionOngoing) {
+    this->transactionOngoing = transactionOngoing;
+}
+
 } // namespace contexts

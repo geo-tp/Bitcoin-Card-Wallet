@@ -37,6 +37,9 @@ public:
     FileTypeEnum getCurrentSelectedFileType() const;
     void setCurrentSelectedFileType(FileTypeEnum fileType);
 
+bool getTransactionOngoing() const;
+void setTransactionOngoing(bool transactionOngoing);
+
 private:
     // Private constructor for singleton
     SelectionContext();
@@ -49,6 +52,7 @@ private:
     size_t currentFileIndex;
     std::string currentFilePath;
     FileTypeEnum currentSelectedFileType = FileTypeEnum::WALLET;
+    bool transactionOngoing = false;
 };
 
 } // namespace contexts
