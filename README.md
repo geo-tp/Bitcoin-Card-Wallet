@@ -68,7 +68,7 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
 
 ## Signing transactions in Electrum
 
-How to export, sign, and import the transaction in Electrum
+How to export the unsigned transation and import the signed transaction in Electrum
 
 [Electrum Wallet Official Website](https://electrum.org/)
 
@@ -85,7 +85,7 @@ How to export, sign, and import the transaction in Electrum
 
 ### Import Transactions
 
-1. Click on **"Tools"** from the main menu and **select your signed .psbt file**
+1. Go to **"Tools"** from the main menu, click on **"Load a transaction from file"** and **select your signed .psbt file**
 - ![](./images/electrum-tx4.png)
 
 ## Seed Import in Electrum
