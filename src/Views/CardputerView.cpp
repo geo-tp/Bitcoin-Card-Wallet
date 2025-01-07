@@ -102,7 +102,8 @@ void CardputerView::displaySelection(
             upperString = toUpperCase(selectionStrings[currentIndex]);
             Display->printf(upperString.c_str());
         } else { 
-            Display->printf(selectionStrings[currentIndex].c_str());
+            auto truncatedString = truncateString(selectionStrings[currentIndex], 24);
+            Display->printf(truncatedString.c_str());
         }
 
         if (showCurrency) {
@@ -431,7 +432,7 @@ void CardputerView::displayWalletValue(std::string description, std::string valu
     if (description == "Balance") {
         Display->setCursor(0, 39);
         Display->setTextSize(0.97);
-        limit = 85;
+        limit = 82;
     } else if (description == "Address") {
         Display->setCursor(0, 48);
         Display->setTextSize(1.2);
@@ -676,6 +677,74 @@ void CardputerView::displaySeedGeneralInfos() {
     Display->printf("Next  ->");
 }
 
+void CardputerView::displayRfidInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(43, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("About RFID");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(15, 46);
+    Display->printf("You can save your seed on tag");
+
+    // Text
+    Display->setCursor(17, 65);
+    Display->printf("To be able to sign transactions");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(8, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("You must have M5Stack RFID2");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
+void CardputerView::displayRfidTagInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(52, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("About tag");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(14, 46);
+    Display->printf("You must have a MIFARE 1K tag");
+
+    // Text
+    Display->setCursor(9, 65);
+    Display->printf("It will be saved in plain or encrypt");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(15, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("It must be blank to write on it");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
 void CardputerView::displaySeedLoadInfos() {
     Display->fillScreen(BACKGROUND_COLOR);
 
@@ -695,8 +764,8 @@ void CardputerView::displaySeedLoadInfos() {
     Display->printf("Seed is not saved on the device");
 
     // Text
-    Display->setCursor(18, 65);
-    Display->printf("To be able to sign transactions");
+    Display->setCursor(20, 65);
+    Display->printf("to be able to sign transactions");
     Display->setTextColor(PRIMARY_COLOR);
     Display->setCursor(24, 88);
     Display->setTextSize(TEXT_MEDIUM);
@@ -810,6 +879,24 @@ void CardputerView::displaySeedRestorationInfos() {
     Display->setTextSize(TEXT_MEDIUM);
     Display->setCursor(90, 115);
     Display->printf("Next  ->");
+}
+
+std::string CardputerView::truncateString(const std::string& input, size_t maxLength) {
+    const std::string ellipsis = "...";
+
+    if (input.length() <= maxLength) {
+        return input;
+    }
+
+    // Calcul char number each side
+    size_t halfLength = (maxLength - ellipsis.length()) / 2;
+
+    // Start of the fist string, end of the second
+    std::string firstPart = input.substr(0, halfLength);
+    std::string secondPart = input.substr(input.length() - halfLength);
+
+    // Concat with "..."
+    return firstPart + ellipsis + secondPart;
 }
 
 }

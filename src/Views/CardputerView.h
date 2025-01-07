@@ -53,8 +53,10 @@ public:
     static void displaySeedGeneralInfos();
     static void displaySdSaveGeneralInfos();
     static void displaySeedFormatGeneralInfos();
-    void displaySeedLoadInfos();
-    void displaySeedRestorationInfos();
+    static void displaySeedLoadInfos();
+    static void displaySeedRestorationInfos();
+    static void displayRfidTagInfos();
+    static void displayRfidInfos();
     static void displayPlugRfid();
     static void drawBitcoinIcon(int x, int y);
 
@@ -66,6 +68,7 @@ private:
     static void clearTopBar();
     static std::string toUpperCase(const std::string& text);
     static float getTextCenterOffset(const std::string& text, int16_t width, float sizeText);
+    static std::string truncateString(const std::string& input, size_t maxLength);
 };
 
 }
