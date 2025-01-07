@@ -39,7 +39,7 @@ std::vector<uint8_t> RfidService::readBlock(uint8_t blockAddr) {
     uint8_t size = buffer.size();
 
     if (mfrc522.MIFARE_Read(blockAddr, buffer.data(), &size) != MFRC522::STATUS_OK) {
-        throw std::runtime_error("Failed to read block.");
+        return {};
     }
 
     buffer.resize(16); // Keep only the 16 bytes of data
@@ -48,7 +48,7 @@ std::vector<uint8_t> RfidService::readBlock(uint8_t blockAddr) {
 
 bool RfidService::writeBlock(uint8_t blockAddr, const std::vector<uint8_t>& data) {
     if (data.size() != 16) {
-        throw std::invalid_argument("Data block must be exactly 16 bytes.");
+        return false;
     }
 
     auto status = mfrc522.MIFARE_Write(blockAddr, const_cast<byte*>(data.data()), 16);
@@ -57,7 +57,7 @@ bool RfidService::writeBlock(uint8_t blockAddr, const std::vector<uint8_t>& data
 
 bool RfidService::verifyBlock(uint8_t blockAddr, const std::vector<uint8_t>& expectedData) {
     if (expectedData.size() != 16) {
-        throw std::invalid_argument("Expected data must be exactly 16 bytes.");
+        return false;
     }
 
     // Read bloc
@@ -126,7 +126,7 @@ bool RfidService::saveMetadata(uint8_t seedLength) {
 std::vector<uint8_t> RfidService::getPrivateKey32() {
     // Auth des blocs contenant la clé
     if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
-        throw std::runtime_error("Failed to authenticate blocks for key.");
+        return {};
     }
 
     // Lecture 16 bytes blocs
@@ -197,7 +197,7 @@ std::vector<uint8_t> RfidService::getPrivateKey() {
 std::string RfidService::getSalt() {
     // Auth du bloc contenant le salt
     if (!authenticateBlock(blockSalt)) {
-        throw std::runtime_error("Failed to authenticate block for salt.");
+        return "";
     }
 
     // Lecture du bloc 6
@@ -212,7 +212,7 @@ std::string RfidService::getSalt() {
 
 bool RfidService::saveChecksum(const std::vector<uint8_t>& signature) {
     if (signature.size() != 16) {
-        throw std::invalid_argument("Signature block must be 16 bytes.");
+        return false;
     }
 
     return authenticateBlock(blockSign) && 
@@ -222,7 +222,7 @@ bool RfidService::saveChecksum(const std::vector<uint8_t>& signature) {
 
 std::vector<uint8_t> RfidService::getCheckSum() {
     if (!authenticateBlock(blockSign)) {
-        throw std::runtime_error("Failed to authenticate block for signature.");
+        return {};
     }
 
     return readBlock(blockSign);
@@ -230,7 +230,7 @@ std::vector<uint8_t> RfidService::getCheckSum() {
 
 uint8_t RfidService::getMetadata() {
     if (!authenticateBlock(blockMetadata)) {
-        throw std::runtime_error("Failed to authenticate metadata block.");
+        return 0;
     }
 
     auto metadata = readBlock(blockMetadata);
