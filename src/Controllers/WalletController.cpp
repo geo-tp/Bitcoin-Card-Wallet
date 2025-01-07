@@ -89,8 +89,8 @@ void WalletController::handleWalletInformationSelection() {
             break;
 
         case WalletInformationEnum::SIGNATURE:
-
             auto selectedWallet = selectionContext.getCurrentSelectedWallet();
+            selectionContext.setTransactionOngoing(true);
             if(selectedWallet.getMnemonic().empty()) {
                 selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SEED);
             } else {
