@@ -92,13 +92,19 @@ bool FileBrowserManager::manageTransactionFile(const std::string& currentPath) {
         sdService.writeBinaryFile((parent + "/" + baseFileName + "-signed.psbt").c_str(), signedTransactionBytes);
         removeCachedDirectoryElement(parent); // new sign.psbt in it, remove to refetch
         display.displaySubMessage("Sign saved on SD", 40, 3000);
+        
+        // Check if user want to sign another tx
+        auto signConfirmation = confirmationSelection.select("Sign another tx ?");
+        if (!signConfirmation) {
+            // Go back to portfolio
+            selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+            selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET);
+            selectionContext.setTransactionOngoing(false);
+            return true;
+        }
 
-        // Contexts
-        selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
-        selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET);
-        selectionContext.setTransactionOngoing(false);
+        return false;
 
-        return true;
     } 
 
     confirmationSelection.select("Unsupported file");
