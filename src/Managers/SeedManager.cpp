@@ -86,14 +86,14 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
     mnemonicWords.reserve(wordCount);
     
     // Get each word
-    // auto mnemonic = manageMnemonicWrite(wordCount);
-    // if (mnemonic.empty()) {
-    //   display.displaySubMessage("Invalid mnemonic", 41, 2000);
-    //   return false;
-    // }
+    auto mnemonic = manageMnemonicWrite(wordCount);
+    if (mnemonic.empty()) { // invalid mnemonic will return empty object
+      display.displaySubMessage("Invalid mnemonic", 41, 2000);
+      return false;
+    }
 
     // Convert
-    auto mnemonicString = "dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility";
+    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
     auto mnemonicWordList = cryptoService.mnemonicStringToWordList(mnemonicString);
     auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
 
@@ -133,20 +133,47 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
 
     sdService.close(); // SD card stop
     
-
+    // Go to portfolio
+    selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
     return true;
 }
 
 std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     // Get the words from user
     auto mnemonic = manageMnemonicWrite(wordCount);
-    if (mnemonic.empty()) {
+    if (mnemonic.empty()) { // not valid mnemonic will return empty object
         display.displaySubMessage("Invalid mnemonic", 41, 2000);
         return {};
     }
 
+    // At this point mnemonic is valid
     display.displayTopBar("Restore seed", false, false, true, 5);
     display.displaySubMessage("Valid mnemonic", 45, 2000);
+
+    // Get Wallet
+    auto wallet = selectionContext.getCurrentSelectedWallet();
+
+    // Get seed passphrase
+    auto passphrase = managePassphrase();
+
+    // Derive PublicKey to check if seed match
+    display.displaySubMessage("Loading", 83);
+    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
+    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
+    if (publicKey.toString().c_str() != wallet.getPublicKey()) {
+      display.displaySubMessage("seed/wallet mismatch", 18, 3000);
+      return {};
+    }
+
+    // Update
+    wallet.setPassphrase(passphrase);
+    wallet.setMnemonic(mnemonicString);
+    selectionContext.setCurrentSelectedWallet(wallet);
+
+    // Go to file browser
+    selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
+    selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
+    display.displaySubMessage("Select xpub psbt file", 28, 3000);
 
     sdService.close(); // SD card stop
     
@@ -160,7 +187,7 @@ bool SeedManager::manageRfidSeedSignature() {
 
     // Get the private key from tag
     auto privateKey = manageRfidRead();
-    if (privateKey.size() != 32) {return false;} // user hits return
+    if (privateKey.empty()) {return false;} // user hits return
 
     // Convert to mnemonic 24 words
     auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
@@ -170,22 +197,37 @@ bool SeedManager::manageRfidSeedSignature() {
       return false;
     }
 
-    // Valid seed
-    display.displaySubMessage("Seed is valid", 63, 1000);
-    display.displaySubMessage("First word: " + mnemonic[0], 38, 3000);
-
-    display.displaySubMessage("Loading", 83);
-    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-
     // Get Wallet
     auto wallet = selectionContext.getCurrentSelectedWallet();
+
+    // Get seed passphrase
+    auto passphrase = managePassphrase();
+    wallet.setPassphrase(passphrase);
+
+    // Derive PublicKey to check if seed match
+    display.displaySubMessage("Loading", 83);
+    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
+    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
+    if (publicKey.toString().c_str() != wallet.getPublicKey()) {
+      display.displaySubMessage("seed/wallet mismatch", 18, 4000);
+      selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+      return false;
+    }
+
+    // Valid seed
+    display.displaySubMessage("Seed is valid", 63, 1000);
+    display.displaySubMessage("1st word: " + mnemonic[0], 49, 3000);
+
+    // Set mnemonic to wallet
     wallet.setMnemonic(mnemonicString);
     selectionContext.setCurrentSelectedWallet(wallet);
 
+    // Go to file browser
+    display.displaySubMessage("Loading", 83);
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
     selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
 
-    display.displaySubMessage("Select psbt file", 50, 3000);
+    display.displaySubMessage("Select xpub psbt file", 28, 3000);
 
     return true;
 }
@@ -197,15 +239,15 @@ void SeedManager::manageRfidSeedRestoration() {
 
     // Get the private key from tag
     auto privateKey = manageRfidRead();
-    if (privateKey.size() != 32) {return;} // user hits return
+    if (privateKey.empty()) {return;} // user hits return
 
-    // Convert to mnemonic 24 words
+    // Convert to mnemonic words
     auto mnemonic = cryptoService.privateKeyToMnemonic(privateKey);
 
     // Bad seed if empty
     if (!mnemonic.empty()) {
       display.displaySubMessage("Seed is valid", 63, 1000);
-      display.displaySubMessage("First word: " + mnemonic[0], 38, 3000);
+      display.displaySubMessage("1st word: " + mnemonic[0], 47, 3000);
     }
 
     // Passphrase
