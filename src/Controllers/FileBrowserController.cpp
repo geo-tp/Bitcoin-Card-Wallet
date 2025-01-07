@@ -49,7 +49,7 @@ void FileBrowserController::handleFileSelection() {
 
     if (selectionContext.getCurrentSelectedMode() != SelectionModeEnum::PORTFOLIO) {
         selectionContext.setIsModeSelected(false); // go back to menu
-        selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET) // default
+        selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET); // default
         selectionContext.setTransactionOngoing(false);
     }
 }

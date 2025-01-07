@@ -12,6 +12,10 @@ void SeedController::handleSeedInformations() {
   manager.input.waitPress();
   manager.display.displaySeedFormatGeneralInfos();
   manager.input.waitPress();
+  manager.display.displayRfidInfos();
+  manager.input.waitPress();
+  manager.display.displayRfidTagInfos();
+  manager.input.waitPress();
 
   selectionContext.setIsModeSelected(false); // go back to menu
 }
@@ -49,10 +53,11 @@ void SeedController::handleSeedRestoration() {
           break;
 
       case SeedRestorationModeEnum::SD:
-          selectionContext.setCurrentSelectedFileType(FileTypeEnum::SEED);
-          selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD); // sd file browser
+            manager.display.displaySubMessage("12 or 24 words txt file", 19, 3500);
+            selectionContext.setCurrentSelectedFileType(FileTypeEnum::SEED);
+            selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD); // sd file browser
           break;
-          
+
       case SeedRestorationModeEnum::WORDS_12:
           if(transactionOngoing) {
             manager.manageMnemonicLoading(12);
