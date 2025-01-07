@@ -52,6 +52,9 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
 ## Saving the Seed Using RFID
 When you create or restore a wallet you have the option **to save your seed** on an RFID tag (optionnal). **This does not replace the necessity of writing down the words manually.**
 
+
+**NOTE: You can save an existing wallet on an RFID tag** by using the **"RESTORE SEED"** option and write your seed words. **It will prompt you to save your seed on the RFID tag** during the restoration process.
+
 ### Prerequisites
 
 - You have the **M5Stack RFID2 module.**
