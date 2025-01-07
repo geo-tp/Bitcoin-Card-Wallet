@@ -5,7 +5,7 @@ namespace selections {
 ValueSelection::ValueSelection(CardputerView& display, CardputerInput& input)
     : display(display), input(input) {}
 
-void ValueSelection::select(const std::string& description, const std::string& value, UsbService& usbService) {
+void ValueSelection::select(const std::string& description, const std::string& value, UsbService& usbService, LedService& ledService) {
     char key = KEY_NONE;
     bool firstOkPress = true;
 
@@ -17,11 +17,13 @@ void ValueSelection::select(const std::string& description, const std::string& v
 
         switch (key) {
             case KEY_OK: // Send USB
+                ledService.showLed();
                 if (firstOkPress) {
                     delay(800); // wait to be sure it's initialized
                     firstOkPress = false;
                 }
                 usbService.sendString(value);
+                ledService.clearLed();
                 break;
             case 'q': // QR Code
                 display.setBrightness(50);

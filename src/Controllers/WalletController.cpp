@@ -67,7 +67,8 @@ void WalletController::handleWalletInformationSelection() {
             manager.valueSelection.select(
                 "Balance", 
                 globalContext.getBitcoinBalanceUrl() + selectedWallet.getPublicKey(), 
-                manager.usbService
+                manager.usbService,
+                manager.ledService
             );
             break;
 
@@ -75,7 +76,8 @@ void WalletController::handleWalletInformationSelection() {
             manager.valueSelection.select(
                 "Address", 
                 selectedWallet.getAddress(), 
-                manager.usbService
+                manager.usbService,
+                manager.ledService
             );
             break;
 
@@ -83,7 +85,8 @@ void WalletController::handleWalletInformationSelection() {
             manager.valueSelection.select(
                 "Public Key", 
                 selectedWallet.getPublicKey(), 
-                manager.usbService
+                manager.usbService,
+                manager.ledService
             );
             break;
 
