@@ -39,8 +39,10 @@ public:
     bool manageWalletFile(const std::string& currentPath);
     bool manageTransactionFile(const std::string& currentPath);
     bool verifySeedFile(const std::string& fileContent);
-    bool manageSeedFile(const std::string& currentPath);
+    bool manageSeedRestorationFile(const std::string& currentPath);
+    bool manageSeedLoadingFile(const std::string& currentPath);
     std::vector<std::string> getCachedDirectoryElements(const std::string& path);
+    void removeCachedDirectoryElement(const std::string& path);
 };
 
 } // namespace managers

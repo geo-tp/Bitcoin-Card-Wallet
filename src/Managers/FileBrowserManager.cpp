@@ -11,7 +11,11 @@ bool FileBrowserManager::loadFile(std::string currentPath, FileTypeEnum selected
         case FileTypeEnum::WALLET:
             return manageWalletFile(currentPath);
         case FileTypeEnum::SEED:
-            return manageSeedFile(currentPath);
+            if (selectionContext.getTransactionOngoing()) {
+                return manageSeedLoadingFile(currentPath);
+            } else {
+                return manageSeedRestorationFile(currentPath);
+            }
         case FileTypeEnum::TRANSACTION:
             return manageTransactionFile(currentPath);
     }
@@ -44,6 +48,7 @@ bool FileBrowserManager::manageWalletFile(const std::string& currentPath) {
         if (verifyWalletFile(fileContent)) {
             walletService.loadAllWallets(fileContent);
             selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+            selectionContext.setIsWalletSelected(false);
             globalContext.setFileWalletPath(currentPath);
             display.displaySubMessage("Wallets loaded", 50, 1000);
             return true;
@@ -61,23 +66,34 @@ bool FileBrowserManager::manageTransactionFile(const std::string& currentPath) {
     auto fileExt = extractFileExtension(fileName);
 
     if (fileExt == "psbt") {
-        display.displayTopBar("Signing", false, false, true);
+        display.displayTopBar("SIGNING", false, false, true);
         display.displaySubMessage("Loading", 83);
 
+        // Read file
         auto fileContent = sdService.readBinaryFile(currentPath.c_str());
+
+        // Convert and get signature
         auto psbt = cryptoService.convertPSBTBinaryToBase64(fileContent);
         auto mnemonic = selectionContext.getCurrentSelectedWallet().getMnemonic();
         auto signedTransactionBytes = manageBitcoinSignature(psbt, mnemonic);
-
+        
+        // Bad sign
         if (signedTransactionBytes.empty()) {
             display.displaySubMessage("Failed to sign", 60, 2000);
             return false;
-        } 
+        }
+
+        // Sign success, means it's the correct seed for the correct transaction
+        display.displaySubMessage("Successefully signed", 25, 2000);
         
+        // SD Save
         auto parent = getParentDirectory(currentPath);
         std::string baseFileName = fileName.substr(0, fileName.find_last_of('.')); // remove ext .psbt
         sdService.writeBinaryFile((parent + "/" + baseFileName + "-signed.psbt").c_str(), signedTransactionBytes);
-        display.displaySubMessage("Transaction signed", 33, 3000);
+        removeCachedDirectoryElement(parent); // new sign.psbt in it, remove to refetch
+        display.displaySubMessage("Sign saved on SD", 40, 3000);
+
+        // Contexts
         selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
         selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET);
         selectionContext.setTransactionOngoing(false);
@@ -89,7 +105,52 @@ bool FileBrowserManager::manageTransactionFile(const std::string& currentPath) {
     return false;
 }
 
-bool FileBrowserManager::manageSeedFile(const std::string& currentPath) {
+bool FileBrowserManager::manageSeedLoadingFile(const std::string& currentPath) {
+    auto fileName = extractFilename(currentPath);
+    auto fileExt = extractFileExtension(fileName);
+    std::string passphrase;
+
+    if (fileExt == "txt") {
+        auto fileContent = sdService.readFile(currentPath.c_str());
+        if (verifySeedFile(fileContent)) {
+            auto mnemonicString = fileContent;
+            auto mnemonicWordList = cryptoService.mnemonicStringToWordList(fileContent);
+            auto validation = cryptoService.verifyMnemonic(mnemonicWordList);
+
+            if (!validation) {
+                display.displaySubMessage("Invalid mnemonic", 41, 2000);
+                return false;
+            }
+
+            display.displayTopBar("Restore Seed", false, false, true, 5);
+            display.displaySubMessage("Valid mnemonic", 45, 2000);
+
+            // Derive PublicKey and create segwit BTC address
+            display.displaySubMessage("Loading", 83);
+            auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
+            auto address = cryptoService.generateBitcoinAddress(publicKey);
+            auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
+            display.displaySubMessage("Seed loaded", 65, 2000);
+
+            // Get Wallet
+            auto wallet = selectionContext.getCurrentSelectedWallet();
+            wallet.setMnemonic(mnemonicString);
+            selectionContext.setCurrentSelectedWallet(wallet);
+
+            // Go get pbst file
+            selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
+            selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
+            return true;
+        } else {
+            confirmationSelection.select("    Invalid seed");
+        }
+    } else {
+        confirmationSelection.select("Unsupported file");
+    }
+    return false;
+}
+
+bool FileBrowserManager::manageSeedRestorationFile(const std::string& currentPath) {
     auto fileName = extractFilename(currentPath);
     auto fileExt = extractFileExtension(fileName);
     std::string passphrase;
@@ -176,5 +237,14 @@ std::vector<std::string> FileBrowserManager::getCachedDirectoryElements(const st
     }
     return elements;
 }
+
+void FileBrowserManager::removeCachedDirectoryElement(const std::string& path) {
+    auto it = cachedDirectoryElements.find(path);
+    if (it != cachedDirectoryElements.end()) {
+        // Erase
+        cachedDirectoryElements.erase(it);
+    }
+}
+
 
 } // namespace managers
