@@ -46,20 +46,25 @@ public:
     std::vector<uint8_t> getPrivateKey();
     bool saveSalt(const std::string& salt);
     std::string getSalt();
-    std::vector<uint8_t> getSignature();
-    bool saveSignature(const std::vector<uint8_t>& signature);
+    std::vector<uint8_t> getCheckSum();
+    bool saveChecksum(const std::vector<uint8_t>& signature);
+    uint8_t getMetadata();
+    bool saveMetadata(uint8_t seedLength);
     bool lockSectorAsReadOnly(uint8_t sector);
     void end();
 
 private:
+    std::vector<uint8_t> getPrivateKey32();
+    std::vector<uint8_t> getPrivateKey16();
     MFRC522 mfrc522;
     GlobalContext& globalContext = GlobalContext::getInstance();
 
     // Block Number
-    int blockSalt         = globalContext.getBlockSalt();
+    int blockSalt         = globalContext.getBlockSalt(); // encryption salt
     int blockPrivateKey1  = globalContext.getBlockPrivateKey1();
     int blockPrivateKey2  = globalContext.getBlockPrivateKey2();
-    int blockSign         = globalContext.getBlockSign();
+    int blockSign         = globalContext.getBlockSign(); // checksum for decryption
+    int blockMetadata     = globalContext.getBlockMetadata(); // metadata for seed length
 
     // Pin and address
     int sda = globalContext.getSdaPin();

@@ -103,7 +103,7 @@ std::vector<uint8_t> CryptoService::generatePrivateKey(size_t keySize) {
 }
 
 std::vector<std::string> CryptoService::privateKeyToMnemonic(const std::vector<uint8_t>& privateKey) {
-    // Convert a 32 bytes private key into a vector of 24 words
+    // Convert a private key into a vector of words
     auto entropy = std::vector<uint8_t>(privateKey.begin(), privateKey.end());
     auto mnemonic = BIP39::create_mnemonic(entropy, BIP39::language::en);
     auto validation = BIP39::valid_mnemonic(mnemonic, BIP39::language::en);
@@ -378,8 +378,8 @@ std::vector<uint8_t> CryptoService::decryptAES(const std::vector<uint8_t>& encry
 }
 
 std::vector<uint8_t> CryptoService::encryptPrivateKeyWithPassphrase(const std::vector<uint8_t>& privateKey, const std::string& passphrase, const std::string& salt) {
-    if (privateKey.size() != 32) {
-        throw std::invalid_argument("Private key size must be 32 bytes.");
+    if (privateKey.size() != 16 && privateKey.size() != 32) {
+        throw std::invalid_argument("Private key size must be 16 or 32 bytes.");
     }
 
     // Derive key with passphrase and salt
@@ -406,6 +406,10 @@ std::vector<uint8_t> CryptoService::decryptPrivateKeyWithPassphrase(const std::v
 }
 
 std::pair<std::vector<uint8_t>, std::vector<uint8_t>> CryptoService::splitVector(const std::vector<uint8_t>& input) {
+    if (input.size() == 16) {
+        return {input, {}}; // we dont need split for 16 bytes
+    }
+
     if (input.size() != 32) {
         throw std::invalid_argument("Input vector must be 32 bytes.");
     }

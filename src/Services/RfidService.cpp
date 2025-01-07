@@ -68,28 +68,35 @@ bool RfidService::verifyBlock(uint8_t blockAddr, const std::vector<uint8_t>& exp
 }
 
 bool RfidService::savePrivateKey(const std::vector<uint8_t>& data1, const std::vector<uint8_t>& data2) {
-    if (data1.size() != 16 || data2.size() != 16) {
-        throw std::invalid_argument("Both data blocks must be exactly 16 bytes.");
-    }
-
-    if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
+    if (data1.size() != 16) {
         return false;
     }
 
-    if (!writeBlock(blockPrivateKey1, data1) || !writeBlock(blockPrivateKey2, data2)) {
+    if (!authenticateBlock(blockPrivateKey1)) {
         return false;
     }
 
-    if (!verifyBlock(blockPrivateKey1, data1) || !verifyBlock(blockPrivateKey2, data2)) {
+    if (!writeBlock(blockPrivateKey1, data1) || !verifyBlock(blockPrivateKey1, data1)) {
         return false;
     }
 
-    return true; // success
-}
+    if (data2.empty()) {
+        return true; // seed 16 bytes
+    }
 
-void RfidService::end() {
-    mfrc522.PICC_HaltA();
-    mfrc522.PCD_StopCrypto1();
+    if (data2.size() != 16) {
+        return false;
+    }
+
+    if (!authenticateBlock(blockPrivateKey2)) {
+        return false;
+    }
+
+    if (!writeBlock(blockPrivateKey2, data2) || !verifyBlock(blockPrivateKey2, data2)) {
+        return false;
+    }
+
+    return true;
 }
 
 bool RfidService::saveSalt(const std::string& salt) {
@@ -105,23 +112,86 @@ bool RfidService::saveSalt(const std::string& salt) {
            verifyBlock(blockSalt, saltData);
 }
 
-std::vector<uint8_t> RfidService::getPrivateKey() {
-    // Auth des blocs contenant la clé
-    if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
-        throw std::runtime_error("Failed to authenticate blocks for encrypted key.");
+bool RfidService::saveMetadata(uint8_t seedLength) {
+    if (!authenticateBlock(blockMetadata)) {
+        return false;
     }
 
-    // Lecture des blocs
+    std::vector<uint8_t> metadata(16, 0);
+    metadata[0] = seedLength;
+
+    return writeBlock(blockMetadata, metadata) && verifyBlock(blockMetadata, metadata);
+}
+
+std::vector<uint8_t> RfidService::getPrivateKey32() {
+    // Auth des blocs contenant la clé
+    if (!authenticateBlock(blockPrivateKey1) || !authenticateBlock(blockPrivateKey2)) {
+        throw std::runtime_error("Failed to authenticate blocks for key.");
+    }
+
+    // Lecture 16 bytes blocs
     auto part1 = readBlock(blockPrivateKey1);
     auto part2 = readBlock(blockPrivateKey2);
 
-    // Combinaison des deux parties de la clé
+    // Combine key
     std::vector<uint8_t> encryptedKey;
     encryptedKey.reserve(32);
     encryptedKey.insert(encryptedKey.end(), part1.begin(), part1.end());
     encryptedKey.insert(encryptedKey.end(), part2.begin(), part2.end());
 
     return encryptedKey;
+}
+
+std::vector<uint8_t> RfidService::getPrivateKey16() {
+    if (!authenticateBlock(blockPrivateKey1)) {
+        return {};
+    }
+
+    // Lecture du bloc 16 bytes
+    auto part1 = readBlock(blockPrivateKey1);
+
+    return part1;
+}
+
+std::vector<uint8_t> RfidService::getPrivateKey() {
+    if (!authenticateBlock(blockMetadata)) {
+        return {};
+    }
+
+    auto metadata = readBlock(blockMetadata);
+    uint8_t keyType = metadata[0]; // 0x10 16 bytes, 0x20 pour 32 bytes
+
+    if (!authenticateBlock(blockPrivateKey1)) {
+        return {};
+    }
+
+    auto part1 = readBlock(blockPrivateKey1);
+
+    // 16 bytes seed
+    if (keyType == 0x10) {
+        return part1;
+    }
+
+    // 32 bytes seed
+    if (keyType == 0x20) {
+        if (!authenticateBlock(blockPrivateKey2)) {
+            return {};
+        }
+
+        auto part2 = readBlock(blockPrivateKey2);
+        if (part1.size() != 16 || part2.size() != 16) {
+            return {};
+        }
+
+        std::vector<uint8_t> encryptedKey;
+        encryptedKey.reserve(32);
+        encryptedKey.insert(encryptedKey.end(), part1.begin(), part1.end());
+        encryptedKey.insert(encryptedKey.end(), part2.begin(), part2.end());
+
+        return encryptedKey;
+    }
+
+    return {};
 }
 
 std::string RfidService::getSalt() {
@@ -140,7 +210,7 @@ std::string RfidService::getSalt() {
     return salt;
 }
 
-bool RfidService::saveSignature(const std::vector<uint8_t>& signature) {
+bool RfidService::saveChecksum(const std::vector<uint8_t>& signature) {
     if (signature.size() != 16) {
         throw std::invalid_argument("Signature block must be 16 bytes.");
     }
@@ -150,12 +220,21 @@ bool RfidService::saveSignature(const std::vector<uint8_t>& signature) {
            verifyBlock(blockSign, signature);
 }
 
-std::vector<uint8_t> RfidService::getSignature() {
+std::vector<uint8_t> RfidService::getCheckSum() {
     if (!authenticateBlock(blockSign)) {
         throw std::runtime_error("Failed to authenticate block for signature.");
     }
 
     return readBlock(blockSign);
+}
+
+uint8_t RfidService::getMetadata() {
+    if (!authenticateBlock(blockMetadata)) {
+        throw std::runtime_error("Failed to authenticate metadata block.");
+    }
+
+    auto metadata = readBlock(blockMetadata);
+    return metadata[0]; // seed length
 }
 
 bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
@@ -166,17 +245,17 @@ bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
         return false;
     }
 
-    // Définir les nouvelles clés ici
+    // Définir les nouvelles clés
     MFRC522::MIFARE_Key keyA = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
     MFRC522::MIFARE_Key keyB = {{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
 
     // Définir les bits d'acces pour lecture seule
     byte accessBits[3] = {0b11111100, 0b00001111, 0b00000000};
 
-    // Construire le nouveau contenu du secteur trailer
+    // Construire le nouveau contenu du secteur
     byte dataBlock[16];
     memcpy(dataBlock, keyA.keyByte, 6); // Clé A
-    memcpy(dataBlock + 6, accessBits, 3); // Bits d'accès
+    memcpy(dataBlock + 6, accessBits, 3); // acces
     dataBlock[9] = 0x00; // Byte utilisateur (optionnel)
     memcpy(dataBlock + 10, keyB.keyByte, 6); // Clé B
 
@@ -185,12 +264,17 @@ bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
         return false;
     }
 
-    // Vérification de l'écriture
+    // Verif secteur
     if (!verifyBlock(sectorTrailer, std::vector<uint8_t>(dataBlock, dataBlock + 16))) {
         return false;
     }
 
     return true;
+}
+
+void RfidService::end() {
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
 }
 
 } // namespace services

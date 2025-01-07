@@ -5,6 +5,7 @@
 #include <USB.h>
 #include <USBHIDKeyboard.h> // custom from local lib
 #include <string>
+#include <M5Cardputer.h>
 
 namespace services {
 
@@ -13,6 +14,7 @@ public:
     UsbService();
     void begin();
     void sendString(const std::string& text);
+    void sendChunkedString(const std::string& data, size_t chunkSize=128, unsigned long delayBetweenChunks=50);
     bool isReady() const;
     void setLayout(const uint8_t* newLayout);
 
