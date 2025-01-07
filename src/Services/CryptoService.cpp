@@ -437,8 +437,7 @@ std::vector<uint8_t> CryptoService::generateChecksum(const std::vector<uint8_t>&
 std::string CryptoService::signBitcoinTransactions(const std::string& psbtBase64, const std::string& mnemonic, const std::string& passphrase) {
     // Derive key
     HDPrivateKey rootKey(mnemonic.c_str(), passphrase.c_str());
-    HDPrivateKey accountKey = rootKey.derive("m/84'/0'/0'/");
-
+    
     // Charger la PSBT
     PSBT psbt;
     size_t bytesParsed = psbt.parseBase64(psbtBase64.c_str());
