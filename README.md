@@ -66,6 +66,28 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
 #### Example of my segwit bitcoin address generated on the cardputer
 `bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr`
 
+## Signing transactions in Electrum
+
+How to export, sign, and import the transaction in Electrum
+
+[Electrum Wallet Official Website](https://electrum.org/)
+
+### Export Transactions
+
+1. Go to **"Send"**, prepare your transaction (address, amount) and click **"Pay"**
+- ![](./images/electrum-tx1.png)
+2. Select the amount of fee and click **"Preview"**
+- ![](./images/electrum-tx2.png)
+3. You can see your transaction resume, click on "**Share**"
+- ![](./images/electrum-tx3.png)
+5. Check **"For hardawre device: include xpub"** and click **"Save to file"**.
+- ![](./images/electrum-tx5.png)
+
+### Import Transactions
+
+1. Click on **"Tools"** from the main menu and **select your signed .psbt file**
+- ![](./images/electrum-tx4.png)
+
 ## Seed Import in Electrum
 
 Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to restore your wallet:
