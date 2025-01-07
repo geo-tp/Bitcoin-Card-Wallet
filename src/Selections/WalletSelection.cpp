@@ -11,8 +11,7 @@ Wallet WalletSelection::select(std::vector<Wallet> wallets) {
     }
 
     this->wallets = wallets; // Stocker la liste locale
-    selectionIndex = 0;
-    lastIndex = 255;
+    lastIndex = -1;
 
     display.displayTopBar("Portfolio", true, false, true, 10);
     
