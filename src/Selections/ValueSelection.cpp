@@ -7,6 +7,7 @@ ValueSelection::ValueSelection(CardputerView& display, CardputerInput& input)
 
 void ValueSelection::select(const std::string& description, const std::string& value, UsbService& usbService) {
     char key = KEY_NONE;
+    bool firstOkPress = true;
 
     display.displayTopBar(description, true, false, false, 20);
     display.displayWalletValue(description, value);
@@ -16,6 +17,10 @@ void ValueSelection::select(const std::string& description, const std::string& v
 
         switch (key) {
             case KEY_OK: // Send USB
+                if (firstOkPress) {
+                    delay(800); // wait to be sure it's initialized
+                    firstOkPress = false;
+                }
                 usbService.sendString(value);
                 break;
             case 'q': // QR Code

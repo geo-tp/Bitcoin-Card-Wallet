@@ -50,10 +50,8 @@ void UsbService::sendChunkedString(const std::string& data, size_t chunkSize, un
         // Send the chunk
         sendString(chunk);
 
-        // Update the sent length
+        // Delay
         sentLength += currentChunkSize;
-
-        // Delay between chunks to prevent USB buffer overflow
         delay(delayBetweenChunks);
     }
 }
