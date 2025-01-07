@@ -16,16 +16,9 @@
 - <b>M5Burner</b> : Search into M5CARDPUTER section and burn it
 - <b>Old school</b> : Build or take the firmware.bin from the [github release](https://github.com/geo-tp/Bitcoin-Card-Wallet/releases) and flash it
 
-## How to use
+## Saving Wallets Using the SD Card
 
-1. Navigate to the **"NEW WALLET"** option.
-- ![](./images/menu.jpg)
-2. Record the displayed mnemonic safely (on paper, **not digitally**), you can choose a passphrase.
-- ![](./images/seed.jpg)
-3. Use the wallet's menu to derive and display your **Bitcoin address, balance and xpub key.**
-- ![](./images/wallet.jpg)
-
-**NOTE :** An SD card is require to save **wallets publics informations** and load them at the launch of the application. Only public informations about your wallets are stored on the SD card, **SAVE YOUR SEED** or you will lose access to your bitcoin wallet.
+An SD card is require to save **wallets publics informations** and load them at the launch of the application. Only public informations about your wallets are stored on the SD card, **SAVE YOUR SEED** or you will lose access to your bitcoin wallet.
 
 The following informations will be stored on SD card in the file `bitcoin-card-wallets.txt` : 
 
@@ -92,22 +85,15 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 **Note:** Storing your seed on an SD card is **not secure and increases the risk of theft or accidental exposure**.
 
-## BIP39 Mnemonic Support:
-  - The private key is converted into a **BIP39-compliant** mnemonic phrase.
-  - The wallet generates seeds in compliance with the BIP39 standard.
-  - Supports **24-word mnemonics**.
-  - Mnemonics can be restored in other **BIP39-compatible wallets** (Electrum for example).
+### Step-by-Step Instructions
 
-#### Example of a 24 words BIP39 Mnemonic seed generated on the cardputer
-`dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility`
+1. Load your wallets and select the one you want to sign with.
 
-## Native SegWit Support:
-  - Derives **Native SegWit** Bitcoin addresses by default.
-  - The wallet uses the **BIP84 standard to derive keys**, following the path m/84'/0'/0' for Bitcoin mainnet.
-  - The **xpub key (extended public key) is generated in a standardized format** and allows the derivation of an unlimited number of public addresses
+2. Load your seed using your preferred method.
 
-#### Example of my segwit bitcoin address generated on the cardputer
-`bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr`
+3. Select the **.psbt transaction file (with xpubs, see Electrum section)**, add your passphrase if necessary, and the Cardputer will sign it.
+
+**NOTE : The signed transaction file will be saved on the SD card with the suffix "-signed"** in the same folder as unsigned file, and you can then import it.
 
 ## Transactions in Electrum
 
@@ -157,6 +143,23 @@ Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to 
 The passphrase is an optional feature that adds an extra layer of security to your wallet. When set, it is combined with your BIP39 seed to generate a unique set of keys. 
 
 **Without the correct passphrase, the wallet cannot access the same addresses or funds**, so it is crucial to remember or securely store it.
+
+## BIP39 Mnemonic Support:
+  - The private key is converted into a **BIP39-compliant** mnemonic phrase.
+  - The wallet generates seeds in compliance with the BIP39 standard.
+  - Supports **24-word mnemonics**.
+  - Mnemonics can be restored in other **BIP39-compatible wallets** (Electrum for example).
+
+#### Example of a 24 words BIP39 Mnemonic seed generated on the cardputer
+`dragon reform deer execute fee tattoo wall barely loan jealous require student pipe bamboo solve toilet latin bargain escape spray scan stay father utility`
+
+## Native SegWit Support:
+  - Derives **Native SegWit** Bitcoin addresses by default.
+  - The wallet uses the **BIP84 standard to derive keys**, following the path m/84'/0'/0' for Bitcoin mainnet.
+  - The **xpub key (extended public key) is generated in a standardized format** and allows the derivation of an unlimited number of public addresses
+
+#### Example of my segwit bitcoin address generated on the cardputer
+`bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr`
 
 ## Random Number Generator
 

@@ -185,14 +185,14 @@ bool FileBrowserManager::manageSeedRestorationFile(const std::string& currentPat
             auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
             display.displaySubMessage("Seed loaded", 65, 2000);
 
+            // Save seed on a RFID tag
+            manageRfidSave(privateKey);
+
             // Prompt for a wallet name
             auto walletName = stringPromptSelection.select("Enter wallet name");
 
             // Create Wallet
             Wallet wallet(walletName, publicKey.toString().c_str(), address, mnemonicString);
-
-            // Save seed on a RFID tag
-            manageRfidSave(privateKey);
 
             // Save wallet to SD if any
             display.displaySubMessage("Loading", 83);

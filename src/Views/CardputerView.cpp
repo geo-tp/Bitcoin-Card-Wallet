@@ -692,7 +692,7 @@ void CardputerView::displayRfidInfos() {
     // Sub title
     Display->setTextSize(TEXT_SMALL);
     Display->setTextColor(TEXT_COLOR);
-    Display->setCursor(15, 46);
+    Display->setCursor(17, 46);
     Display->printf("You can save your seed on tag");
 
     // Text

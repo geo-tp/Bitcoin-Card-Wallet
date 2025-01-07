@@ -155,16 +155,25 @@ std::vector<uint8_t> GlobalManager::manageDecryption() {
     auto salt = rfidService.getSalt();
     auto sign = rfidService.getCheckSum(); 
 
+    // Allow more chars
+    auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
+    globalContext.setMaxInputCharCount(128);
+
+    // If salt is empty, the seed is not emcrypted
     auto saltIsEmpty = std::all_of(salt.begin(), salt.end(), [](int value) { return value == 0; });
+
     bool validation = false;
     while (!validation && privateKey.size() % 16 == 0 && !saltIsEmpty) {
+      // Ask password
       auto password = stringPromptSelection.select("Enter the password", 8);
-      if (password.empty()) {return {};}
+      if (password.empty()) {return {};} // return button
 
+      // Decrypt
       display.displaySubMessage("Loading", 83);
       auto decryptedKey = cryptoService.decryptPrivateKeyWithPassphrase(privateKey, password, salt);
       auto generatedSign = cryptoService.generateChecksum(decryptedKey, salt);
 
+      // Verify
       validation = sign == generatedSign;
       if(validation) {
         privateKey = decryptedKey;
@@ -173,6 +182,7 @@ std::vector<uint8_t> GlobalManager::manageDecryption() {
         display.displaySubMessage("Bad password", 55, 1500);
       }
     }
+    globalContext.setMaxInputCharCount(defaultMaxCharLimit);
     return privateKey;
 }
 

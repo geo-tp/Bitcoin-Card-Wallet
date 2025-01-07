@@ -5,7 +5,6 @@ namespace controllers {
 WalletController::WalletController(WalletManager& manager) : manager(manager) {}
 
 void WalletController::handleWalletSelection() {
-
     auto wallets = manager.walletService.getAllWallets();
 
     // No wallets currently in the repo, ask for loading wallets file from the SD card
@@ -39,7 +38,7 @@ void WalletController::handleWalletInformationSelection() {
     auto selectedWallet = selectionContext.getCurrentSelectedWallet();
     const uint8_t* selectedLayout = nullptr; // for keyboard layout
 
-    // Select between Balance, Btc Address, PubKey
+    // Select between Balance, Btc Address, PubKey, Sign
     auto selectedInfo = manager.walletInformationSelection.select(selectedWallet.getName());
 
     // Init usb keyboard
