@@ -68,6 +68,9 @@ public:
     int getBlockSign() const;
     void setBlockSign(int blockSign);
 
+    int getBlockMetadata() const;
+    void setBlockMetadata(int blockSign);
+
 private:
     // Private constructor to prevent instantiation
     GlobalContext();
@@ -100,6 +103,7 @@ private:
     int blockPrivateKey1 = 4;
     int blockPrivateKey2 = 5;
     int blockSign = 8;
+    int blockMetadata = 9;
 };
 
 } // namespace contexts

@@ -165,4 +165,13 @@ void GlobalContext::setBlockSign(int blockSign) {
     this->blockSign = blockSign;
 }
 
+
+int GlobalContext::getBlockMetadata() const {
+    return blockMetadata;
+}
+
+void GlobalContext::setBlockMetadata(int blockSign) {
+    this->blockSign = blockMetadata;
+}
+
 } // namespace contexts
