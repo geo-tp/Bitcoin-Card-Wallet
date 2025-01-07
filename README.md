@@ -102,9 +102,11 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 ## Watch-only wallet in Electrum
 
-You can import you bitcoin address into Electrum to create a **"Watch-only wallet in Electrum"**. A watch-only wallet allows you to view balances and transactions without having access to the private keys, making it ideal for monitoring funds securely.
+You can import you bitcoin address into Electrum to create a **"Watch-only wallet"**. A watch-only wallet allows you to view balances and transactions without having access to the private keys, making it ideal for monitoring funds securely.
 
-1. Open Electrum, go to **"File**" Menu option and select **"New/Restore"**
+[Electrum Wallet Official Website](https://electrum.org/)
+
+1. Open Electrum, go to **"File*"* Menu option and select **"New/Restore"**
 1. Choose **"Import bitcoin adresses or private keys"**
 - ![](./images/electrum-spectator1.png)
 2. Type your bitcoin adress, **you can use USB auto typing**, once done, your watch-only wallet is created
