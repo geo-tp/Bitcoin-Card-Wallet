@@ -13,9 +13,10 @@ private:
     std::string address;             // Adresse Bitcoin
     std::vector<uint8_t> privateKey; // Only stored if restored or loaded
     std::string mnemonic;            // Only store if restore from SD
+    std::string passphrase;          // Only store for signing transaction
 
 public:
-    Wallet() : name(""), address(""), mnemonic("") {}
+    Wallet() : name(""), address(""), mnemonic(""), passphrase("") {}
 
     Wallet(const std::string& walletName, 
            const std::string& pubKey, 
@@ -49,6 +50,10 @@ public:
         return mnemonic;
     }
 
+    std::string getPassphrase() const {
+        return passphrase;
+    }
+
     // Setters
     void setName(const std::string& walletName) {
         name = walletName;
@@ -68,6 +73,10 @@ public:
 
     void setAddress(const std::string& addr) {
         address = addr;
+    }
+
+    void setPassphrase(const std::string& pp) {
+        passphrase = pp;
     }
     
     // Utils
