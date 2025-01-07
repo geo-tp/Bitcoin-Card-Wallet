@@ -1,14 +1,19 @@
 # Bitcoin Card Wallet
 
-**Bitcoin Card Wallet** is an ESP32 project that **allows you to generate seeds, addresses, and  manage Bitcoin wallets.** It offers key generation based on **BIP39 standards**, allowing the user to generate a mnemonic **24 words seed** that can be safely backed up and restored in **compatible wallets.**
+**Bitcoin Card Wallet** is an ESP32 project that **allows you to generate seeds, addresses, and sign transactions.** It offers key generation based on **BIP39 standards**, allowing the user to generate a mnemonic **24 words seed** that can be safely backed up and restored in **compatible wallets.**. The seed is **never stored on the device itself**, and to sign a transaction, you must enter the seed words or use an RFID tag to store it.
 
 ![](./images/bitcoin-card-wallet.jpg)
 
 
 - **Manage Wallets**: create seeds, public key, mnemonic words, balance
+- **Transaction Signing:** Sign Bitcoin transactions directly on the device using your seed or RFID tag.
+- **Seed Storage on RFID Tags:** Store your seed securely on an RFID MIFARE 1K tag (optionnal).
+- **Encrypted Seed Backup:** Encrypt and store your seed on RFID tags for enhanced protection.
+- **Seed Retrieval:** Load your seed from RFID tags,or by manually entering mnemonic words.
+- **Transaction File Handling:** Sign and export PSBT transaction files directly on the device.
 - **QR Code**: Generate and display QR codes for easy sharing of Bitcoin and balance addresses.
 - **USB Typing**: Emulate a USB keyboard to type out Bitcoin addresses.
-- **SD Card**: Support for SD card storage to save and retrieve wallet data.
+- **SD Card**: Support for SD card storage to save and retrieve wallet data and saving PSBT file.
 - **Passphrase**: Generate and use seeds with an optional passphrase for enhanced security.
 
 ## Installation
@@ -94,6 +99,19 @@ When you create or restore a wallet you have the option **to save your seed** on
 3. Select the **.psbt transaction file (with xpubs, see Electrum section)**, add your passphrase if necessary, and the Cardputer will sign it.
 
 **NOTE : The signed transaction file will be saved on the SD card with the suffix "-signed"** in the same folder as unsigned file, and you can then import it.
+
+## Watch-only wallet in Electrum
+
+You can import you bitcoin address into Electrum to create a **"Watch-only wallet in Electrum"**. A watch-only wallet allows you to view balances and transactions without having access to the private keys, making it ideal for monitoring funds securely.
+
+1. Open Electrum, go to **"File**" Menu option and select **"New/Restore"**
+1. Choose **"Import bitcoin adresses or private keys"**
+- ![](./images/electrum-spectator1.png)
+2. Type your bitcoin adress, **you can use USB auto typing**, once done, your watch-only wallet is created
+- ![](./images/electrum-spectator2.png)
+
+
+**NOTE : You can use this watch-only wallet to prepare your transactions**, which you can then transfer to your **Cardputer for signing**.
 
 ## Transactions in Electrum
 
