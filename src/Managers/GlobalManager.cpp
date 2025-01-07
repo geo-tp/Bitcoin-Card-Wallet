@@ -104,6 +104,8 @@ void GlobalManager::manageSdSave(Wallet wallet) {
 
 std::string GlobalManager::managePassphrase() {
     auto passConfirmation = confirmationSelection.select("Add passphrase?");
+    display.displaySubMessage("Loading", 83);
+
     std::string passphrase;
     if (passConfirmation) {
         passphrase = confirmStringsMatch("Enter passphrase", "Repeat passphrase", "Do not match");
@@ -149,14 +151,15 @@ std::tuple<std::vector<uint8_t>, std::string> GlobalManager::manageEncryption(st
 std::vector<uint8_t> GlobalManager::manageDecryption() {
     // Get private key, salt and signature
     auto privateKey = rfidService.getPrivateKey();
+    if (privateKey.empty()) {return {};}
     auto salt = rfidService.getSalt();
-    auto sign = rfidService.getSignature();
+    auto sign = rfidService.getCheckSum(); 
 
     auto saltIsEmpty = std::all_of(salt.begin(), salt.end(), [](int value) { return value == 0; });
     bool validation = false;
-    while (!validation && privateKey.size() == 32 && !saltIsEmpty) {
+    while (!validation && privateKey.size() % 16 == 0 && !saltIsEmpty) {
       auto password = stringPromptSelection.select("Enter the password", 8);
-      if (password.empty()) {return std::vector<uint8_t>();}
+      if (password.empty()) {return {};}
 
       display.displaySubMessage("Loading", 83);
       auto decryptedKey = cryptoService.decryptPrivateKeyWithPassphrase(privateKey, password, salt);
@@ -186,14 +189,12 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
   // Init RFID
   rfidService.initialize();
 
-  display.displayDebug(std::to_string(privateKey.size()));
-
   // Get salt, key, sign
   std::vector<uint8_t> returnedKey;
   std::string salt;
   std::tie(returnedKey, salt) = manageEncryption(privateKey);
   auto signature = cryptoService.generateChecksum(privateKey, salt);
-  auto splittedKey = cryptoService.splitVector(returnedKey); // block are 16 bytes for a 32 bytes keys
+  auto splittedKey = cryptoService.splitVector(returnedKey); // return {key, {}} for 16 bytes seed
   
   display.displaySubMessage("PLUG YOUR TAG", 43);
   const unsigned long timeout = 5000; // 5 seconds
@@ -234,9 +235,16 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
     }
 
     // Save sign as a checksum for data
-    auto signSaved = rfidService.saveSignature(signature);
-    if (!saltSaved) {
+    auto signSaved = rfidService.saveChecksum(signature);
+    if (!signSaved) {
         display.displaySubMessage("Failed to save sign", 34, 1000);
+        continue;
+    }
+
+    // Save seed length
+    auto lengthSaved = rfidService.saveMetadata(privateKey.size());
+    if (!lengthSaved) {
+        display.displaySubMessage("Failed to save length", 31, 1000);
         continue;
     }
 
@@ -280,15 +288,21 @@ std::vector<uint8_t> GlobalManager::manageRfidRead() {
 }
 
 std::vector<uint8_t> GlobalManager::manageBitcoinSignature(std::string& psbt, std::string& mnemonic) {
-        auto passphrase = managePassphrase();
+    // Get passphrase or ask for it
+    auto passphrase = selectionContext.getCurrentSelectedWallet().getPassphrase();
+    if(passphrase.empty()) {
+      passphrase = managePassphrase();
+    }
+    
+    // Sign
+    auto signedTransactionB64 = cryptoService.signBitcoinTransactions(psbt, mnemonic, passphrase);
+    if(signedTransactionB64.empty()) {return {};}
 
-        auto signedTransactionB64 = cryptoService.signBitcoinTransactions(psbt, mnemonic, passphrase);
-        if(signedTransactionB64.empty()) {return {};}
+    // Convert
+    auto signedTransactionBytes = cryptoService.convertPSBTBase64ToBinary(signedTransactionB64);
+    if(signedTransactionBytes.empty()) {return {};}
 
-        auto signedTransactionBytes = cryptoService.convertPSBTBase64ToBinary(signedTransactionB64);
-        if(signedTransactionBytes.empty()) {return {};}
-
-        return signedTransactionBytes;
+    return signedTransactionBytes;
 }
 
 } // namespace managers
