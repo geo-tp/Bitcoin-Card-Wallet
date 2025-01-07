@@ -98,9 +98,7 @@ void WalletController::handleWalletInformationSelection() {
             } else {
                 selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
                 selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
-            }
-            
-            selectionContext.setTransactionOngoing(true);
+            }            
             break;
     }
 }
