@@ -49,6 +49,46 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
 
 ```
 
+## Saving the Seed Using RFID
+When you create or restore a wallet you have the option **to save your seed** on an RFID tag (optionnal). **This does not replace the necessity of writing down the words manually.**
+
+### Prerequisites
+
+- You have the **M5Stack RFID2 module.**
+- ![](./images/rfid2.png)
+- You have **MIFARE 1K tag**. The tag **must be empty (blank).**
+- ![](./images/mifare1K.png)
+
+### You can save your seed in two ways:
+
+- **Plaintext:** The seed is stored in plaintext on the RFID tag.
+- **Encrypted:** The seed is encrypted with a passphrase and saved on the RFID tag. This ensures higher security.
+
+### Step-by-Step Instructions
+
+1. During the wallet creation process, choose to save your seed on an RFID tag.
+
+2. Ensure your RFID2 module is plugged in, and place the tag on the reader when prompted.
+
+3. Choose whether or not to encrypt your seed backup on the tag. If you choose encryption, the application will require you to decrypt it with the passphrase before use.
+
+4. Once your seed is saved on the tag, you can use it to sign your transactions or even restore your wallet.
+
+**NOTE :** Encryption is **recommended for better security**, especially when storing sensitive information like a seed. Each **MIFARE 1K tag can hold one seed at a time**. Always test the tag after saving by **restoring the seed with RFID** to confirm that it was saved correctly.
+
+
+## Signing Methods
+
+**The seed is not stored on the Cardputer**, so it must be loaded from an RFID tag, entered manually, or retrieved from a backup file on the SD card to sign a transaction
+
+- **Using an RFID Tag (Recommended):** Sign transactions securely by reading the seed stored on an RFID tag. Encryption is recommended for added security.
+
+- **Entering Seed Words Manually:** Enter your 12 or 24 seed words manually when prompted to sign the transaction.
+
+- **Using a Seed Backup File (Not Recommended):** Load a 12-24 words backup txt file from the SD card to sign the transaction. This method should only be used as a last resort.
+
+**Note:** Storing your seed on an SD card is **not secure and increases the risk of theft or accidental exposure**.
+
 ## BIP39 Mnemonic Support:
   - The private key is converted into a **BIP39-compliant** mnemonic phrase.
   - The wallet generates seeds in compliance with the BIP39 standard.
@@ -66,7 +106,7 @@ BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
 #### Example of my segwit bitcoin address generated on the cardputer
 `bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr`
 
-## Signing transactions in Electrum
+## Transactions in Electrum
 
 How to export the unsigned transation and import the signed transaction in Electrum
 
