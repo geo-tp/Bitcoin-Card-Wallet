@@ -121,7 +121,6 @@ void FilePathSelection::handleFirstRun(FileTypeEnum fileType) {
             input.waitPress();
             break;
         case FileTypeEnum::SEED:
-            display.displaySubMessage("12 or 24 words txt file", 19, 2000);
             break;
     }
     firstRun = false;
