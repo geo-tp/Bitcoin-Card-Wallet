@@ -86,8 +86,8 @@ public:
                                     const std::string& prompt2, 
                                     const std::string& mismatchMessage);
 
-    std::tuple<std::vector<uint8_t>, std::string> manageEncryption(std::vector<uint8_t> privateKey);
-    std::vector<uint8_t> manageDecryption();
+    std::tuple<std::vector<uint8_t>, std::string> manageRfidEncryption(std::vector<uint8_t> privateKey);
+    std::vector<uint8_t> manageRfidDecryption();
 
     void manageRfidSave(std::vector<uint8_t> privateKey);
     std::vector<uint8_t> manageRfidRead();

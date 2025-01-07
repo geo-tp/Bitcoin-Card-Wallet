@@ -132,7 +132,7 @@ std::string GlobalManager::confirmStringsMatch(const std::string& prompt1,
     return input1;
 }
 
-std::tuple<std::vector<uint8_t>, std::string> GlobalManager::manageEncryption(std::vector<uint8_t> privateKey) {
+std::tuple<std::vector<uint8_t>, std::string> GlobalManager::manageRfidEncryption(std::vector<uint8_t> privateKey) {
     display.displaySubMessage("Loading", 83, 800); // Add some time to avoid double input
     auto encryptConfirmation = confirmationSelection.select("Encrypt the seed?");
     if (!encryptConfirmation) { 
@@ -148,9 +148,10 @@ std::tuple<std::vector<uint8_t>, std::string> GlobalManager::manageEncryption(st
     return {encryptedKey, salt};
 }
 
-std::vector<uint8_t> GlobalManager::manageDecryption() {
+std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
     // Get private key, salt and signature
     auto privateKey = rfidService.getPrivateKey();
+    ledService.blink(); // to signal RFID reading
     if (privateKey.empty()) {return {};}
     auto salt = rfidService.getSalt();
     auto sign = rfidService.getCheckSum(); 
@@ -202,7 +203,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
   // Get salt, key, sign
   std::vector<uint8_t> returnedKey;
   std::string salt;
-  std::tie(returnedKey, salt) = manageEncryption(privateKey);
+  std::tie(returnedKey, salt) = manageRfidEncryption(privateKey);
   auto signature = cryptoService.generateChecksum(privateKey, salt);
   auto splittedKey = cryptoService.splitVector(returnedKey); // return {key, {}} for 16 bytes seed
   
@@ -292,8 +293,7 @@ std::vector<uint8_t> GlobalManager::manageRfidRead() {
         continue;
     }
 
-    ledService.blink();
-    return manageDecryption();
+    return manageRfidDecryption();
   }
 }
 
