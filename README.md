@@ -9,7 +9,7 @@
 - **Transaction Signing:** Sign Bitcoin transactions directly on the device using your seed or RFID tag.
 - **Seed Storage on RFID Tags:** Store your seed securely on an RFID MIFARE 1K tag (optionnal).
 - **Encrypted Seed Backup:** Encrypt and store your seed on RFID tags for enhanced protection.
-- **Seed Retrieval:** Load your seed from RFID tags,or by manually entering mnemonic words.
+- **Seed Restoration:** restore your seed from RFID tags,or by manually entering mnemonic words.
 - **Transaction File Handling:** Sign and export PSBT transaction files directly on the device.
 - **QR Code**: Generate and display QR codes for easy sharing of Bitcoin and balance addresses.
 - **USB Typing**: Emulate a USB keyboard to type out Bitcoin addresses.
@@ -115,11 +115,11 @@ You can import you zpub key into Sparrow to create a **"Watch-only wallet"**. A 
 - ![](./images/sparrow-watchonly1.png)
 2. Select **"xPub Watch Only Wallet"**
 - ![](./images/sparrow-watchonly2.png)
-3. Type your fingerprint, derivation path and zpub, **you can use USB auto typing**, all these informations are **in your wallet informations on the cardputer.**
+3. Type your fingerprint, derivation path and zpub, **you can use USB auto typing**, all these informations are **in your wallet informations on the cardputer.** And then, click on **"Apply"**.
 - ![](./images/sparrow-watchonly3.png)
 4. Your Watch only wallet is now created, **you can fetch your balance by toggling the switch on the right corner**
 
-**NOTE : You can use this watch-only wallet to prepare your transactions**, which you can then transfer to your **Cardputer for signing**.
+**NOTE : You can use this watch-only wallet to prepare your transactions**, which you can then transfer to your **Cardputer for signing**. Make sure to use the right seed for the right transaction.
 
 ## Transactions in Sparrow
 
@@ -129,12 +129,12 @@ How to export the unsigned transation and import the signed transaction in Sparr
 
 1. Go to **"Send"**, prepare your transaction (address, label, amount) and click **"Create Transaction"**
 - ![](./images/sparrow-watchonly4.png)
-2. Your transaction is created, click on **"Finalize Transaction for signing"**
+2. Your transaction is created, click on **"Finalize Transaction for Signing"**
 - ![](./images/sparrow-watchonly6.png)
 3. You can see your transaction resume, click on "**Save**" to get the .psbt file, **sign it with you cardputer by using SD card** and import the signed transaction with **"Load"**.
 - ![](./images/sparrow-watchonly7.png)
 
-**NOTE: The cardputer will created a new signed with the "-signed" mention in the same filepath.**
+**NOTE: The cardputer will created a new signed file with the "-signed" mention in the same path.**
 
 ## Seed Import in Electrum
 
