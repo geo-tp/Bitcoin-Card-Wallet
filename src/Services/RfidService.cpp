@@ -2,10 +2,15 @@
 
 namespace services {
 
-void RfidService::initialize() {
+bool RfidService::initialize() {
     mfrc522 = MFRC522(0x28);
     Wire.begin(2, 1);
+    if (!isModuleConnected(0x28)) {
+        return false;
+    }
+
     mfrc522.PCD_Init();
+    return true;
 }
 
 bool RfidService::isCardPresent() {
@@ -20,6 +25,11 @@ std::string RfidService::getCardUID() {
     }
 
     return uidStream.str();
+}
+
+bool RfidService::isModuleConnected(uint8_t address) {
+    Wire.beginTransmission(address);
+    return (Wire.endTransmission() == 0); // means it responds
 }
 
 bool RfidService::authenticateBlock(uint8_t blockAddr) {

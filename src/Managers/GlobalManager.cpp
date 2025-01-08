@@ -151,13 +151,13 @@ std::tuple<std::vector<uint8_t>, std::string> GlobalManager::manageRfidEncryptio
 std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
     // Get private key, salt and signature
     auto privateKey = rfidService.getPrivateKey();
-    ledService.blink(); // to signal RFID reading
     if (privateKey.empty()) {
       display.displaySubMessage("Failed to read key", 38, 1000);
       return {};
     }
     auto salt = rfidService.getSalt();
     auto sign = rfidService.getCheckSum(); 
+    ledService.blink(); // to signal RFID reading
 
     // Allow more chars
     auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
@@ -201,7 +201,11 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
   if (!rfidConfirmation) { return; }
   
   // Init RFID
-  rfidService.initialize();
+  auto initialised = rfidService.initialize();
+  if(!initialised) {
+     display.displaySubMessage("No RFID module", 48, 2500);
+     return;
+  }
 
   // Get salt, key, sign
   std::vector<uint8_t> returnedKey;
@@ -240,9 +244,9 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
       if (metadataByte == 32 || metadataByte == 16) {
         display.displaySubMessage("Tag contains a seed", 28, 1500);
         eraseConfirmation = confirmationSelection.select(" Overwrite tag ?");
+        display.displaySubMessage("PLUG YOUR TAG", 43);
         rfidService.reset();
         startTime = millis();
-        display.displaySubMessage("PLUG YOUR TAG", 43);
         continue;
       }
     }
@@ -276,19 +280,23 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
     }
 
     ledService.blink();
-    display.displaySubMessage("Seed is saved", 60, 2000);
+    display.displaySubMessage("Seed is saved", 60, 2500);
     return;
   }
   rfidService.end();
 }
 
 std::vector<uint8_t> GlobalManager::manageRfidRead() {
-  std::vector<uint8_t> privateKey;
+  auto initialised = rfidService.initialize();
+  if(!initialised) {
+     display.displaySubMessage("No RFID module", 48, 2500);
+     return {};
+  }
+
   display.displayTopBar("MIFARE 1K", false, false, false);
   display.displaySubMessage("PLUG YOUR TAG", 43);
 
-  rfidService.initialize();
-
+  std::vector<uint8_t> privateKey;
   const unsigned long timeout = 5000; // 5 seconds
   unsigned long startTime = millis();
 

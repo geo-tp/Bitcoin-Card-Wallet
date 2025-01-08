@@ -34,8 +34,9 @@ namespace services {
 
 class RfidService {
 public:
-    void initialize();
+    bool initialize();
     bool isCardPresent();
+    bool isModuleConnected(uint8_t address);
     std::string getCardUID();
     bool authenticateBlock(uint8_t blockAddr);
     std::vector<uint8_t> readBlock(uint8_t blockAddr);
