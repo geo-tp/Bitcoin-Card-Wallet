@@ -51,6 +51,7 @@ public:
     uint8_t getMetadata();
     bool saveMetadata(uint8_t seedLength);
     bool lockSectorAsReadOnly(uint8_t sector);
+    void reset();
     void end();
 
 private:

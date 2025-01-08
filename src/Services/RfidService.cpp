@@ -272,6 +272,13 @@ bool RfidService::lockSectorAsReadOnly(uint8_t sector) {
     return true;
 }
 
+void RfidService::reset() {
+    end();
+    mfrc522.PCD_Reset();
+    mfrc522.PCD_Init();
+    delay(100);
+}
+
 void RfidService::end() {
     mfrc522.PICC_HaltA();
     mfrc522.PCD_StopCrypto1();
