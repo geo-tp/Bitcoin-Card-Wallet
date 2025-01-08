@@ -101,7 +101,7 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 2. Load your seed using your preferred method.
 
-3. Select the **.psbt transaction file (with xpubs, see Electrum section)**, add your passphrase if necessary, and the Cardputer will sign it.
+3. Select the **.psbt transaction file**, add your passphrase if necessary, and the Cardputer will sign it.
 
 **NOTE : The signed transaction file will be saved on the SD card with the suffix "-signed"** in the same folder as unsigned file, and you can then import it.
 
