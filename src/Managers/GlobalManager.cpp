@@ -222,6 +222,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
             display.displaySubMessage("RFID save cancelled", 27, 2000);
             break;
         }
+        rfidService.reset();
         startTime = millis();
         display.displaySubMessage("PLUG YOUR TAG", 43);
     }
