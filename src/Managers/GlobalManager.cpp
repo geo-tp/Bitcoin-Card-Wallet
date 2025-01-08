@@ -152,7 +152,10 @@ std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
     // Get private key, salt and signature
     auto privateKey = rfidService.getPrivateKey();
     ledService.blink(); // to signal RFID reading
-    if (privateKey.empty()) {return {};}
+    if (privateKey.empty()) {
+      display.displaySubMessage("Failed to read key", 38, 1000);
+      return {};
+    }
     auto salt = rfidService.getSalt();
     auto sign = rfidService.getCheckSum(); 
 
@@ -255,7 +258,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
     // Save seed length
     auto lengthSaved = rfidService.saveMetadata(privateKey.size());
     if (!lengthSaved) {
-        display.displaySubMessage("Failed to save length", 31, 1000);
+        display.displaySubMessage("Failed to save length", 28, 1000);
         continue;
     }
 
@@ -313,6 +316,24 @@ std::vector<uint8_t> GlobalManager::manageBitcoinSignature(std::string& psbt, st
     if(signedTransactionBytes.empty()) {return {};}
 
     return signedTransactionBytes;
+}
+
+Wallet GlobalManager::manageBitcoinWalletCreation(std::string mnemonic, std::string passphrase, 
+                                                  std::string walletName, bool loadedConfirmation) {
+    // Derive public keys and create segwit BTC address
+    display.displaySubMessage("Loading", 83);
+    auto zpub = cryptoService.deriveZPub(mnemonic, passphrase);
+    auto fingerprint = cryptoService.getFingerprint(mnemonic, passphrase);
+    auto derivePath = cryptoService.getSegwitDerivePath();
+    auto addressSegwit = cryptoService.generateBitcoinSegwitAddress(zpub);
+
+    if (loadedConfirmation) {
+      display.displaySubMessage("Seed loaded", 65, 2000);
+    }
+
+    // Create Wallet
+    return Wallet(walletName, zpub.toString().c_str(), addressSegwit, 
+                  fingerprint, derivePath);
 }
 
 } // namespace managers

@@ -110,17 +110,8 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
     // Prompt for a wallet name
     display.displayTopBar("Wallet", false, false, true);
     auto walletName = stringPromptSelection.select("Enter wallet name");
-    if (walletName.empty()) {
-      return false;
-    }
-
-    // Derive PublicKey and create segwit BTC address
-    display.displaySubMessage("Loading", 83);
-    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-    auto address = cryptoService.generateBitcoinAddress(publicKey);
-
-    // Create Wallet
-    Wallet wallet(walletName, publicKey.toString().c_str(), address, mnemonicString);
+    if (walletName.empty()) {return false;}
+    auto wallet = manageBitcoinWalletCreation(mnemonicString, passphrase, walletName);
 
     // Save wallet to SD if any
     display.displaySubMessage("Loading", 83);
@@ -159,9 +150,10 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     // Derive PublicKey to check if seed match
     display.displaySubMessage("Loading", 83);
     auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-    if (publicKey.toString().c_str() != wallet.getPublicKey()) {
+    auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
+    if (publicKey.toString().c_str() != wallet.getZPub()) {
       display.displaySubMessage("seed/wallet mismatch", 18, 3000);
+      selectionContext.setTransactionOngoing(false);
       return {};
     }
 
@@ -207,10 +199,11 @@ bool SeedManager::manageRfidSeedSignature() {
     // Derive PublicKey to check if seed match
     display.displaySubMessage("Loading", 83);
     auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-    if (publicKey.toString().c_str() != wallet.getPublicKey()) {
+    auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
+    if (publicKey.toString().c_str() != wallet.getZPub()) {
       display.displaySubMessage("seed/wallet mismatch", 18, 4000);
       selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+      selectionContext.setTransactionOngoing(false);
       return false;
     }
 
@@ -251,23 +244,14 @@ void SeedManager::manageRfidSeedRestoration() {
     }
 
     // Passphrase
+    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
     auto passphrase = managePassphrase(); // return "" in case user doesn't want passphrase
 
     // Prompt for a wallet name
     display.displayTopBar("Wallet", false, false, true);
     auto walletName = stringPromptSelection.select("Enter wallet name");
-    if (walletName.empty()) {
-      return;
-    }
-
-    // Derive PublicKey and create segwit BTC address
-    display.displaySubMessage("Loading", 83);
-    auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-    auto address = cryptoService.generateBitcoinAddress(publicKey);
-
-    // Create Wallet
-    Wallet wallet(walletName, publicKey.toString().c_str(), address);
+    if (walletName.empty()) {return;}
+    auto wallet = manageBitcoinWalletCreation(mnemonicString, passphrase, walletName);
 
     // Save wallet to SD if any
     display.displaySubMessage("Loading", 83);
@@ -296,6 +280,7 @@ void SeedManager::manageNewSeedCreation() {
     // Check if an SD is plugged
     auto confirmRunWithoutSd = manageSdConfirmation();
     if (!confirmRunWithoutSd) {
+        selectionContext.setIsModeSelected(false);
         return;
     }
 
@@ -325,13 +310,7 @@ void SeedManager::manageNewSeedCreation() {
     // Optional passphrase
     auto passphrase = managePassphrase(); // returns "" if user doesn't want passphrase
 
-    // Derive PublicKey and create segwit BTC address
-    display.displaySubMessage("Loading", 83);
-    auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-    auto address   = cryptoService.generateBitcoinAddress(publicKey);
-
-    // Create a Wallet object
-    Wallet wallet(walletName, publicKey.toString().c_str(), address);
+    auto wallet = manageBitcoinWalletCreation(mnemonicString, passphrase, walletName);
 
     // Save seed on an RFID tag
     manageRfidSave(privateKey);
