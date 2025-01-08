@@ -57,6 +57,7 @@ public:
     static void displaySeedRestorationInfos();
     static void displayRfidTagInfos();
     static void displayRfidInfos();
+    static void displayFileVersionInfos();
     static void displayPlugRfid();
     static void drawBitcoinIcon(int x, int y);
 

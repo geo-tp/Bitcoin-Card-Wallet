@@ -131,23 +131,25 @@ void CardputerView::displayWalletFileInfo(std::string defaultFileName) {
 
     // Main title
     Display->setTextSize(TEXT_BIG);
-    Display->setCursor(50, 22);
+    Display->setCursor(52, 22);
     Display->setTextColor(PRIMARY_COLOR);
     Display->printf("About File");
 
     // Sub title
     Display->setTextSize(TEXT_SMALL);
     Display->setTextColor(TEXT_COLOR);
-    Display->setCursor(32, 46);
+    Display->setCursor(34, 46);
     Display->printf("When you create a wallet");
 
     // Text
-    Display->setCursor(32, 65);
+    Display->setCursor(34, 65);
     Display->printf("it is saved on the SD card");
     Display->setTextColor(PRIMARY_COLOR);
-    Display->setCursor(22, 88);
     Display->setTextSize(TEXT_MEDIUM_LARGE);
-    Display->printf(defaultFileName.c_str());
+    auto truncated = truncateString(defaultFileName, 24);
+    auto x = getTextCenterOffset(truncated, Display->width(), 4);
+    Display->setCursor(x, 88);
+    Display->printf(truncated.c_str());
 
     // Button OK
     Display->fillRoundRect(70, 105, 100, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
@@ -436,9 +438,14 @@ void CardputerView::displayWalletValue(std::string description, std::string valu
     } else if (description == "Address") {
         Display->setCursor(0, 48);
         Display->setTextSize(1.2);
-    } else { // Pubkey
+    } else if (description == "Public Zpub") {
         Display->setCursor(0, 43);
         Display->setTextSize(0.9);
+        limit = 80;
+    } else { // small infos, derive path, fingerprint
+        auto x = getTextCenterOffset(description, Display->width(), 6);
+        Display->setCursor(x, 60);
+        Display->setTextSize(1.5);
         limit = 80;
     }
 
@@ -597,9 +604,11 @@ void CardputerView::displaySeedEnd(bool sdCardMount) {
     Display->setCursor(12, 65);
     Display->printf(sdCardMount ? "It has been saved to the SD card" : "  It could not be saved to the SD");
     Display->setTextColor(PRIMARY_COLOR);
-    Display->setCursor(28, 88);
     Display->setTextSize(TEXT_MEDIUM_LARGE);
-    Display->printf(sdCardMount ? "bitcoin-card-wallets.txt" : " It will be lost on reboot");
+    auto finalString = sdCardMount ? "/card-wallet.txt" : "will be lost on reboot";
+    auto offsetX = getTextCenterOffset(finalString, Display->width(), 4);
+    Display->setCursor(offsetX, 88);
+    Display->printf(finalString);
 
     // Button OK
     Display->fillRoundRect(70, 105, 100, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
@@ -719,9 +728,9 @@ void CardputerView::displayRfidTagInfos() {
 
     // Main title
     Display->setTextSize(TEXT_BIG);
-    Display->setCursor(52, 22);
+    Display->setCursor(50, 22);
     Display->setTextColor(PRIMARY_COLOR);
-    Display->printf("About tag");
+    Display->printf("About Tag");
 
     // Sub title
     Display->setTextSize(TEXT_SMALL);
@@ -868,6 +877,40 @@ void CardputerView::displaySeedRestorationInfos() {
     // Text
     Display->setCursor(27, 65);
     Display->printf("Input your words accurately");
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->setCursor(28, 88);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->printf("It will recover your wallet");
+
+    // Button Next
+    Display->fillRoundRect(80, 105, 80, 20, DEFAULT_ROUND_RECT, PRIMARY_COLOR);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setTextSize(TEXT_MEDIUM);
+    Display->setCursor(90, 115);
+    Display->printf("Next  ->");
+}
+
+void CardputerView::displayFileVersionInfos() {
+    Display->fillScreen(BACKGROUND_COLOR);
+
+    // Box frame
+    Display->drawRect(1, 1, Display->width() - 1, Display->height() - 1, PRIMARY_COLOR);
+
+    // Main title
+    Display->setTextSize(TEXT_BIG);
+    Display->setCursor(36, 22);
+    Display->setTextColor(PRIMARY_COLOR);
+    Display->printf("File Version");
+
+    // Sub title
+    Display->setTextSize(TEXT_SMALL);
+    Display->setTextColor(TEXT_COLOR);
+    Display->setCursor(32, 46);
+    Display->printf("You can't use file version 1");
+
+    // Text
+    Display->setCursor(16, 65);
+    Display->printf("Restore your seed using words");
     Display->setTextColor(PRIMARY_COLOR);
     Display->setCursor(28, 88);
     Display->setTextSize(TEXT_MEDIUM);
