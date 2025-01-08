@@ -8,7 +8,6 @@ WalletInformationSelection::WalletInformationSelection(CardputerView& display, C
 WalletInformationEnum WalletInformationSelection::select(const std::string& walletName) {
     display.displayTopBar(walletName.c_str(), true, false, true, 10);
     char key = KEY_NONE;
-    selectionIndex = 0;
     lastIndex = -1;
 
     while (key != KEY_OK && key != KEY_ARROW_RIGHT) {
