@@ -18,6 +18,7 @@ void FileBrowserController::handleFileSelection() {
         manager.display.displaySubMessage("SD card not found", 38, 2000);
         manager.sdService.close(); // SD card stop
         manager.selectionContext.setIsModeSelected(false);
+        selectionContext.setTransactionOngoing(false);
         return;
     }
 
