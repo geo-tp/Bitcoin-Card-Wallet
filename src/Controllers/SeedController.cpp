@@ -34,15 +34,14 @@ void SeedController::handleSeedRestoration() {
   manager.display.displayTopBar("Load Seed", true, false, true, 15);
   auto restorationMethod = manager.seedRestorationSelection.select();
 
-
-  if (restorationMethod == SeedRestorationModeEnum::NONE) {
-      selectionContext.setIsModeSelected(false); // go to menu
-      return;
-  }
-
   switch (restorationMethod) {
       case SeedRestorationModeEnum::NONE:
+        if (transactionOngoing) {
+          selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
+        } else {
           selectionContext.setIsModeSelected(false); // go to menu
+        }
+        break;
 
       case SeedRestorationModeEnum::RFID:
           if (transactionOngoing) {
@@ -53,9 +52,9 @@ void SeedController::handleSeedRestoration() {
           break;
 
       case SeedRestorationModeEnum::SD:
-            manager.display.displaySubMessage("12 or 24 words txt file", 19, 3500);
-            selectionContext.setCurrentSelectedFileType(FileTypeEnum::SEED);
-            selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD); // sd file browser
+          manager.display.displaySubMessage("12 or 24 words txt file", 19, 3500);
+          selectionContext.setCurrentSelectedFileType(FileTypeEnum::SEED);
+          selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD); // sd file browser
           break;
 
       case SeedRestorationModeEnum::WORDS_12:
