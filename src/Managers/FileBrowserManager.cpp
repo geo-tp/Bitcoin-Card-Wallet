@@ -23,8 +23,17 @@ bool FileBrowserManager::loadFile(std::string currentPath, FileTypeEnum selected
 }
 
 bool FileBrowserManager::verifyWalletFile(const std::string& fileContent) {
-    return fileContent.find("Filetype: Card Wallet") != std::string::npos &&
-           fileContent.find("Version:") != std::string::npos;
+    if (fileContent.find("Filetype: Card Wallet") != std::string::npos) {
+        if (fileContent.find("Version: 1") != std::string::npos) {
+            display.displayFileVersionInfos();
+            input.waitPress();
+            display.displayTopBar("Old Version", false, false, false, 15);
+            return false;
+        } else if (fileContent.find("Version: 2") != std::string::npos) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool FileBrowserManager::verifySeedFile(const std::string& fileContent) {
@@ -133,8 +142,8 @@ bool FileBrowserManager::manageSeedLoadingFile(const std::string& currentPath) {
 
             // Derive PublicKey and create segwit BTC address
             display.displaySubMessage("Loading", 83);
-            auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-            auto address = cryptoService.generateBitcoinAddress(publicKey);
+            auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
+            auto address = cryptoService.generateBitcoinSegwitAddress(publicKey);
             auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
             display.displaySubMessage("Seed loaded", 65, 2000);
 
@@ -175,24 +184,17 @@ bool FileBrowserManager::manageSeedRestorationFile(const std::string& currentPat
 
             display.displayTopBar("Restore Seed", false, false, true, 5);
             display.displaySubMessage("Valid mnemonic", 45, 2000);
-
             auto passphrase = managePassphrase(); // return "" in case user doesn't want passphrase
-
-            // Derive PublicKey and create segwit BTC address
-            display.displaySubMessage("Loading", 83);
-            auto publicKey = cryptoService.derivePublicKey(mnemonicString, passphrase);
-            auto address = cryptoService.generateBitcoinAddress(publicKey);
             auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
-            display.displaySubMessage("Seed loaded", 65, 2000);
 
             // Save seed on a RFID tag
             manageRfidSave(privateKey);
-
+            
             // Prompt for a wallet name
+            display.displayTopBar("Wallet", false, false, true);
             auto walletName = stringPromptSelection.select("Enter wallet name");
-
-            // Create Wallet
-            Wallet wallet(walletName, publicKey.toString().c_str(), address, mnemonicString);
+            if (walletName.empty()) {return false;}
+            auto wallet = manageBitcoinWalletCreation(mnemonicString, passphrase, walletName);
 
             // Save wallet to SD if any
             display.displaySubMessage("Loading", 83);
