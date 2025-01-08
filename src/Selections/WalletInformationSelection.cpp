@@ -15,6 +15,10 @@ WalletInformationEnum WalletInformationSelection::select(const std::string& wall
         if (lastIndex != selectionIndex) {
             display.displaySelection(getWalletInformationStrings(), selectionIndex);
             lastIndex = selectionIndex;
+
+            if (selectionIndex > 3) { // on the second page
+                display.displayPlugUsbMention();
+            }
         }
 
         key = input.handler();
