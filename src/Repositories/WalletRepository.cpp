@@ -35,8 +35,8 @@ std::vector<std::string> WalletRepository::splitWallets(const std::string& fileC
         if (line.find("# WALLET") != std::string::npos) {
             currentWalletData.clear(); // Reset for new wallet
 
-            // The 3 following lines are : Name, PublicKey, BitcoinAddress
-            for (int i = 0; i < 3; ++i) {
+            // The 6 following lines are: Name, zPub, BitcoinAddress, Fingerprint, DerivePath
+            for (int i = 0; i < 5; ++i) {
                 if (std::getline(stream, line) && !line.empty()) {
                     currentWalletData += line + "\n";
                 }
@@ -52,8 +52,11 @@ std::vector<std::string> WalletRepository::splitWallets(const std::string& fileC
 
 Wallet WalletRepository::parseWallet(const std::string& walletData) {
     std::string name;
-    std::string publicKey;
+    std::string zPub;
+    std::string xPub;
     std::string address;
+    std::string fingerprint;
+    std::string derivePath;
 
     std::istringstream stream(walletData);
     std::string line;
@@ -73,14 +76,18 @@ Wallet WalletRepository::parseWallet(const std::string& walletData) {
 
         if (key == "Name") {
             name = value;
-        } else if (key == "PublicKey") {
-            publicKey = value;
+        } else if (key == "zPub") {
+            zPub = value;
         } else if (key == "BitcoinAddress") {
             address = value;
+        } else if (key == "Fingerprint") {
+            fingerprint = value;
+        } else if (key == "DerivePath") {
+            derivePath = value;
         }
     }
 
-    return Wallet(name, publicKey, address);
+    return Wallet(name, zPub, address, "", fingerprint, derivePath);
 }
 
 void WalletRepository::loadAllWallets(const std::string& fileContent) {
@@ -97,19 +104,24 @@ std::string WalletRepository::getWalletsFileContent() {
 
     // Header
     fileContent << "Filetype: Card Wallet\n";
-    fileContent << "Version: 1\n";
+    fileContent << "Version: 2\n";
     fileContent << "\n";
 
     // Wallets
     for (size_t i = 0; i < wallets.size(); ++i) {
         const auto& wallet = wallets[i];
 
-        std::string publicKey = wallet.getPublicKey();
-        
+        std::string zPub = wallet.getZPub();
+        std::string xPub = wallet.getXPub();
+        std::string fingerprint = wallet.getFingerprint();
+        std::string derivePath = wallet.getDerivePath();
+
         fileContent << "# WALLET " << (i + 1) << "\n";
         fileContent << "Name: " << wallet.getName().c_str() << "\n";
-        fileContent << "PublicKey: " << publicKey.c_str() << "\n";
+        fileContent << "zPub: " << zPub.c_str() << "\n";
         fileContent << "BitcoinAddress: " << wallet.getAddress().c_str() << "\n";
+        fileContent << "Fingerprint: " << fingerprint.c_str() << "\n";
+        fileContent << "DerivePath: " << derivePath.c_str() << "\n";
         fileContent << "\n";
     }
 

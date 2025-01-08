@@ -40,10 +40,14 @@ const std::string WalletInformationSelection::getWalletInformationToString(Walle
             return "BITCOIN BALANCE";
         case WalletInformationEnum::ADDRESS:
             return "BITCOIN ADDRESS";
-        case WalletInformationEnum::PUBLIC_KEY:
-            return "WALLET PUBLIC KEY";
         case WalletInformationEnum::SIGNATURE:
             return "SIGN TRANSACTIONS";
+        case WalletInformationEnum::PUBLIC_KEY:
+            return "WALLET PUBLIC ZPUB";
+        case WalletInformationEnum::FINGERPRINT:
+            return "MASTER FINGERPRINT";
+        case WalletInformationEnum::DERIVE_PATH:
+            return "DERIVATION PATH";
         default:
             return "Unknown";
     }

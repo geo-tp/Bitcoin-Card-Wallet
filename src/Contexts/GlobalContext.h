@@ -78,7 +78,7 @@ private:
     // GENERAL
     std::string appName = "Card Wallet";
     std::string fileWalletPath;
-    std::string fileWalletDefaultPath = "/bitcoin-card-wallets.txt";
+    std::string fileWalletDefaultPath = "/card-wallets.txt";
     std::string bitcoinBalanceUrl = "https://www.blockonomics.co/#/search?q=";
     int maxInputCharCount = 14;
 

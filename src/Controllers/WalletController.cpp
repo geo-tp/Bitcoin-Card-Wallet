@@ -46,6 +46,8 @@ void WalletController::handleWalletInformationSelection() {
         case WalletInformationEnum::BALANCE:
         case WalletInformationEnum::ADDRESS:
         case WalletInformationEnum::PUBLIC_KEY:
+        case WalletInformationEnum::FINGERPRINT:
+        case WalletInformationEnum::DERIVE_PATH:
             // Keyboard layout is not selected, this means usb keyboard is not init
             if (!selectionContext.getIsLayoutSelected()) {
                 // Select keyboard layout and init it
@@ -66,7 +68,7 @@ void WalletController::handleWalletInformationSelection() {
         case WalletInformationEnum::BALANCE:
             manager.valueSelection.select(
                 "Balance", 
-                globalContext.getBitcoinBalanceUrl() + selectedWallet.getPublicKey(), 
+                globalContext.getBitcoinBalanceUrl() + selectedWallet.getZPub(), 
                 manager.usbService,
                 manager.ledService
             );
@@ -81,17 +83,7 @@ void WalletController::handleWalletInformationSelection() {
             );
             break;
 
-        case WalletInformationEnum::PUBLIC_KEY:
-            manager.valueSelection.select(
-                "Public Key", 
-                selectedWallet.getPublicKey(), 
-                manager.usbService,
-                manager.ledService
-            );
-            break;
-
         case WalletInformationEnum::SIGNATURE:
-            auto selectedWallet = selectionContext.getCurrentSelectedWallet();
             selectionContext.setTransactionOngoing(true);
             if(selectedWallet.getMnemonic().empty()) {
                 selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SEED);
@@ -99,6 +91,33 @@ void WalletController::handleWalletInformationSelection() {
                 selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
                 selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
             }            
+            break;
+
+        case WalletInformationEnum::PUBLIC_KEY:
+            manager.valueSelection.select(
+                "Public Zpub", 
+                selectedWallet.getZPub(), 
+                manager.usbService,
+                manager.ledService
+            );
+            break;
+
+        case WalletInformationEnum::FINGERPRINT:
+            manager.valueSelection.select(
+                "Fingerprint", 
+                selectedWallet.getFingerprint(), 
+                manager.usbService,
+                manager.ledService
+            );
+            break;
+
+        case WalletInformationEnum::DERIVE_PATH:
+            manager.valueSelection.select(
+                "Deriv Path", 
+                selectedWallet.getDerivePath(), 
+                manager.usbService,
+                manager.ledService
+            );
             break;
     }
 }
