@@ -37,8 +37,13 @@ public:
     std::string getRandomString(size_t length);
     std::vector<uint8_t> generatePrivateKey(size_t keySize = 32);
     std::vector<std::string> privateKeyToMnemonic(const std::vector<uint8_t>& privateKey);
-    HDPublicKey derivePublicKey(std::string mnemonic, std::string passphrase="");
-    std::string generateBitcoinAddress(HDPublicKey xpub);
+    HDPublicKey deriveZPub(std::string mnemonic, std::string passphrase="");
+    HDPublicKey deriveXPub(std::string mnemonic, std::string passphrase);
+    std::string getFingerprint(std::string mnemonic, std::string passphrase);
+    std::string getLegacyDerivePath();
+    std::string getSegwitDerivePath();
+    std::string generateBitcoinLegacyAddress(HDPublicKey xpub);
+    std::string generateBitcoinSegwitAddress(HDPublicKey xpub);
     std::string mnemonicVectorToString(std::vector<std::string> mnemonic);
     BIP39::word_list mnemonicStringToWordList(const std::string& mnemonicStr);
     std::vector<uint8_t> mnemonicToPrivateKey(const std::string& mnemonic);
@@ -59,7 +64,7 @@ public:
     std::vector<uint8_t> convertPSBTBase64ToBinary(const std::string& psbtBase64);
     std::string convertPSBTBinaryToBase64(const std::vector<uint8_t>& psbtBinary);
     std::vector<uint8_t> OLDderivePublicKey(const std::vector<uint8_t>& privateKey);
-    std::string OLDgenerateBitcoinAddress(const std::vector<uint8_t>& publicKey);
+    std::string OLDgenerateBitcoinSegwitAddress(const std::vector<uint8_t>& publicKey);
 private:
     void OLDhashPublicKey(const std::vector<uint8_t>& publicKey, std::vector<uint8_t>& hashedKey);
     std::string encodeBase58(const uint8_t* input, size_t len);

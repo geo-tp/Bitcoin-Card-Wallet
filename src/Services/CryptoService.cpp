@@ -167,18 +167,50 @@ std::vector<uint8_t> CryptoService::hashSha256(const std::vector<uint8_t>& entro
     return std::vector<uint8_t>(hash, hash + keySize);
 }
 
-HDPublicKey CryptoService::derivePublicKey(std::string mnemonic, std::string passphrase) {
+HDPublicKey CryptoService::deriveXPub(std::string mnemonic, std::string passphrase) {
+    // Mnemonic words with passphrase
+    HDPrivateKey hd(mnemonic.c_str(), passphrase.c_str());
+    
+    // derive legacy
+    HDPrivateKey legacyAccount = hd.derive(getLegacyDerivePath().c_str());
+    legacyAccount.type = P2PKH;
+    HDPublicKey xpub = legacyAccount.xpub();
+}
+
+HDPublicKey CryptoService::deriveZPub(std::string mnemonic, std::string passphrase) {
     // Mnemonic 24 words with passphrase
     HDPrivateKey hd(mnemonic.c_str(), passphrase.c_str());
-
+    
     // derive native segwit account BIP84
-    HDPrivateKey account = hd.derive("m/84'/0'/0'/");
+    HDPrivateKey account = hd.derive(getSegwitDerivePath().c_str());
     return account.xpub();
 }
 
-std::string CryptoService::generateBitcoinAddress(HDPublicKey xpub) {
+std::string CryptoService::getSegwitDerivePath() {
+    return "m/84'/0'/0'/";
+}
+
+std::string CryptoService::getLegacyDerivePath() {
+    return "m/44'/0'/0";
+}
+
+std::string CryptoService::getFingerprint(std::string mnemonic, std::string passphrase) {
+    // Mnemonic with passphrase
+    HDPrivateKey hd(mnemonic.c_str(), passphrase.c_str());
+
+    // Get fingerprint
+    return hd.fingerprint().c_str();
+}
+
+std::string CryptoService::generateBitcoinSegwitAddress(HDPublicKey xpub) {
     // Set segwit addresses by default
     xpub.type = P2WPKH;
+    return xpub.derive("m/0/0").address().c_str();
+}
+
+std::string CryptoService::generateBitcoinLegacyAddress(HDPublicKey xpub) {
+    // Set segwit addresses by default
+    xpub.type = P2PKH;
     return xpub.derive("m/0/0").address().c_str();
 }
 
@@ -437,7 +469,7 @@ std::vector<uint8_t> CryptoService::generateChecksum(const std::vector<uint8_t>&
 std::string CryptoService::signBitcoinTransactions(const std::string& psbtBase64, const std::string& mnemonic, const std::string& passphrase) {
     // Derive key
     HDPrivateKey rootKey(mnemonic.c_str(), passphrase.c_str());
-    
+
     // Charger la PSBT
     PSBT psbt;
     size_t bytesParsed = psbt.parseBase64(psbtBase64.c_str());
@@ -546,7 +578,7 @@ void CryptoService::OLDhashPublicKey(const std::vector<uint8_t>& publicKey, std:
     ripemd.CalculateDigest(hashedKey.data(), sha256Hash, sizeof(sha256Hash));
 }
 
-std::string CryptoService::OLDgenerateBitcoinAddress(const std::vector<uint8_t>& publicKey) {
+std::string CryptoService::OLDgenerateBitcoinSegwitAddress(const std::vector<uint8_t>& publicKey) {
     // Legacy address starting with 1.....
     std::vector<uint8_t> hashedKey(20);
     OLDhashPublicKey(publicKey, hashedKey);
