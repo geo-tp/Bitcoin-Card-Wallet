@@ -2,10 +2,8 @@
 
 namespace services {
 
-RfidService::RfidService()
-    : mfrc522(0x28) {}
-
 void RfidService::initialize() {
+    mfrc522 = MFRC522(0x28);
     Wire.begin(2, 1);
     mfrc522.PCD_Init();
 }

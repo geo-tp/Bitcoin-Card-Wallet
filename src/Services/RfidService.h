@@ -34,7 +34,6 @@ namespace services {
 
 class RfidService {
 public:
-    explicit RfidService();
     void initialize();
     bool isCardPresent();
     std::string getCardUID();

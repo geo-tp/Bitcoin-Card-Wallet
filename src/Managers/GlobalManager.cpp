@@ -213,6 +213,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
   display.displaySubMessage("PLUG YOUR TAG", 43);
   const unsigned long timeout = 5000; // 5 seconds
   unsigned long startTime = millis();
+  bool eraseConfirmation = false;
 
   while (true) {
     if (millis() - startTime > timeout) {
@@ -233,12 +234,23 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
         continue;
     }
 
-    ledService.blink();
+    // Tag already contains a seed
+    if (!eraseConfirmation) {
+      auto metadataByte = rfidService.getMetadata();
+      if (metadataByte == 32 || metadataByte == 16) {
+        display.displaySubMessage("Tag contains a seed", 28, 1500);
+        eraseConfirmation = confirmationSelection.select(" Overwrite tag ?");
+        rfidService.reset();
+        startTime = millis();
+        display.displaySubMessage("PLUG YOUR TAG", 43);
+        continue;
+      }
+    }
 
     // Save private key
     auto privateKeySaved = rfidService.savePrivateKey(splittedKey.first, splittedKey.second);
     if (!privateKeySaved) {
-        display.displaySubMessage("Failed to save key", 38, 1000);
+        display.displaySubMessage("Failed to save key", 36, 1000);
         continue;
     }
 
@@ -263,6 +275,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
         continue;
     }
 
+    ledService.blink();
     display.displaySubMessage("Seed is saved", 60, 2000);
     return;
   }
