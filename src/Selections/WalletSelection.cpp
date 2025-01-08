@@ -37,6 +37,7 @@ Wallet WalletSelection::select(std::vector<Wallet> wallets) {
                 selectionIndex = (selectionIndex > 0) ? selectionIndex - 1 : wallets.size() - 1;
                 break;
             case KEY_RETURN_CUSTOM:
+                selectionIndex = 0; // default
                 return Wallet(); // empty wallet
         }
     }

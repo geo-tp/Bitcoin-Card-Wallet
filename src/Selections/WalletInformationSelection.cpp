@@ -30,6 +30,7 @@ WalletInformationEnum WalletInformationSelection::select(const std::string& wall
                 selectionIndex = (selectionIndex > 0) ? selectionIndex - 1 : static_cast<uint8_t>(WalletInformationEnum::COUNT) - 1;
                 break;
             case KEY_RETURN_CUSTOM:
+                selectionIndex = 0; // default
                 return WalletInformationEnum::NONE;
         }
     }

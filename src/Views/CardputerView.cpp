@@ -605,7 +605,7 @@ void CardputerView::displaySeedEnd(bool sdCardMount) {
     Display->printf(sdCardMount ? "It has been saved to the SD card" : "  It could not be saved to the SD");
     Display->setTextColor(PRIMARY_COLOR);
     Display->setTextSize(TEXT_MEDIUM_LARGE);
-    auto finalString = sdCardMount ? "/card-wallet.txt" : "will be lost on reboot";
+    auto finalString = sdCardMount ? "/card-wallets.txt" : "will be lost on reboot";
     auto offsetX = getTextCenterOffset(finalString, Display->width(), 4);
     Display->setCursor(offsetX, 88);
     Display->printf(finalString);
