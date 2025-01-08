@@ -25,22 +25,27 @@
 
 An SD card is require to save **wallets publics informations** and load them at the launch of the application. Only public informations about your wallets are stored on the SD card, **SAVE YOUR SEED** or you will lose access to your bitcoin wallet.
 
-The following informations will be stored on SD card in the file `bitcoin-card-wallets.txt` : 
+The following informations will be stored on SD card in the file `card-wallets.txt` : 
 
 - ***Wallet name***
 - ***Public Key***
 - ***Bitcoin address***
+- ***Derivation path***
+- ***Fingerprint***
 
 You can **manually edit this file** to add others bitcoin addresses or remove existing ones
 
 ```
 Filetype: Card Wallet
-Version: 1
+Version: 2
 
 # WALLET 1
 Name: Geo Wallet
-PublicKey: zpub6rCZfQGdfMMFhj2kMV66dZXhVxWfgfFfJF7MzkQ4zdXdT44dC4x756Qd8b14j5aAbgL1r7JgjABEDRoWSLkA89PEek5wxgFqtjXsCPgp6BQ
+zPub: zpub6rCZfQGdfMMFhj2kMV66dZXhVxWfgfFfJF7MzkQ4zdXdT44dC4x756Qd8b14j5aAbgL1r7JgjABEDRoWSLkA89PEek5wxgFqtjXsCPgp6BQ
 BitcoinAddress: bc1qcr6zdqzqsqu9dh9fr8899p59m4cq4xjl3aepmr
+DerivationPath: m/84'/0'/0'/
+Fingerprint: 6f022fd
+
 
 # WALLET 2
 ...
@@ -100,42 +105,36 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 **NOTE : The signed transaction file will be saved on the SD card with the suffix "-signed"** in the same folder as unsigned file, and you can then import it.
 
-## Watch-only wallet in Electrum
+## Watch-only wallet in Sparrow
 
-You can import you bitcoin address into Electrum to create a **"Watch-only wallet"**. A watch-only wallet allows you to view balances and transactions without having access to the private keys, making it ideal for monitoring funds securely.
+You can import you zpub key into Sparrow to create a **"Watch-only wallet"**. A watch-only wallet allows you to view balances and transactions **without having access to the private keys**, making it ideal for monitoring funds securely.
 
-[Electrum Wallet Official Website](https://electrum.org/)
+[Sparrow Wallet Official Website](https://sparrowwallet.com/)
 
-1. Open Electrum, go to **"File*"* Menu option and select **"New/Restore"**
-1. Choose **"Import bitcoin adresses or private keys"**
-- ![](./images/electrum-spectator1.png)
-2. Type your bitcoin adress, **you can use USB auto typing**, once done, your watch-only wallet is created
-- ![](./images/electrum-spectator2.png)
-
+1. Open Sparrow, select **"New wallet"**
+- ![](./images/sparrow-watchonly1.png)
+2. Select **"xPub Watch Only Wallet"**
+- ![](./images/sparrow-watchonly2.png)
+3. Type your fingerprint, derivation path and zpub, **you can use USB auto typing**, all these informations are **in your wallet informations on the cardputer.**
+- ![](./images/sparrow-watchonly3.png)
+4. Your Watch only wallet is now created, **you can fetch your balance by toggling the switch on the right corner**
 
 **NOTE : You can use this watch-only wallet to prepare your transactions**, which you can then transfer to your **Cardputer for signing**.
 
-## Transactions in Electrum
+## Transactions in Sparrow
 
-How to export the unsigned transation and import the signed transaction in Electrum
+How to export the unsigned transation and import the signed transaction in Sparrow
 
-[Electrum Wallet Official Website](https://electrum.org/)
+[Sparrow Wallet Official Website](https://sparrowwallet.com/)
 
-### Export Transactions
+1. Go to **"Send"**, prepare your transaction (address, label, amount) and click **"Create Transaction"**
+- ![](./images/sparrow-watchonly4.png)
+2. Your transaction is created, click on **"Finalize Transaction for signing"**
+- ![](./images/sparrow-watchonly6.png)
+3. You can see your transaction resume, click on "**Save**" to get the .psbt file, **sign it with you cardputer by using SD card** and import the signed transaction with **"Load"**.
+- ![](./images/sparrow-watchonly7.png)
 
-1. Go to **"Send"**, prepare your transaction (address, amount) and click **"Pay"**
-- ![](./images/electrum-tx1.png)
-2. Select the amount of fee and click **"Preview"**
-- ![](./images/electrum-tx2.png)
-3. You can see your transaction resume, click on "**Share**"
-- ![](./images/electrum-tx3.png)
-5. Check **"For hardawre device: include xpub"** and click **"Save to file"**.
-- ![](./images/electrum-tx5.png)
-
-### Import Transactions
-
-1. Go to **"Tools"** from the main menu, click on **"Load a transaction from file"** and **select your signed .psbt file**
-- ![](./images/electrum-tx4.png)
+**NOTE: The cardputer will created a new signed with the "-signed" mention in the same filepath.**
 
 ## Seed Import in Electrum
 
