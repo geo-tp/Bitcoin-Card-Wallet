@@ -1,6 +1,6 @@
 # Bitcoin Card Wallet
 
-**Bitcoin Card Wallet** is an ESP32 project that **allows you to generate seeds, addresses, and sign transactions.** It offers key generation based on **BIP39 standards**, allowing the user to generate a mnemonic **24 words seed** that can be safely backed up and restored in **compatible wallets.**. The seed is **never stored on the device itself**, and to sign a transaction, you must enter the seed words or use an RFID tag to store it.
+**Bitcoin Card Wallet** is an ESP32 project that **allows you to generate seeds, addresses, and sign transactions.** It offers key generation based on **BIP39 standards**, allowing the user to generate a mnemonic **24 words seed** that can be safely backed up and restored in **compatible wallets.**. The seed is **never stored on the device itself**, and to sign a transaction, **you must enter the seed words or use an RFID tag to store it.**
 
 ![](./images/bitcoin-card-wallet.jpg)
 
@@ -97,6 +97,9 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 ### Step-by-Step Instructions
 
+![](./images/sign.png)
+
+
 1. Load your wallets and select the one you want to sign with.
 
 2. Load your seed using your preferred method.
@@ -116,6 +119,7 @@ You can import your zpub key into Sparrow to create a **"Watch-only wallet"**. A
 2. Select **"xPub Watch Only Wallet"**
 - ![](./images/sparrow-watchonly2.png)
 3. Type your fingerprint, derivation path and zpub, **you can use USB auto typing**, all these informations are **in your wallet informations on the cardputer.** And then, click on **"Apply"**.
+- ![](./images/infos.png)
 - ![](./images/sparrow-watchonly3.png)
 4. Your Watch only wallet is now created, **you can fetch your balance by toggling the switch on the right corner**
 
@@ -140,7 +144,9 @@ How to export the unsigned transation and import the signed transaction in Sparr
 
 You can also use Sparrow as a standard wallet by writing down the **24 words provided when creating your seed.**
 
-- ![](./images/sparrow-standard1.png)
+![](./images/sparrow-standard1.png)
+
+**NOTE :If you set a passphrase when creating your seed,** don't forget to check the corresponding box and enter it.
 
 
 ## Seed Import in Electrum
