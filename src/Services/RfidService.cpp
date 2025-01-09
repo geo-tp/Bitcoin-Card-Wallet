@@ -3,9 +3,13 @@
 namespace services {
 
 bool RfidService::initialize() {
-    mfrc522 = MFRC522(0x28);
-    Wire.begin(2, 1);
-    if (!isModuleConnected(0x28)) {
+    auto sda = globalContext.getSdaPin();
+    auto scl = globalContext.getSclPin();
+    auto rfidAddress = globalContext.getRfidAddress();
+
+    mfrc522 = MFRC522(rfidAddress);
+    Wire.begin(sda, scl);
+    if (!isModuleConnected(rfidAddress)) {
         return false;
     }
 
@@ -29,7 +33,7 @@ std::string RfidService::getCardUID() {
 
 bool RfidService::isModuleConnected(uint8_t address) {
     Wire.beginTransmission(address);
-    return (Wire.endTransmission() == 0); // means it responds
+    return (Wire.endTransmission() == 0); // mean it responds
 }
 
 bool RfidService::authenticateBlock(uint8_t blockAddr) {
