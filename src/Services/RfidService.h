@@ -62,15 +62,10 @@ private:
 
     // Block Number
     int blockSalt         = globalContext.getBlockSalt(); // encryption salt
-    int blockPrivateKey1  = globalContext.getBlockPrivateKey1();
+    int blockPrivateKey1  = globalContext.getBlockPrivateKey1(); // seed
     int blockPrivateKey2  = globalContext.getBlockPrivateKey2();
     int blockSign         = globalContext.getBlockSign(); // checksum for decryption
     int blockMetadata     = globalContext.getBlockMetadata(); // metadata for seed length
-
-    // Pin and address
-    int sda = globalContext.getSdaPin();
-    int scl = globalContext.getSclPin();
-    int address = globalContext.getRfidAddress();
 };
 
 } // namespace services

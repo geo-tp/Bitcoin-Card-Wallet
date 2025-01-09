@@ -83,6 +83,8 @@ private:
     std::string fileWalletPath;
     std::string fileWalletDefaultPath = "/card-wallets.txt";
     std::string bitcoinBalanceUrl = "https://www.blockonomics.co/#/search?q=";
+
+    // INPUT
     int maxInputCharCount = 14;
     int maxInputCharPasswordCount = 128;
 
