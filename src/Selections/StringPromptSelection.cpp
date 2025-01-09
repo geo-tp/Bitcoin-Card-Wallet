@@ -5,10 +5,15 @@ namespace selections {
 StringPromptSelection::StringPromptSelection(CardputerView& display, CardputerInput& input)
     : display(display), input(input) {}
 
-std::string StringPromptSelection::select(std::string description, size_t offsetX, bool backButton) {
+std::string StringPromptSelection::select(std::string description, size_t offsetX, bool backButton, bool password) {
     std::string output;
     char key = KEY_NONE;
+    auto limit = globalContext.getMaxInputCharCount();
     display.displayStringPrompt(description, output, offsetX, backButton);
+
+    if (password) {
+        limit = globalContext.getMaxInputCharPasswordCount();
+    }
 
     while (key != KEY_OK || output.length() < 3) {
         key = input.handler();
@@ -20,7 +25,10 @@ std::string StringPromptSelection::select(std::string description, size_t offset
         else if (key == KEY_RETURN_CUSTOM && backButton) {
             return ""; // empty string will not save
         }
-        else if (isalnum(key) && output.size() < globalContext.getMaxInputCharCount()) {
+        else if (password && key != KEY_NONE && output.size() < limit) {
+            output += key;
+        }
+        else if (isalnum(key) && output.size() < limit) {
             output += key;
         }
 
@@ -28,7 +36,6 @@ std::string StringPromptSelection::select(std::string description, size_t offset
             display.displayStringPrompt(description, output, offsetX, backButton);
         }
     }
-
     return output;
 }
 

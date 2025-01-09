@@ -51,6 +51,14 @@ void GlobalContext::setMaxInputCharCount(int maxInputCharCount) {
     this->maxInputCharCount = maxInputCharCount;
 }
 
+int GlobalContext::getMaxInputCharPasswordCount() const {
+    return maxInputCharPasswordCount;
+}
+
+void GlobalContext::setMaxInputCharPasswordCount(int maxInputCount) {
+    this->maxInputCharPasswordCount = maxInputCount;
+}
+
 int GlobalContext::getLedPin() const {
     return ledPin;
 }
@@ -107,7 +115,6 @@ void GlobalContext::setFileCountLimit(int fileCountLimit) {
     this->fileCountLimit = fileCountLimit;
 }
 
-// Getters and setters for sdaPin, sclPin, and rfidAddress
 int GlobalContext::getSdaPin() const {
     return sdaPin;
 }
@@ -132,7 +139,6 @@ void GlobalContext::setRfidAddress(int rfidAddress) {
     this->rfidAddress = rfidAddress;
 }
 
-// Getters and setters for blockSalt, blockPrivateKey1, blockPrivateKey2, blockSign (all integers)
 int GlobalContext::getBlockSalt() const {
     return blockSalt;
 }

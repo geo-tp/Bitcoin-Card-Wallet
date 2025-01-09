@@ -31,9 +31,10 @@ void SeedController::handleSeedRestoration() {
     manager.input.waitPress();
   }
 
-  manager.display.displayTopBar("Load Seed", true, false, true, 15);
+  auto title = transactionOngoing ? "Load Seed" : "New Seed";
+  manager.display.displayTopBar(title, true, false, true, 15);
+  
   auto restorationMethod = manager.seedRestorationSelection.select();
-
   switch (restorationMethod) {
       case SeedRestorationModeEnum::NONE:
         if (transactionOngoing) {

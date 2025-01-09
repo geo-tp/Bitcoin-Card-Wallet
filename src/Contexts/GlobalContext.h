@@ -26,6 +26,9 @@ public:
     int getMaxInputCharCount() const;
     void setMaxInputCharCount(int maxInputCharCount);
 
+    int getMaxInputCharPasswordCount() const;
+    void setMaxInputCharPasswordCount(int maxInputCharPasswordCount);
+
     int getLedPin() const;
     void setLedPin(int ledPin);
 
@@ -81,6 +84,7 @@ private:
     std::string fileWalletDefaultPath = "/card-wallets.txt";
     std::string bitcoinBalanceUrl = "https://www.blockonomics.co/#/search?q=";
     int maxInputCharCount = 14;
+    int maxInputCharPasswordCount = 128;
 
     // LED
     int ledPin = 21;

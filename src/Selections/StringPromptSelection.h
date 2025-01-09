@@ -14,7 +14,7 @@ namespace selections {
 class StringPromptSelection {
 public:
     StringPromptSelection(CardputerView& display, CardputerInput& input);
-    std::string select(std::string description, size_t offsetX = 0, bool backButton=true);
+    std::string select(std::string description, size_t offsetX = 0, bool backButton=true, bool password=false);
 private:
     GlobalContext& globalContext = GlobalContext::getInstance();
     CardputerView& display;

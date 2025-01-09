@@ -119,16 +119,13 @@ std::string GlobalManager::confirmStringsMatch(const std::string& prompt1,
                                                const std::string& mismatchMessage) 
 {
     std::string input1, input2;
-    auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
-    globalContext.setMaxInputCharCount(128);
     do {
-        input1 = stringPromptSelection.select(prompt1, 0, false);
-        input2 = stringPromptSelection.select(prompt2, 4, false);
+        input1 = stringPromptSelection.select(prompt1, 0, false, true);
+        input2 = stringPromptSelection.select(prompt2, 4, false, true);
         if (input1 != input2) {
             display.displaySubMessage(mismatchMessage, 58, 2000);
         }
     } while (input1 != input2);
-    globalContext.setMaxInputCharCount(defaultMaxCharLimit);
     return input1;
 }
 
@@ -169,7 +166,7 @@ std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
     bool validation = false;
     while (!validation && privateKey.size() % 16 == 0 && !saltIsEmpty) {
       // Ask password
-      auto password = stringPromptSelection.select("Enter the password", 8);
+      auto password = stringPromptSelection.select("Enter the password", 8, true, true);
       if (password.empty()) {return {};} // return button
 
       // Decrypt
