@@ -48,7 +48,7 @@ void SeedController::handleSeedRestoration() {
 
       case SeedRestorationModeEnum::RFID:
           if (transactionOngoing) {
-            manager.manageRfidSeedSignature();
+            manager.manageRfidSeedLoading();
           } else {
             manager.manageRfidSeedRestoration();
           }
