@@ -52,6 +52,7 @@ void USBHIDKeyboard::begin(const uint8_t *layout){
 }
 
 void USBHIDKeyboard::end(){
+    hid.end();
 }
 
 void USBHIDKeyboard::onEvent(esp_event_handler_t callback){

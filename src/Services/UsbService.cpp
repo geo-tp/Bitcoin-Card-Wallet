@@ -17,6 +17,10 @@ void UsbService::begin() {
     }
 }
 
+void UsbService::end() {
+    keyboard.end();
+}
+
 // USB Keyboard send string
 void UsbService::sendString(const std::string& text) {
     keyboard.releaseAll();

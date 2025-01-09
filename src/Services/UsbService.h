@@ -13,6 +13,7 @@ class UsbService {
 public:
     UsbService();
     void begin();
+    void end();
     void sendString(const std::string& text);
     void sendChunkedString(const std::string& data, size_t chunkSize=128, unsigned long delayBetweenChunks=50);
     bool isReady() const;
