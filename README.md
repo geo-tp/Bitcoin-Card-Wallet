@@ -119,8 +119,9 @@ You can import your zpub key into Sparrow to create a **"Watch-only wallet"**. A
 2. Select **"xPub Watch Only Wallet"**
 - ![](./images/sparrow-watchonly2.png)
 3. Type your fingerprint, derivation path and zpub, **you can use USB auto typing**, all these informations are **in your wallet informations on the cardputer.** And then, click on **"Apply"**.
-- ![](./images/infos.png)
 - ![](./images/sparrow-watchonly3.png)
+- ![](./images/infos.png)
+
 4. Your Watch only wallet is now created, **you can fetch your balance by toggling the switch on the right corner**
 
 **NOTE : You can use this watch-only wallet to prepare your transactions**, which you can then transfer to your **Cardputer for signing**. Make sure to use the right seed for the right transaction.
