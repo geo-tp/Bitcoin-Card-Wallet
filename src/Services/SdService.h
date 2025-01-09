@@ -27,6 +27,7 @@ public:
     bool writeBinaryFile(const char* filePath, const std::vector<uint8_t>& data);
     bool appendToFile(const char* filePath, const std::string& data);
     std::vector<uint8_t> readBinaryFile(const char* filePath);
+    bool deleteFile(const char* filePath);
 private:
     GlobalContext& globalContext = GlobalContext::getInstance();
     SPIClass sdCardSPI;

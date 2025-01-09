@@ -146,6 +146,17 @@ bool SdService::writeFile(const char* filePath, const std::string& data) {
     return false;
 }
 
+bool SdService::deleteFile(const char* filePath) {
+    if (!sdCardMounted) {
+        return false;
+    }
+
+    if (SD.exists(filePath)) {
+        return SD.remove(filePath);
+    }
+    return false;
+}
+
 bool SdService::writeBinaryFile(const char* filePath, const std::vector<uint8_t>& data) {
     if (!sdCardMounted) {
         return false;
