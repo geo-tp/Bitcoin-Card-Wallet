@@ -27,7 +27,11 @@ void FileBrowserController::handleFileSelection() {
         // currentPath is a file
         if (manager.sdService.isFile(currentPath)) {
             // Load file with correct type
-            if(manager.loadFile(currentPath, selectedFileType)) {break;} // successfully loaded
+            if(manager.loadFile(currentPath, selectedFileType)) {
+                manager.sdService.close(); // succesfully loaded, close sd
+                currentPath = "/";
+                return;
+            }
            
             // Revert to parent dir, currentPath was not a valid file
             currentPath = manager.getParentDirectory(currentPath);
@@ -48,11 +52,11 @@ void FileBrowserController::handleFileSelection() {
     manager.sdService.close(); // SD card stop
     currentPath = "/"; // reset to root path
 
-    if (selectionContext.getCurrentSelectedMode() != SelectionModeEnum::PORTFOLIO) {
-        selectionContext.setIsModeSelected(false); // go back to menu
-        selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET); // default
-        selectionContext.setTransactionOngoing(false);
-    }
+    selectionContext.setIsModeSelected(false); // go back to menu
+    selectionContext.setIsWalletSelected(false);
+    selectionContext.setCurrentSelectedFileType(FileTypeEnum::WALLET); // default
+    selectionContext.setTransactionOngoing(false);
+    
 }
 
 } // namespace controllers
