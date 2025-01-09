@@ -12,6 +12,10 @@ bool WalletService::addWallet(const Wallet& wallet) {
     return false;
 }
 
+bool WalletService::updateWallet(const Wallet& updatedWallet) {
+    return repository.updateWallet(updatedWallet);
+}
+
 bool WalletService::deleteWallet(const std::string& walletName) {
     return repository.deleteWallet(walletName);
 }

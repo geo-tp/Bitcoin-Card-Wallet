@@ -20,6 +20,7 @@ public:
     std::string getWalletsFileContent();
 
     bool addWallet(const Wallet& wallet);
+    bool updateWallet(const Wallet& updatedWallet);
     bool deleteWallet(const std::string& walletName);
     const std::vector<Wallet>& getWallets() const;
     std::string vectorToHexString(const std::vector<uint8_t>& vec);

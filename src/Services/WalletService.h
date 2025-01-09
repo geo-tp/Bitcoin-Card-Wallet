@@ -20,6 +20,7 @@ public:
     WalletService(WalletRepository& repository);
 
     bool addWallet(const Wallet& wallet);
+    bool updateWallet(const Wallet& updatedWallet);
     bool deleteWallet(const std::string& walletName); 
     Wallet getWallet(const std::string& walletName);
     std::vector<Wallet> getAllWallets();

@@ -7,13 +7,23 @@ bool WalletRepository::addWallet(const Wallet& wallet) {
     return true;
 }
 
+bool WalletRepository::updateWallet(const Wallet& updatedWallet) {
+    for (auto& wallet : wallets) {
+        if (wallet.getZPub() == updatedWallet.getZPub()) {
+            wallet = updatedWallet;
+            return true;
+        }
+    }
+    return false; 
+}
+
 bool WalletRepository::deleteWallet(const std::string& walletName) {
     auto it = std::remove_if(wallets.begin(), wallets.end(), [&walletName](const Wallet& w) {
         return w.getName() == walletName;
     });
 
     if (it != wallets.end()) {
-        wallets.erase(it, wallets.end()); // Supprime le wallet
+        wallets.erase(it, wallets.end()); 
         return true;
     }
 
@@ -31,11 +41,11 @@ std::vector<std::string> WalletRepository::splitWallets(const std::string& fileC
     std::string currentWalletData;
 
     while (std::getline(stream, line)) {
-        // Détecter le début d'un wallet
+        // Detecter le début d'un wallet
         if (line.find("# WALLET") != std::string::npos) {
             currentWalletData.clear(); // Reset for new wallet
 
-            // The 6 following lines are: Name, zPub, BitcoinAddress, Fingerprint, DerivePath
+            // The 5 following lines are: Name, zPub, BitcoinAddress, Fingerprint, DerivePath
             for (int i = 0; i < 5; ++i) {
                 if (std::getline(stream, line) && !line.empty()) {
                     currentWalletData += line + "\n";
