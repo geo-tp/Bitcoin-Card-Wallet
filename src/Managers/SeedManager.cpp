@@ -44,7 +44,7 @@ void SeedManager::manageMnemonicRead(std::vector<std::string>& mnemonic) {
     if (mnemonicVerification && word != mnemonic[randomNumber]) {
       if (!word.empty()) {display.displaySubMessage("Wrong answer", 50, 2000);}
     } else {
-      display.displaySubMessage("Seed backup done", 36, 2000);
+      display.displaySubMessage("Seed backup done", 37, 2000);
       mnemonicIsBackedUp = true;
     }
   } while (!mnemonicIsBackedUp);
@@ -165,7 +165,7 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     // Go to file browser
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
     selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
-    display.displaySubMessage("Select xpub psbt file", 28, 3000);
+    display.displaySubMessage("Select .psbt file", 48, 3000);
 
     sdService.close(); // SD card stop
     
@@ -220,7 +220,7 @@ bool SeedManager::manageRfidSeedSignature() {
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
     selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
 
-    display.displaySubMessage("Select xpub psbt file", 28, 3000);
+    display.displaySubMessage("Select .psbt file", 48, 3000);
 
     return true;
 }
