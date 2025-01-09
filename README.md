@@ -53,7 +53,7 @@ Fingerprint: 6f022fd
 ```
 
 ## Saving the Seed Using RFID
-When you create or restore a wallet you have the option **to save your seed** on an RFID tag (optionnal). **This does not replace the necessity of writing down the words manually.**
+When you create or restore a wallet you have the option **to save your seed** on an RFID tag. **This does not replace the necessity of writing down the words manually.**
 
 
 **NOTE: You can save an existing wallet on an RFID tag** by using the **"RESTORE SEED"** option and write your seed words. **It will prompt you to save your seed on the RFID tag** during the restoration process.
@@ -76,9 +76,9 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 2. Ensure your RFID2 module is plugged in, and place the tag on the reader when prompted.
 
-3. Choose whether or not to encrypt your seed backup on the tag. If you choose encryption, the application will require you to decrypt it with the passphrase before use.
+3. Choose whether or not to encrypt your seed backup on the tag. If you choose encryption, you will choose a password, the application will require you to decrypt it with the password before use.
 
-4. Once your seed is saved on the tag, you can use it to sign your transactions or even restore your wallet.
+4. Once your seed is saved on the tag, **you can use it to sign your transactions or even restore your wallet.**
 
 **NOTE :** Encryption is **recommended for better security**, especially when storing sensitive information like a seed. Each **MIFARE 1K tag can hold one seed at a time**. Always test the tag after saving by **restoring the seed with RFID** to confirm that it was saved correctly.
 
@@ -107,7 +107,7 @@ When you create or restore a wallet you have the option **to save your seed** on
 
 ## Watch-only wallet in Sparrow
 
-You can import you zpub key into Sparrow to create a **"Watch-only wallet"**. A watch-only wallet allows you to view balances and transactions **without having access to the private keys**, making it ideal for monitoring funds securely.
+You can import your zpub key into Sparrow to create a **"Watch-only wallet"**. A watch-only wallet allows you to view balances and transactions **without having access to the private keys**, making it ideal for monitoring funds securely.
 
 [Sparrow Wallet Official Website](https://sparrowwallet.com/)
 
@@ -134,11 +134,18 @@ How to export the unsigned transation and import the signed transaction in Sparr
 3. You can see your transaction resume, click on "**Save**" to get the .psbt file, **sign it with you cardputer by using SD card** and import the signed transaction with **"Load"**.
 - ![](./images/sparrow-watchonly7.png)
 
-**NOTE: The cardputer will created a new signed file with the "-signed" mention in the same path.**
+**NOTE: The cardputer will create a new signed file with the "-signed" mention in the same path.**
+
+## Seed Import in Sparrow
+
+You can also use Sparrow as a standard wallet by writing down the **24 words provided when creating your seed.**
+
+- ![](./images/sparrow-standard1.png)
+
 
 ## Seed Import in Electrum
 
-Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to restore your wallet:
+Bitcoin Card Wallet generates a BIP39-compliant seed phrase that you can use to restore your wallet in Electrum.
 
 [Electrum Wallet Official Website](https://electrum.org/)
 
