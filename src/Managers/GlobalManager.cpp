@@ -272,7 +272,7 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
     }
 
     ledService.blink();
-    display.displaySubMessage("Seed is saved", 60, 2500);
+    display.displaySubMessage("Seed is saved", 57, 2500);
     return;
   }
   rfidService.end();

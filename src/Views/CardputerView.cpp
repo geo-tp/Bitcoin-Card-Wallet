@@ -590,14 +590,14 @@ void CardputerView::displaySeedEnd(bool sdCardMount) {
 
     // Main title
     Display->setTextSize(TEXT_BIG);
-    Display->setCursor(30, 22);
+    Display->setCursor(33, 22);
     Display->setTextColor(PRIMARY_COLOR);
     Display->printf("About Wallet");
 
     // Sub title
     Display->setTextSize(TEXT_SMALL);
     Display->setTextColor(TEXT_COLOR);
-    Display->setCursor(38, 46);
+    Display->setCursor(41, 46);
     Display->printf("Wallet has been created");
 
     // Text
