@@ -19,7 +19,7 @@ void ValueSelection::select(const std::string& description, const std::string& v
         switch (key) {
             case KEY_OK: // Send USB
                 ledService.showLed();
-                if (firstOkPress) { // keyboard hid needs approx 1.5sec to init
+                if (firstOkPress) { // hid needs approx 1.5sec to init
                     unsigned long elapsed = millis() - loopStartTime;
                     if (elapsed < 1500) {delay(1500 - elapsed);}
                     firstOkPress = false;

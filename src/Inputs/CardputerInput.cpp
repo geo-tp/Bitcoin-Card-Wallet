@@ -36,7 +36,7 @@ char CardputerInput::handler() {
             }
 
             for (auto c : status.word) {
-                entropyContext.add(c); // get some entropy
+                if (isalnum(c)) {entropyContext.add(c);} // get some entropy
                 return c; // retourner le premier char saisi
             }
         }
@@ -53,7 +53,7 @@ void CardputerInput::waitPress() {
             Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
             entropyContext.tick();
             for (auto c : status.word) {
-                entropyContext.add(c); // get some entropy
+                if (isalnum(c)) {entropyContext.add(c);} // get some entropy
             }
         return;
       }
