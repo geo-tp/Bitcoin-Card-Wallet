@@ -281,11 +281,12 @@ void GlobalManager::manageRfidSave(std::vector<uint8_t> privateKey) {
 std::vector<uint8_t> GlobalManager::manageRfidRead() {
   auto initialised = rfidService.initialize();
   if(!initialised) {
+     display.displayTopBar("RFID Error");
      display.displaySubMessage("No RFID module", 48, 2500);
      return {};
   }
 
-  display.displayTopBar("MIFARE 1K", false, false, false);
+  display.displayTopBar("MIFARE 1K");
   display.displaySubMessage("PLUG YOUR TAG", 43);
 
   std::vector<uint8_t> privateKey;

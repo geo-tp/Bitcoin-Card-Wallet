@@ -169,7 +169,7 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     // Go to file browser
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
     selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
-    display.displaySubMessage("Select .psbt file", 48, 3000);
+    display.displaySubMessage("Select .psbt file", 50, 3000);
 
     sdService.close(); // SD card stop
     
@@ -225,7 +225,7 @@ bool SeedManager::manageRfidSeedLoading() {
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
     selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
 
-    display.displaySubMessage("Select .psbt file", 48, 3000);
+    display.displaySubMessage("Select .psbt file", 50, 3000);
 
     return true;
 }
