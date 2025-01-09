@@ -25,10 +25,7 @@ std::string StringPromptSelection::select(std::string description, size_t offset
         else if (key == KEY_RETURN_CUSTOM && backButton) {
             return ""; // empty string will not save
         }
-        else if (password && key != KEY_NONE && output.size() < limit) {
-            output += key;
-        }
-        else if (isalnum(key) && output.size() < limit) {
+        else if (isprint(key) && output.size() < limit) {
             output += key;
         }
 
