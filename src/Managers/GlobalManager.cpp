@@ -300,6 +300,7 @@ std::vector<uint8_t> GlobalManager::manageRfidRead() {
             display.displaySubMessage("RFID read cancelled", 30, 2000);
             return privateKey;
         }
+        rfidService.reset();
         startTime = millis();
         display.displaySubMessage("PLUG YOUR TAG", 43);
     }
@@ -310,7 +311,11 @@ std::vector<uint8_t> GlobalManager::manageRfidRead() {
         continue;
     }
 
-    return manageRfidDecryption();
+    // Return key if not empty
+    privateKey = manageRfidDecryption();
+    if (!privateKey.empty()) {
+      return privateKey;
+    }
   }
 }
 
