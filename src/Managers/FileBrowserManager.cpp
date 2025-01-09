@@ -99,6 +99,7 @@ bool FileBrowserManager::manageTransactionFile(const std::string& currentPath) {
         auto parent = getParentDirectory(currentPath);
         std::string baseFileName = fileName.substr(0, fileName.find_last_of('.')); // remove ext .psbt
         sdService.writeBinaryFile((parent + "/" + baseFileName + "-signed.psbt").c_str(), signedTransactionBytes);
+        sdService.deleteFile(currentPath.c_str()); // delete unsigned file
         removeCachedDirectoryElement(parent); // new sign.psbt in it, remove to refetch
         display.displaySubMessage("Sign saved on SD", 40, 3000);
         
@@ -137,24 +138,37 @@ bool FileBrowserManager::manageSeedLoadingFile(const std::string& currentPath) {
                 return false;
             }
 
-            display.displayTopBar("Restore Seed", false, false, true, 5);
+            display.displayTopBar("Loading Seed", false, false, true, 5);
             display.displaySubMessage("Valid mnemonic", 45, 2000);
-
-            // Derive PublicKey and create segwit BTC address
-            display.displaySubMessage("Loading", 83);
-            auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
-            auto address = cryptoService.generateBitcoinSegwitAddress(publicKey);
-            auto privateKey = cryptoService.mnemonicToPrivateKey(mnemonicString);
-            display.displaySubMessage("Seed loaded", 65, 2000);
 
             // Get Wallet
             auto wallet = selectionContext.getCurrentSelectedWallet();
+
+            // Get seed passphrase
+            auto passphrase = managePassphrase();
+
+            // Derive PublicKey to check if seed match
+            display.displaySubMessage("Loading", 83);
+            auto zPub = cryptoService.deriveZPub(mnemonicString, passphrase);
+            if (zPub.toString().c_str() != wallet.getZPub()) {
+                display.displaySubMessage("seed/wallet mismatch", 18, 3000);
+                selectionContext.setTransactionOngoing(false);
+                return {};
+            }
+
+            display.displaySubMessage("Seed loaded", 65, 1500);
+
+            // Update
+            wallet.setPassphrase(passphrase);
             wallet.setMnemonic(mnemonicString);
             selectionContext.setCurrentSelectedWallet(wallet);
+            walletService.updateWallet(wallet);
 
-            // Go get pbst file
+            // Go to file browser
             selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
             selectionContext.setCurrentSelectedFileType(FileTypeEnum::TRANSACTION);
+            display.displaySubMessage("Select .psbt file", 48, 3000);
+
             return true;
         } else {
             confirmationSelection.select("    Invalid seed");
@@ -205,6 +219,7 @@ bool FileBrowserManager::manageSeedRestorationFile(const std::string& currentPat
             sdService.close(); // SD card stop
 
             // Go to portfolio
+            selectionContext.setIsWalletSelected(false);
             selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
             return true;
         } else {
@@ -249,7 +264,6 @@ std::vector<std::string> FileBrowserManager::getCachedDirectoryElements(const st
 void FileBrowserManager::removeCachedDirectoryElement(const std::string& path) {
     auto it = cachedDirectoryElements.find(path);
     if (it != cachedDirectoryElements.end()) {
-        // Erase
         cachedDirectoryElements.erase(it);
     }
 }

@@ -125,6 +125,7 @@ bool SeedManager::manageMnemonicRestore(size_t wordCount) {
     sdService.close(); // SD card stop
     
     // Go to portfolio
+    selectionContext.setIsWalletSelected(false);
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
     return true;
 }
@@ -138,7 +139,7 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     }
 
     // At this point mnemonic is valid
-    display.displayTopBar("Restore seed", false, false, true, 5);
+    display.displayTopBar("Loading seed", false, false, true, 5);
     display.displaySubMessage("Valid mnemonic", 45, 2000);
 
     // Get Wallet
@@ -150,17 +151,20 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     // Derive PublicKey to check if seed match
     display.displaySubMessage("Loading", 83);
     auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-    auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
-    if (publicKey.toString().c_str() != wallet.getZPub()) {
+    auto zPub = cryptoService.deriveZPub(mnemonicString, passphrase);
+    if (zPub.toString().c_str() != wallet.getZPub()) {
       display.displaySubMessage("seed/wallet mismatch", 18, 3000);
       selectionContext.setTransactionOngoing(false);
       return {};
     }
 
+    display.displaySubMessage("Seed loaded", 65, 2000);
+
     // Update
     wallet.setPassphrase(passphrase);
     wallet.setMnemonic(mnemonicString);
     selectionContext.setCurrentSelectedWallet(wallet);
+    walletService.updateWallet(wallet);
 
     // Go to file browser
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::LOAD_SD);
@@ -172,7 +176,7 @@ std::vector<std::string> SeedManager::manageMnemonicLoading(size_t wordCount) {
     return mnemonic;
 }
 
-bool SeedManager::manageRfidSeedSignature() {
+bool SeedManager::manageRfidSeedLoading() {
     // Display infos about module
     display.displayPlugRfid();
     input.waitPress();
@@ -199,8 +203,8 @@ bool SeedManager::manageRfidSeedSignature() {
     // Derive PublicKey to check if seed match
     display.displaySubMessage("Loading", 83);
     auto mnemonicString = cryptoService.mnemonicVectorToString(mnemonic);
-    auto publicKey = cryptoService.deriveZPub(mnemonicString, passphrase);
-    if (publicKey.toString().c_str() != wallet.getZPub()) {
+    auto zPub = cryptoService.deriveZPub(mnemonicString, passphrase);
+    if (zPub.toString().c_str() != wallet.getZPub()) {
       display.displaySubMessage("seed/wallet mismatch", 18, 4000);
       selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
       selectionContext.setTransactionOngoing(false);
@@ -214,6 +218,7 @@ bool SeedManager::manageRfidSeedSignature() {
     // Set mnemonic to wallet
     wallet.setMnemonic(mnemonicString);
     selectionContext.setCurrentSelectedWallet(wallet);
+    walletService.updateWallet(wallet);
 
     // Go to file browser
     display.displaySubMessage("Loading", 83);
@@ -270,6 +275,7 @@ void SeedManager::manageRfidSeedRestoration() {
     mnemonicString.clear(); 
 
     // Go to Portfolio
+    selectionContext.setIsWalletSelected(false);
     selectionContext.setCurrentSelectedMode(SelectionModeEnum::PORTFOLIO);
 }
 

@@ -156,10 +156,6 @@ std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
     auto sign = rfidService.getCheckSum(); 
     ledService.blink(); // to signal RFID reading
 
-    // Allow more chars
-    auto defaultMaxCharLimit = globalContext.getMaxInputCharCount();
-    globalContext.setMaxInputCharCount(128);
-
     // If salt is empty, the seed is not emcrypted
     auto saltIsEmpty = std::all_of(salt.begin(), salt.end(), [](int value) { return value == 0; });
 
@@ -183,7 +179,6 @@ std::vector<uint8_t> GlobalManager::manageRfidDecryption() {
         display.displaySubMessage("Bad password", 55, 1500);
       }
     }
-    globalContext.setMaxInputCharCount(defaultMaxCharLimit);
     return privateKey;
 }
 

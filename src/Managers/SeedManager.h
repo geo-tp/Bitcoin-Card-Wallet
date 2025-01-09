@@ -21,7 +21,7 @@ public:
     std::vector<std::string> manageMnemonicWrite(size_t wordCount);
     std::vector<uint8_t> managePrivateKey();
     void manageRfidSeedRestoration();
-    bool manageRfidSeedSignature();
+    bool manageRfidSeedLoading();
     void manageNewSeedCreation();
 
 };
