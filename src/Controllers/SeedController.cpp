@@ -29,11 +29,13 @@ void SeedController::handleSeedRestoration() {
   if (transactionOngoing) {
     manager.display.displaySeedLoadInfos();
     manager.input.waitPress();
+  } else {
+    manager.display.displaySubMessage("Restore a wallet", 45, 1500);
   }
 
-  auto title = transactionOngoing ? "Load Seed" : "New Seed";
+  auto title = transactionOngoing ? "Load Seed" : "Restore";
   manager.display.displayTopBar(title, true, false, true, 15);
-  
+
   auto restorationMethod = manager.seedRestorationSelection.select();
   switch (restorationMethod) {
       case SeedRestorationModeEnum::NONE:

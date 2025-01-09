@@ -62,6 +62,7 @@ void WalletController::handleWalletInformationSelection() {
     // Route to the selected wallet infos
     switch (selectedInfo) {
         case WalletInformationEnum::NONE: // when key return is hits
+            selectionContext.setTransactionOngoing(false);
             selectionContext.setIsWalletSelected(false); // go back to wallet selection
             break;
 
