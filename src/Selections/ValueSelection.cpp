@@ -8,6 +8,7 @@ ValueSelection::ValueSelection(CardputerView& display, CardputerInput& input)
 void ValueSelection::select(const std::string& description, const std::string& value, UsbService& usbService, LedService& ledService) {
     char key = KEY_NONE;
     bool firstOkPress = true;
+    unsigned long loopStartTime = millis();  // used to wait for keyboard init
 
     display.displayTopBar(description, true, false, false, 20);
     display.displayWalletValue(description, value);
@@ -18,8 +19,9 @@ void ValueSelection::select(const std::string& description, const std::string& v
         switch (key) {
             case KEY_OK: // Send USB
                 ledService.showLed();
-                if (firstOkPress) {
-                    delay(800); // wait to be sure it's initialized
+                if (firstOkPress) { // keyboard hid needs approx 1.5sec to init
+                    unsigned long elapsed = millis() - loopStartTime;
+                    if (elapsed < 1500) {delay(1500 - elapsed);}
                     firstOkPress = false;
                 }
                 usbService.sendString(value);
