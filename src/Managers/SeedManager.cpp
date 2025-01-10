@@ -198,7 +198,6 @@ bool SeedManager::manageRfidSeedLoading() {
 
     // Get seed passphrase
     auto passphrase = managePassphrase();
-    wallet.setPassphrase(passphrase);
 
     // Derive PublicKey to check if seed match
     display.displaySubMessage("Loading", 83);
@@ -216,6 +215,7 @@ bool SeedManager::manageRfidSeedLoading() {
     display.displaySubMessage("1st word: " + mnemonic[0], 49, 3000);
 
     // Set mnemonic to wallet
+    wallet.setPassphrase(passphrase);
     wallet.setMnemonic(mnemonicString);
     selectionContext.setCurrentSelectedWallet(wallet);
     walletService.updateWallet(wallet);

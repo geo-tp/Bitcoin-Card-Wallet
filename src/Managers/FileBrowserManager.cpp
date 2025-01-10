@@ -152,8 +152,7 @@ bool FileBrowserManager::manageSeedLoadingFile(const std::string& currentPath) {
             auto zPub = cryptoService.deriveZPub(mnemonicString, passphrase);
             if (zPub.toString().c_str() != wallet.getZPub()) {
                 display.displaySubMessage("seed/wallet mismatch", 18, 3000);
-                selectionContext.setTransactionOngoing(false);
-                return {};
+                return false;
             }
 
             display.displaySubMessage("Seed loaded", 65, 1500);
