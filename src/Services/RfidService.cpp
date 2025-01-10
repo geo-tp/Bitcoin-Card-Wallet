@@ -171,12 +171,18 @@ std::vector<uint8_t> RfidService::getPrivateKey() {
     }
 
     auto metadata = readBlock(blockMetadata);
-    uint8_t keyType = metadata[0]; // 0x10 16 bytes, 0x20 pour 32 bytes
+    if (metadata.empty()) {
+        return {};
+    }
+
+    // 0x10 16 bytes, 0x20 pour 32 bytes
+    uint8_t keyType = metadata[0];
 
     if (!authenticateBlock(blockPrivateKey1)) {
         return {};
     }
 
+    // Seed first 16 bytes
     auto part1 = readBlock(blockPrivateKey1);
 
     // 16 bytes seed

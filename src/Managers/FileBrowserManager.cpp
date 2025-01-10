@@ -155,9 +155,8 @@ bool FileBrowserManager::manageSeedLoadingFile(const std::string& currentPath) {
                 return false;
             }
 
-            display.displaySubMessage("Seed loaded", 65, 1500);
-
             // Update
+            display.displaySubMessage("Seed loaded", 65, 1500);
             wallet.setPassphrase(passphrase);
             wallet.setMnemonic(mnemonicString);
             selectionContext.setCurrentSelectedWallet(wallet);
