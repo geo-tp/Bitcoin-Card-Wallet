@@ -214,10 +214,10 @@ std::vector<uint8_t> CryptoService::generateRandomMbetls(size_t size) {
     mbedtls_entropy_init(&entropy);
 
     // Seed the DRBG
-    const char *pers = "cardputer_card_wallet_random_generator";
+    auto pers = getRandomString(32); // length of the string
     mbedtls_ctr_drbg_seed(&ctr_drbg, mbedtls_entropy_func, &entropy,
-                          reinterpret_cast<const unsigned char*>(pers),
-                          strlen(pers));
+                          reinterpret_cast<const unsigned char*>(pers.c_str()),
+                          pers.length());
 
     // Get random
     std::vector<uint8_t> randomData(size);
