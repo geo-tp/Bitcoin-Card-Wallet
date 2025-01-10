@@ -9,7 +9,8 @@ bool WalletRepository::addWallet(const Wallet& wallet) {
 
 bool WalletRepository::updateWallet(const Wallet& updatedWallet) {
     for (auto& wallet : wallets) {
-        if (wallet.getZPub() == updatedWallet.getZPub()) {
+        if (wallet.getZPub() == updatedWallet.getZPub() && 
+            wallet.getName() == updatedWallet.getName()) {
             wallet = updatedWallet;
             return true;
         }
