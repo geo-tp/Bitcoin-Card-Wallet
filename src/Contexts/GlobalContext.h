@@ -74,6 +74,9 @@ public:
     int getBlockMetadata() const;
     void setBlockMetadata(int blockSign);
 
+    int getMaxAllowedWallet() const;
+    void setMaxAllowedWallet(int maxCount);
+
 private:
     // Private constructor to prevent instantiation
     GlobalContext();
@@ -83,6 +86,7 @@ private:
     std::string fileWalletPath;
     std::string fileWalletDefaultPath = "/card-wallets.txt";
     std::string bitcoinBalanceUrl = "https://www.blockonomics.co/#/search?q=";
+    int allowedWalletCount = 100;
 
     // INPUT
     int maxInputCharCount = 14;

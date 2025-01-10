@@ -180,4 +180,12 @@ void GlobalContext::setBlockMetadata(int blockSign) {
     this->blockSign = blockMetadata;
 }
 
+int GlobalContext::getMaxAllowedWallet() const {
+    return allowedWalletCount;
+}
+
+void GlobalContext::setMaxAllowedWallet(int maxCount) {
+    this->allowedWalletCount = maxCount;
+}
+
 } // namespace contexts

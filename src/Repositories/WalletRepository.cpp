@@ -40,6 +40,7 @@ std::vector<std::string> WalletRepository::splitWallets(const std::string& fileC
     std::istringstream stream(fileContent);
     std::string line;
     std::string currentWalletData;
+    auto maxWallets =  globalContext.getMaxAllowedWallet();
 
     while (std::getline(stream, line)) {
         // Detecter le début d'un wallet
@@ -55,6 +56,10 @@ std::vector<std::string> WalletRepository::splitWallets(const std::string& fileC
 
             if (!currentWalletData.empty()) {
                 walletDataList.push_back(currentWalletData);
+                // Max allowed wallet count
+                if (walletDataList.size() >= maxWallets) {
+                    return walletDataList;
+                }
             }
         }
     }

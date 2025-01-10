@@ -9,8 +9,10 @@
 #include <algorithm>
 #include <M5Cardputer.h>
 #include <iomanip>
+#include <Contexts/GlobalContext.h>
 
 using namespace models;
+using namespace contexts;
 
 namespace repositories {
 
@@ -30,6 +32,7 @@ private:
     std::vector<std::string> splitWallets(const std::string& walletData);
     models::Wallet parseWallet(const std::string& walletData);
     std::vector<uint8_t> hexStringToVector(const std::string& str);
+    GlobalContext& globalContext = GlobalContext::getInstance();
 };
 
 } // namespace repositories
