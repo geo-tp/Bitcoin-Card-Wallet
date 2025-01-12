@@ -128,7 +128,7 @@ You can import your zpub key into Sparrow to create a **"Watch-only wallet"**. A
 
 ## Transactions in Sparrow
 
-How to export the unsigned transation and import the signed transaction in Sparrow
+How to export the unsigned translation and import the signed transaction in Sparrow
 
 [Sparrow Wallet Official Website](https://sparrowwallet.com/)
 
