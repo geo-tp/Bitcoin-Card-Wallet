@@ -18,6 +18,12 @@
 
 ## Installation
 
+### Prerequisites
+
+- You have the **M5Stack Cardputer**
+- ![](./images/cardputer.jpg)
+
+
 - <b>M5Burner</b> : Search into M5CARDPUTER section and burn it
 - <b>Old school</b> : Build or take the firmware.bin from the [github release](https://github.com/geo-tp/Bitcoin-Card-Wallet/releases) and flash it
 
